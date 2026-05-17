@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
+import { footerLabelToPage } from "@/lib/routes";
 
 /* ─── Global CSS ─────────────────────────────────────────────────────────── */
 const CSS = `
@@ -150,9 +153,10 @@ const MEGA_PRODUCTS = {
 
 /* ─── Hooks ──────────────────────────────────────────────────────────────── */
 function useWidth() {
-  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const [w, setW] = useState(1200);
   useEffect(() => {
     const h = () => setW(window.innerWidth);
+    h();
     window.addEventListener("resize", h);
     return () => window.removeEventListener("resize", h);
   }, []);
@@ -425,10 +429,15 @@ function Nav({ onNavigate, onBack, pageName }) {
 
 function goLegalPage(label, onNavigate) {
   if (typeof onNavigate !== "function") return;
-  if (label === "Terms of Use") window.location.hash = "";
+  if (label === "Terms of Use" || label === "Terms & Conditions") window.location.hash = "";
   else if (label === "Privacy Policy") window.location.hash = "intro";
   else if (label === "Cookie Policy") window.location.hash = "analytics";
   onNavigate("terms");
+}
+
+function goFooterLink(label, onNavigate) {
+  const page = footerLabelToPage(label);
+  if (page) onNavigate(page);
 }
 
 /* ─── VDDFooter ──────────────────────────────────────────────────────────── */
@@ -437,9 +446,9 @@ function VDDFooter({ onNavigate }) {
   const isMobile = w < 640;
   const twWord = useTypewriter(["Security","Diligence","Results","Compliance","Scale"]);
   const cols = [
-    ["PRODUCT",   ["Compliance Portal","Supplier Portal","Invoice Processing","RFx Management","Supplier Analytics"]],
+    ["PRODUCT",   ["Supplier Due Diligence","Supplier Portal","Invoice Processing","RFx Management","Supplier Analytics"]],
     ["COMPANY",   ["About Us","Careers","Press & Media","Partners","Contact"]],
-    ["RESOURCES", ["Blog","Case Studies","Guides & Whitepapers","API Documentation","Security"]],
+    ["RESOURCES", ["Blog","Case Studies","Automation Smiles","Guides & Whitepapers","Trust Center"]],
   ];
   const socials = [{ label:"in", title:"LinkedIn" }, { label:"𝕏", title:"X / Twitter" }, { label:"▶", title:"YouTube" }];
   const dots = [
@@ -484,6 +493,7 @@ function VDDFooter({ onNavigate }) {
               <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
                 {links.map(l => (
                   <a key={l} href="#" style={{ fontSize:14, color:"rgba(255,255,255,.5)", textDecoration:"none", fontFamily:"var(--fb)", fontWeight:400, transition:"color .15s" }}
+                    onClick={e => { if (footerLabelToPage(l)) { e.preventDefault(); goFooterLink(l, onNavigate); } }}
                     onMouseEnter={e => e.target.style.color = "rgba(255,255,255,.9)"}
                     onMouseLeave={e => e.target.style.color = "rgba(255,255,255,.5)"}
                   >{l}</a>

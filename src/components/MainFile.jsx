@@ -1,11 +1,17 @@
-import { useState, useEffect, useRef } from "react";
-import TermsPage from "./NimbleS2PTerms.jsx";
-import CompliancePortalDemo from "@gifs/CompliancePortal.jsx";
-import RFQAgentDemo from "@gifs/RFQAgent.jsx";
-import SupplierPortalDemo from "@gifs/SupplierPortal.jsx";
-import InvoiceProcessingDemo from "@gifs/InvoiceProcessing.jsx";
-import SupplierAnalyticsDemo from "@gifs/SupplierAnalytics.jsx";
-import { assetUrl } from "../lib/assetUrl.js";
+"use client";
+
+import { useState, useEffect, useRef, useCallback, Fragment } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import TermsPage from "./NimbleS2PTerms";
+import PressMediaPage from "./PressMediaPage";
+import ResourcesPage from "./ResourcesPage";
+import CompliancePortalDemo from "@gifs/CompliancePortal";
+import RFQAgentDemo from "@gifs/RFQAgent";
+import SupplierPortalDemo from "@gifs/SupplierPortal";
+import InvoiceProcessingDemo from "@gifs/InvoiceProcessing";
+import SupplierAnalyticsDemo from "@gifs/SupplierAnalytics";
+import { assetUrl } from "@/lib/assetUrl";
+import { pageToPath, pathToPage, footerLabelToPage } from "@/lib/routes";
 
 /* ─────────────────────────────────────────
    GLOBAL STYLES + DESIGN TOKENS
@@ -236,11 +242,13 @@ function useTypewriter(words, { typeSpeed=80, eraseSpeed=50, pauseMs=1600 } = {}
   return display;
 }
 
-function useWidth() {  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+function useWidth() {
+  const [w, setW] = useState(1200);
   useEffect(() => {
-    const h = () => setW(window.innerWidth);
-    window.addEventListener("resize", h);
-    return () => window.removeEventListener("resize", h);
+    const update = () => setW(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
   return w;
 }
@@ -2265,10 +2273,15 @@ function FinalCTA({ onNavigate }) {
 
 function goLegalPage(label, onNavigate) {
   if (typeof onNavigate !== "function") return;
-  if (label === "Terms of Use") window.location.hash = "";
+  if (label === "Terms of Use" || label === "Terms & Conditions") window.location.hash = "";
   else if (label === "Privacy Policy") window.location.hash = "intro";
   else if (label === "Cookie Policy") window.location.hash = "analytics";
   onNavigate("terms");
+}
+
+function goFooterLink(label, onNavigate) {
+  const page = footerLabelToPage(label);
+  if (page) onNavigate(page);
 }
 
 /* ─────────────────────────────────────────
@@ -2281,9 +2294,9 @@ function Footer({ onNavigate }) {
   const twWord = useTypewriter(["Security","Diligence","Results","Compliance","Scale"]);
 
   const cols = [
-    ["PRODUCT", ["Compliance Portal","Supplier Portal","Invoice Processing","RFx Management","Supplier Analytics","Blackbox API"]],
+    ["PRODUCT", ["Supplier Due Diligence","Supplier Portal","Invoice Processing","RFx Management","Supplier Analytics","Blackbox API"]],
     ["COMPANY", ["About Us","Careers","Press & Media","Partners","Contact"]],
-    ["RESOURCES",["Blog","Case Studies","Guides & Whitepapers","API Documentation","Security"]],
+    ["RESOURCES",["Blog","Case Studies","Automation Smiles","Guides & Whitepapers","Trust Center"]],
   ];
 
   const socials = [
@@ -2400,6 +2413,7 @@ function Footer({ onNavigate }) {
                     textDecoration:"none", fontFamily:"var(--fb)",
                     fontWeight:400, transition:"color .15s",
                   }}
+                    onClick={e=>{ if(footerLabelToPage(l)){ e.preventDefault(); goFooterLink(l, onNavigate); } }}
                     onMouseEnter={e=>e.target.style.color="rgba(255,255,255,.9)"}
                     onMouseLeave={e=>e.target.style.color="rgba(255,255,255,.5)"}
                   >{l}</a>
@@ -3072,9 +3086,9 @@ function VDDFooter({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const twWord = useTypewriter(["Security","Diligence","Results","Compliance","Scale"]);
   const cols = [
-    ["PRODUCT",["Compliance Portal","Supplier Portal","Invoice Processing","RFx Management","Supplier Analytics"]],
+    ["PRODUCT",["Supplier Due Diligence","Supplier Portal","Invoice Processing","RFx Management","Supplier Analytics"]],
     ["COMPANY",["About Us","Careers","Press & Media","Partners","Contact"]],
-    ["RESOURCES",["Blog","Case Studies","Guides & Whitepapers","API Documentation","Security"]],
+    ["RESOURCES",["Blog","Case Studies","Automation Smiles","Guides & Whitepapers","Trust Center"]],
   ];
   const socials = [{ label:"in",title:"LinkedIn" },{ label:"𝕏",title:"X / Twitter" },{ label:"▶",title:"YouTube" }];
 
@@ -3156,6 +3170,7 @@ function VDDFooter({ onNavigate }) {
               <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
                 {links.map(l=>(
                   <a key={l} href="#" style={{ fontSize:14, color:"rgba(255,255,255,.5)", textDecoration:"none", fontFamily:"var(--fb)", fontWeight:400, transition:"color .15s" }}
+                    onClick={e=>{ if(footerLabelToPage(l)){ e.preventDefault(); goFooterLink(l, onNavigate); } }}
                     onMouseEnter={e=>e.target.style.color="rgba(255,255,255,.9)"}
                     onMouseLeave={e=>e.target.style.color="rgba(255,255,255,.5)"}
                   >{l}</a>
@@ -6266,9 +6281,9 @@ function BookDemoPage({ onBack, onNavigate }) {
     if (!validateForm()) return;
     setSending(true);
     try {
-      const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_nimbles2p";
-      const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_demo_req";
-      const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+      const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_nimbles2p";
+      const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_demo_req";
+      const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
       if (!PUBLIC_KEY) throw new Error("EmailJS not configured");
       if (!window.emailjs) {
         await new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
@@ -6560,7 +6575,20 @@ function BookDemoPage({ onBack, onNavigate }) {
 
 
 export default function NimbleS2PHomepage() {
-  const [page, setPage] = useState("home");
+  const pathname = usePathname();
+  const router = useRouter();
+  const page = pathToPage(pathname);
+
+  const navigate = useCallback(
+    (p) => {
+      const target = pageToPath(p);
+      if (pathname !== target) router.push(target);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [pathname, router]
+  );
+
+  const goHome = useCallback(() => navigate("home"), [navigate]);
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -6570,52 +6598,70 @@ export default function NimbleS2PHomepage() {
   }, []);
 
   if (page === "vdd") {
-    return <VendorDueDiligencePage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <VendorDueDiligencePage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "supplier") {
-    return <SupplierPortalPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <SupplierPortalPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "invoice") {
-    return <InvoiceProcessingPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <InvoiceProcessingPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "rfq") {
-    return <RFQManagementPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <RFQManagementPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "why") {
-    return <WhyNimblePage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <WhyNimblePage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "pricing") {
-    return <PricingPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <PricingPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "demo") {
-    return <BookDemoPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <BookDemoPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "analytics") {
-    return <SupplierAnalyticsPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <SupplierAnalyticsPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "finance") {
-    return <EarlyFinancingPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <EarlyFinancingPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "getstarted") {
-    return <GetStartedPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <GetStartedPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "terms") {
-    return <TermsPage onBack={() => setPage("home")} onNavigate={(p) => setPage(p)} />;
+    return <TermsPage onBack={goHome} onNavigate={navigate} />;
+  }
+  if (page === "press") {
+    return (
+      <>
+        <Nav onNavigate={navigate} onBack={goHome} pageName="Press & Media" />
+        <PressMediaPage />
+        <VDDFooter onNavigate={navigate} />
+      </>
+    );
+  }
+  if (page === "resources") {
+    return (
+      <>
+        <Nav onNavigate={navigate} onBack={goHome} pageName="Resources" />
+        <ResourcesPage />
+        <VDDFooter onNavigate={navigate} />
+      </>
+    );
   }
 
   return (
     <div>
-      <Nav onNavigate={(p) => setPage(p)} onBack={() => { setPage("home"); window.scrollTo({top:0,behavior:"smooth"}); }} />
-      <Hero onNavigate={(p) => setPage(p)} />
+      <Nav onNavigate={navigate} onBack={() => { navigate("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+      <Hero onNavigate={navigate} />
       <LogoMarquee />
-      <PlatformModules onNavigate={(p) => setPage(p)} />
+      <PlatformModules onNavigate={navigate} />
       <NimbleDifference />
       <RealResults />
       <DomainStatement />
       <SupplierLoveUs />
       <HearFromThem />
-      <FinalCTA onNavigate={(p) => setPage(p)} />
-      <Footer onNavigate={(p) => setPage(p)} />
+      <FinalCTA onNavigate={navigate} />
+      <Footer onNavigate={navigate} />
     </div>
   );
 }
@@ -7078,7 +7124,7 @@ function SATimeline() {
                 const c = nodeColors[i];
                 const isConnectorPast = i > 0 && active >= i;
                 return (
-                  <React.Fragment key={p.period}>
+                  <Fragment key={p.period}>
                     {/* Connector segment between pills */}
                     {i > 0 && (
                       <div style={{
@@ -7121,7 +7167,7 @@ function SATimeline() {
                         transition:"color .3s", whiteSpace:"nowrap",
                       }}>{p.period}</span>
                     </div>
-                  </React.Fragment>
+                  </Fragment>
                 );
               })}
             </div>

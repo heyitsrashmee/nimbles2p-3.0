@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useCallback, useState } from "react";
 
 /* ─── Data ─────────────────────────────────────────────── */

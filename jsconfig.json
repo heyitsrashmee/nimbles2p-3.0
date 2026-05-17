@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@gifs/*": ["./gifs/*"]
+    }
+  },
+  "exclude": ["node_modules", ".next"]
+}
