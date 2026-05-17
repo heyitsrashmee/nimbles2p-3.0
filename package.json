@@ -1,0 +1,22 @@
+{
+  "name": "nimbles2p-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/prepare-public.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/prepare-public.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "verify": "node scripts/prepare-public.mjs && node scripts/verify-assets.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "sharp": "^0.33.5",
+    "vite": "^5.4.11"
+  }
+}
