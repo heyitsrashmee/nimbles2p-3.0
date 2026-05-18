@@ -335,8 +335,17 @@ function NimbleColorLogo({ height = 28 }) {
 }
 
 /* ─────────────────────────────────────────
-   MEGA MENU DATA
+   MEGA MENU DATA — resources synced to each product page CTA
 ───────────────────────────────────────── */
+const PRODUCT_PAGE_RESOURCES = {
+  vdd:       { type:"guide",      label:"7 Most Expensive Onboarding Mistakes", meta:"Free guide",       icon:"📋" },
+  supplier:  { type:"case study", label:"Behind the scenes of supplier experience transformation", meta:"Case study", icon:"📈" },
+  invoice:   { type:"diagnostic", label:"Get the CFO Diagnostic: How Mature Is Your Invoice Process?", meta:"Free diagnostic", icon:"📋" },
+  rfq:       { type:"diagnostic", label:"The RFQ Reality Index", meta:"Free diagnostic", icon:"📋" },
+  finance:   { type:"blog",       label:"Launch Scalable SCF Programs Faster", meta:"Blog", icon:"✍️" },
+  analytics: { type:"blog",      label:"Your Supplier Network Is Talking. Are You Listening?", meta:"Blog", icon:"✍️" },
+};
+
 const MEGA_PRODUCTS = {
   integrated: [
     {
@@ -346,7 +355,7 @@ const MEGA_PRODUCTS = {
       desc:"Automate supplier onboarding, KYC, compliance checks, and risk validation.",
       color:"#231a67",
       tag:"Trending",
-      resource:{ type:"guide", label:"Due Diligence Playbook", meta:"8 min read", icon:"📋" },
+      resource: PRODUCT_PAGE_RESOURCES.vdd,
     },
     {
       id:"supplier",
@@ -354,7 +363,7 @@ const MEGA_PRODUCTS = {
       name:"Supplier Portal",
       desc:"Unified interface for suppliers to manage onboarding, documents, communication, and transactions.",
       color:"#6DB657",
-      resource:{ type:"case", label:"How Tata Cut Onboarding 80%", meta:"Case study", icon:"📈" },
+      resource: PRODUCT_PAGE_RESOURCES.supplier,
     },
     {
       id:"invoice",
@@ -362,7 +371,7 @@ const MEGA_PRODUCTS = {
       name:"Invoice Processing Automation",
       desc:"Agentic 2-way and 3-way matching automation for every invoice type — material, service, and non-PO — with enterprise-scale exception management.",
       color:"#1a1a2e",
-      resource:{ type:"demo", label:"Watch: 3-Way Match in 60s", meta:"2 min demo", icon:"▶" },
+      resource: PRODUCT_PAGE_RESOURCES.invoice,
     },
     {
       id:"rfq",
@@ -370,7 +379,7 @@ const MEGA_PRODUCTS = {
       name:"RFx Management",
       desc:"Create, distribute, and evaluate RFQs with supplier comparison and selection.",
       color:"#717C89",
-      resource:{ type:"guide", label:"RFQ Best Practices Guide", meta:"6 min read", icon:"📋" },
+      resource: PRODUCT_PAGE_RESOURCES.rfq,
     },
     {
       id:"finance",
@@ -379,7 +388,7 @@ const MEGA_PRODUCTS = {
       desc:"Enable supply chain financing and early payment options for vendors.",
       color:"#E06B72",
       tag:"New",
-      resource:{ type:"report", label:"Supply Chain Finance Report 2026", meta:"Whitepaper", icon:"📄" },
+      resource: PRODUCT_PAGE_RESOURCES.finance,
     },
     {
       id:"analytics",
@@ -388,7 +397,7 @@ const MEGA_PRODUCTS = {
       desc:"Monitor supplier health, exposure, compliance, and operational performance from one analytics layer",
       color:"#48A9A6",
       tag:"Beta",
-      resource:{ type:"demo", label:"Live Analytics Dashboard", meta:"Interactive demo", icon:"▶" },
+      resource: PRODUCT_PAGE_RESOURCES.analytics,
     },
   ],
 };
@@ -3022,7 +3031,7 @@ function LeadMagnetCTA() {
               <span style={{ fontSize:11, fontWeight:700, color:"#F5D060", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Free Resource</span>
             </div>
             <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.06, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16 }}>
-              The 7 Most Expensive Supplier Onboarding Mistakes
+              {PRODUCT_PAGE_RESOURCES.vdd.label}
             </h2>
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)", marginBottom:0 }}>
               Download our guide to avoid the pitfalls that cost enterprises crores in delayed payments, audit failures, and compliance gaps every year.
@@ -3774,7 +3783,7 @@ function SPCTA() {
               <span style={{ fontSize:11, fontWeight:700, color:"#6EE7B7", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Free Case Study</span>
             </div>
             <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.06, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16 }}>
-              Behind the scenes of supplier experience transformation
+              {PRODUCT_PAGE_RESOURCES.supplier.label}
             </h2>
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>Full case study inside — how India's leading enterprises transformed supplier relationships with NimbleS2P.</p>
           </div>
@@ -4732,7 +4741,7 @@ function IPCTA() {
               <span style={{ fontSize:11, fontWeight:700, color:"#F5D060", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Free Diagnostic</span>
             </div>
             <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.06, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16 }}>
-              Get the CFO Diagnostic: How Mature Is Your Invoice Process?
+              {PRODUCT_PAGE_RESOURCES.invoice.label}
             </h2>
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>
               A practical self-assessment that benchmarks your current invoice workflow against best-in-class automation. Know exactly where your gaps are.
@@ -5175,7 +5184,7 @@ function RFQCTA() {
               <span style={{ fontSize:11, fontWeight:700, color:"#F5D060", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Free Diagnostic</span>
             </div>
             <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.06, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16 }}>
-              Download The RFQ<br />Reality Index
+              {PRODUCT_PAGE_RESOURCES.rfq.label}
             </h2>
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>
               A short diagnostic that benchmarks RFQ maturity across speed, governance, collaboration, and AI enablement. Know exactly where your gaps are.
@@ -7287,10 +7296,10 @@ function SACTA({ onNavigate }) {
           <div>
             <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:"rgba(52,211,153,.12)", border:"1px solid rgba(52,211,153,.28)", borderRadius:100, padding:"5px 14px", marginBottom:20 }}>
               <span style={{ width:6, height:6, borderRadius:"50%", background:"#34D399", display:"inline-block", animation:"pulse-dot 2s infinite" }} />
-              <span style={{ fontSize:11, fontWeight:700, color:"#6EE7B7", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Free Analytics Guide</span>
+              <span style={{ fontSize:11, fontWeight:700, color:"#6EE7B7", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Blog</span>
             </div>
             <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.12, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16, paddingBottom:8 }}>
-              Your Supplier Network Is Talking.<br />Are You Listening?
+              {PRODUCT_PAGE_RESOURCES.analytics.label}
             </h2>
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>
               Get real-time visibility into supplier risk, compliance, performance, and operational health with AI-driven analytics.
@@ -8298,10 +8307,10 @@ function EFCTA({ onNavigate }) {
           <div>
             <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:"rgba(245,166,35,.15)", border:"1px solid rgba(245,166,35,.35)", borderRadius:100, padding:"5px 14px", marginBottom:20 }}>
               <span style={{ width:6, height:6, borderRadius:"50%", background:"#F5A623", display:"inline-block", animation:"pulse-dot 2s infinite" }} />
-              <span style={{ fontSize:11, fontWeight:700, color:"#F5D060", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Financing Cloud</span>
+              <span style={{ fontSize:11, fontWeight:700, color:"#F5D060", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Blog</span>
             </div>
             <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.12, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16, paddingBottom:8 }}>
-              Launch Scalable SCF<br />Programs Faster
+              {PRODUCT_PAGE_RESOURCES.finance.label}
             </h2>
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>
               Get your early financing programs live with pre-integrated lenders, automated workflows, and enterprise-grade compliance — all in one platform.

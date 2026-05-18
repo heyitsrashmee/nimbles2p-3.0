@@ -28,7 +28,7 @@ const REQUIRED_IMAGES = [
   "images/textile.jpg",
 ];
 
-const REQUIRED_STATIC = ["arrow.svg", "favicon.svg"];
+const REQUIRED_STATIC = ["arrow.svg", "favicon.png"];
 
 const GIF_MODULES = [
   "gifs/CompliancePortal.jsx",
