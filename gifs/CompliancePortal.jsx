@@ -3,490 +3,421 @@
 import { useEffect, useRef, useCallback } from "react";
 
 const CHECKS = [
-  { id: "pan",  label: "PAN Verification" },
-  { id: "cin",  label: "CIN / ROC Check" },
-  { id: "gst",  label: "GST Active Status" },
-  { id: "msme", label: "MSME Registration" },
-  { id: "itr",  label: "ITR Returns Filed" },
-  { id: "epf",  label: "EPF Compliance" },
+  { id: "pan",  label: "PAN Verification",    source: "Income Tax Dept",  icon: "🪪" },
+  { id: "cin",  label: "CIN / ROC Check",     source: "MCA21 Portal",     icon: "🏛" },
+  { id: "gst",  label: "GST Active Status",   source: "GSTN Gateway",     icon: "📋" },
+  { id: "msme", label: "MSME Registration",   source: "Udyam Registry",   icon: "🏭" },
+  { id: "itr",  label: "ITR Returns Filed",   source: "TRACES Portal",    icon: "📊" },
+  { id: "epf",  label: "EPF Compliance",      source: "EPFO Database",    icon: "🛡" },
 ];
 
 export default function CompliancePortal() {
-  const timersRef = useRef([]);
-
+  const tos = useRef([]);
   const clearAll = useCallback(() => {
-    timersRef.current.forEach(clearTimeout);
-    timersRef.current = [];
+    tos.current.forEach(clearTimeout);
+    tos.current = [];
+  }, []);
+  const t = useCallback((fn, d) => {
+    const id = setTimeout(fn, d);
+    tos.current.push(id);
+    return id;
   }, []);
 
-  const t = useCallback((fn, delay) => {
-    const id = setTimeout(fn, delay);
-    timersRef.current.push(id);
-  }, []);
-
-  const setStep = useCallback((n, state) => {
-    const el = document.getElementById(`cpStep${n}`);
-    if (!el) return;
-    el.className = `cp-step-node ${state}`;
-    if (state === "done") el.textContent = "✓";
-    else el.textContent = String(n);
-  }, []);
-
-  const setLine = useCallback((n, filled) => {
-    const el = document.getElementById(`cpLine${n}`);
-    if (!el) return;
-    el.style.transition = filled ? "width 0.6s ease" : "none";
-    el.style.width = filled ? "100%" : "0%";
-  }, []);
-
+  /* ── state helpers ── */
   const setCheck = useCallback((id, state) => {
-    const row = document.getElementById(`cpChk-${id}`);
+    const row = document.getElementById(`cp-row-${id}`);
     if (!row) return;
-    row.className = `cp-check-item ${state}`;
-    const icon = row.querySelector(".cp-ci-icon");
-    if (icon) {
-      if (state === "checking") icon.textContent = "⟳";
-      else if (state === "done") icon.textContent = "✓";
-      else icon.textContent = "·";
-    }
-    const statusEl = row.querySelector(".cp-ci-status");
-    if (statusEl) {
-      if (state === "checking") statusEl.textContent = "Checking…";
-      else if (state === "done") statusEl.textContent = "Verified";
-      else statusEl.textContent = "Pending";
+
+    const iconEl   = row.querySelector(".cp-row-icon");
+    const statusEl = row.querySelector(".cp-row-status");
+    const spinEl   = row.querySelector(".cp-row-spinner");
+    const pillEl   = row.querySelector(".cp-row-pill");
+
+    row.dataset.state = state;
+
+    if (state === "running") {
+      row.style.background = "#FFFBEB";
+      row.style.borderColor = "rgba(245,158,11,0.25)";
+      if (spinEl)   { spinEl.style.display = "flex"; }
+      if (pillEl)   { pillEl.style.display = "none"; }
+      if (statusEl) { statusEl.textContent = "Checking…"; statusEl.style.color = "#D97706"; }
+      if (iconEl)   { iconEl.style.opacity = "1"; }
+    } else if (state === "done") {
+      row.style.background = "#F0FDF4";
+      row.style.borderColor = "rgba(16,185,129,0.25)";
+      if (spinEl)   { spinEl.style.display = "none"; }
+      if (pillEl)   { pillEl.style.display = "flex"; }
+      if (statusEl) { statusEl.textContent = "Verified"; statusEl.style.color = "#059669"; }
+    } else {
+      row.style.background = "#fff";
+      row.style.borderColor = "#E8E8ED";
+      if (spinEl)   { spinEl.style.display = "none"; }
+      if (pillEl)   { pillEl.style.display = "none"; }
+      if (statusEl) { statusEl.textContent = "Pending"; statusEl.style.color = "#94A3B8"; }
     }
   }, []);
+
+  const setProgress = useCallback((pct, animated = true) => {
+    const bar = document.getElementById("cp-progress-fill");
+    if (!bar) return;
+    if (!animated) { bar.style.transition = "none"; }
+    else { bar.style.transition = "width 0.6s cubic-bezier(0.22,1,0.36,1)"; }
+    bar.style.width = pct + "%";
+    const label = document.getElementById("cp-progress-label");
+    if (label) label.textContent = pct + "%";
+  }, []);
+
+  
+
+  
 
   const run = useCallback(() => {
     clearAll();
 
-    // Reset
-    [1, 2, 3, 4].forEach((n) => setStep(n, n === 1 ? "active" : ""));
-    [1, 2, 3].forEach((n) => setLine(n, false));
-    CHECKS.forEach((c) => setCheck(c.id, ""));
-    const badge = document.getElementById("cpCountryBadge");
-    if (badge) badge.style.opacity = "0";
-    const popup = document.getElementById("cpPopup");
-    if (popup) popup.style.opacity = "0";
-    if (popup) popup.style.pointerEvents = "none";
+    /* ── full reset ── */
+    const root = document.getElementById("cp-root");
+    if (root) { root.style.transition = "none"; root.style.opacity = "0"; }
 
-    // Country badge appears
+    CHECKS.forEach(c => setCheck(c.id, "idle"));
+    setProgress(0, false);
+
+    const banner = document.getElementById("cp-banner");
+    if (banner) { banner.style.transition = "none"; banner.style.transform = "translateY(-100%)"; banner.style.opacity = "0"; }
+
+    const btn = document.getElementById("cp-run-btn");
+    if (btn) { btn.style.background = "#1E1B4B"; btn.style.transform = "scale(1)"; }
+
+    const progressWrap = document.getElementById("cp-progress-wrap");
+    if (progressWrap) { progressWrap.style.transition = "none"; progressWrap.style.opacity = "0"; }
+
+    /* SCENE 1 — fade in */
     t(() => {
-      const b = document.getElementById("cpCountryBadge");
-      if (b) b.style.opacity = "1";
-    }, 600);
+      if (root) { root.style.transition = "opacity 0.7s ease"; root.style.opacity = "1"; }
+    }, 150);
 
-    // Step 1 → 2
     t(() => {
-      setStep(1, "done");
-      setLine(1, true);
-      setStep(2, "active");
-    }, 1400);
+      if (progressWrap) {
+        progressWrap.style.transition = "opacity 0.4s ease";
+        progressWrap.style.opacity = "1";
+      }
+    }, 900);
 
-    // Checks run sequentially
+    /* SCENE 4 — activate button */
+    t(() => {
+      if (btn) {
+        btn.style.background = "#2D2A6A";
+        setTimeout(() => { if (btn) btn.style.background = "#1E1B4B"; }, 180);
+      }
+    }, 1900);
+
+    const CHECK_INTERVAL = 950;
+    const CHECK_DURATION = 680;
+    const checkStartDelay = 2550;
+
     CHECKS.forEach((c, i) => {
-      t(() => setCheck(c.id, "checking"), 1700 + i * 380);
-      t(() => setCheck(c.id, "done"), 1700 + i * 380 + 520);
+      const fireAt = checkStartDelay + i * CHECK_INTERVAL;
+
+      t(() => {
+        setCheck(c.id, "running");
+        /* progress ticks with each check starting */
+        setProgress(Math.round(((i) / CHECKS.length) * 90));
+      }, fireAt);
+
+      t(() => {
+        setCheck(c.id, "done");
+      }, fireAt + CHECK_DURATION);
     });
 
-    // Step 2 → 3
-    t(() => {
-      setStep(2, "done");
-      setLine(2, true);
-      setStep(3, "active");
-    }, 4200);
+    /* SCENE 6 — all done, fill progress to 100% */
+    const allDoneAt = checkStartDelay + CHECKS.length * CHECK_INTERVAL;
 
-    // Step 3 → 4
     t(() => {
-      setStep(3, "done");
-      setLine(3, true);
-      setStep(4, "active");
-    }, 5100);
+      setProgress(100);
+    }, allDoneAt);
 
-    // Popup
+    /* SCENE 7 — success banner slides in */
     t(() => {
-      const p = document.getElementById("cpPopup");
-      if (p) { p.style.opacity = "1"; p.style.pointerEvents = "auto"; }
-    }, 5600);
+      if (banner) {
+        banner.style.transition = "transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease";
+        banner.style.transform = "translateY(0)";
+        banner.style.opacity = "1";
+      }
 
-    // Loop
-    t(() => run(), 8800);
-  }, [clearAll, t, setStep, setLine, setCheck]);
+    }, allDoneAt + 400);
+
+    /* SCENE 8 — hold success, then fade out → loop */
+    t(() => {
+      if (root) {
+        root.style.transition = "opacity 0.7s ease";
+        root.style.opacity = "0";
+      }
+    }, allDoneAt + 2600);
+
+    t(() => run(), allDoneAt + 3400);
+
+  }, [clearAll, t, setCheck, setProgress]);
 
   useEffect(() => {
-    const id = setTimeout(run, 400);
+    const id = setTimeout(run, 300);
     return () => { clearTimeout(id); clearAll(); };
   }, [run, clearAll]);
 
+  /* ── progress step count ── */
+  const totalChecks = CHECKS.length;
+
   return (
-    <div style={styles.root}>
-      {/* Header strip */}
-      <div style={styles.headerStrip}>
-        <div style={styles.headerLeft}>
-          <div style={styles.headerDot} />
-          <span style={styles.headerLabel}>AI-POWERED COMPLIANCE</span>
-        </div>
-        <div style={styles.liveChip}>
-          <div style={styles.liveDot} />
-          <span>Live Verification</span>
-        </div>
-      </div>
-
-      {/* Main content */}
-      <div style={styles.main}>
-        {/* Left: step flow */}
-        <div style={styles.leftPanel}>
-          <div style={styles.leftTitle}>Vendor Onboarding</div>
-          <div style={styles.leftSub}>Statutory checks running live against government databases</div>
-
-          {/* Step progress */}
-          <div style={styles.stepsRow}>
-            {[1, 2, 3, 4].map((n, i) => (
-              <div key={n} style={styles.stepGroup}>
-                <div id={`cpStep${n}`} className="cp-step-node" style={styles.stepNodeBase}>
-                  {n}
-                </div>
-                {i < 3 && (
-                  <div style={styles.stepLineWrap}>
-                    <div id={`cpLine${n}`} style={{ ...styles.stepLineFill, width: "0%" }} />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div style={styles.stepLabels}>
-            {["Select Country", "Run Checks", "Risk Score", "Approved"].map((lbl) => (
-              <div key={lbl} style={styles.stepLabel}>{lbl}</div>
-            ))}
-          </div>
-
-          {/* Country selector */}
-          <div style={styles.countryCard}>
-            <div style={styles.countryFlag}>🇮🇳</div>
-            <div>
-              <div style={styles.countryName}>India</div>
-              <div style={styles.countryCode}>ISO 3166-1 · IN</div>
-            </div>
-            <div
-              id="cpCountryBadge"
-              style={{ ...styles.countryBadge, opacity: 0, transition: "opacity 0.4s" }}
-            >
-              ✓ Selected
-            </div>
-          </div>
-
-          {/* Stats row */}
-          <div style={styles.statsRow}>
-            {[
-              { val: "12+", lbl: "Statutory APIs" },
-              { val: "< 4s", lbl: "Avg Check Time" },
-              { val: "100%", lbl: "Govt DB Verified" },
-            ].map((s) => (
-              <div key={s.lbl} style={styles.statCard}>
-                <div style={styles.statVal}>{s.val}</div>
-                <div style={styles.statLbl}>{s.lbl}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: checks grid */}
-        <div style={styles.rightPanel}>
-          <div style={styles.checksHeader}>
-            <span style={styles.checksTitle}>Running Compliance Checks</span>
-            <span style={styles.checksCount}>{CHECKS.length} checks</span>
-          </div>
-
-          <div style={styles.checksGrid}>
-            {CHECKS.map((c) => (
-              <div key={c.id} id={`cpChk-${c.id}`} className="cp-check-item" style={styles.checkItemBase}>
-                <div className="cp-ci-icon" style={styles.checkIcon}>·</div>
-                <div style={{ flex: 1 }}>
-                  <div style={styles.checkLabel}>{c.label}</div>
-                  <div className="cp-ci-status" style={styles.checkStatus}>Pending</div>
-                </div>
-                <div style={styles.checkArrow}>›</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Completion popup */}
-          <div
-            id="cpPopup"
-            style={{
-              ...styles.popup,
-              opacity: 0,
-              pointerEvents: "none",
-              transition: "opacity 0.4s",
-            }}
-          >
-            <div style={styles.popupCard}>
-              <div style={styles.popupIconWrap}>
-                <span style={{ fontSize: 40 }}>🔍</span>
-              </div>
-              <div style={styles.popupTitle}>All Checks Passed</div>
-              <div style={styles.popupBody}>
-                Vendor cleared across all 6 statutory checks. Proceed with financial due diligence?
-              </div>
-              <div style={styles.popupBadgesRow}>
-                <span style={styles.popupBadgeGreen}>✓ GST Active</span>
-                <span style={styles.popupBadgeGreen}>✓ PAN Valid</span>
-                <span style={styles.popupBadgeGreen}>✓ CIN Registered</span>
-              </div>
-              <div style={styles.popupActions}>
-                <button
-                  style={styles.popupBtnPrimary}
-                  onClick={() => {
-                    const p = document.getElementById("cpPopup");
-                    if (p) { p.style.opacity = "0"; p.style.pointerEvents = "none"; }
-                    clearAll();
-                    setTimeout(run, 800);
-                  }}
-                >
-                  Yes, Proceed →
-                </button>
-                <button
-                  style={styles.popupBtnSecondary}
-                  onClick={() => {
-                    const p = document.getElementById("cpPopup");
-                    if (p) { p.style.opacity = "0"; p.style.pointerEvents = "none"; }
-                    clearAll();
-                    setTimeout(run, 800);
-                  }}
-                >
-                  Skip for now
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <>
       <style>{`
-        .cp-step-node {
-          width: 44px; height: 44px; border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 15px; font-weight: 800; flex-shrink: 0;
-          transition: all 0.4s; z-index: 1;
-          background: #E0DDF5; color: #7C75C9;
-          border: 2px solid #C4BFED;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+        #cp-root, #cp-root * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        /* Spinner */
+        @keyframes cp-spin { to { transform: rotate(360deg); } }
+        .cp-spinner {
+          width: 16px; height: 16px; border-radius: 50%;
+          border: 2px solid #FDE68A;
+          border-top-color: #D97706;
+          animation: cp-spin 0.7s linear infinite;
+          flex-shrink: 0;
         }
-        .cp-step-node.active {
-          background: #1E1B4B; color: #fff;
-          border-color: #1E1B4B;
-          box-shadow: 0 0 0 6px rgba(30,27,75,0.12);
+
+        /* Check row */
+        .cp-check-row {
+          display: flex; align-items: center; gap: 14px;
+          padding: 14px 20px;
+          border: 1px solid #E8E8ED;
+          border-radius: 10px;
+          background: #fff;
+          transition: background 0.35s ease, border-color 0.35s ease;
         }
-        .cp-step-node.done {
-          background: #10B981; color: #fff; border-color: #10B981;
+
+        /* Verified pill */
+        .cp-pill {
+          display: flex; align-items: center; gap: 5px;
+          background: #ECFDF5; color: #059669;
+          border: 1px solid #A7F3D0;
+          border-radius: 100px; padding: 3px 10px;
+          font-size: 11.5px; font-weight: 600;
+          white-space: nowrap; flex-shrink: 0;
         }
-        .cp-check-item {
-          display: flex; align-items: center; gap: 16px;
-          border: 1.5px solid #E0DDF5; border-radius: 14px;
-          padding: 18px 20px; background: #fff;
-          transition: all 0.4s;
+
+        /* Success banner */
+        #cp-banner {
+          position: absolute; top: 0; left: 0; right: 0;
+          transform: translateY(-100%); opacity: 0;
+          z-index: 50;
         }
-        .cp-check-item.checking {
-          border-color: #4A47A0; background: #F5F4FF;
+
+        @keyframes cp-shimmer {
+          0%   { background-position: -200% 0; }
+          100% { background-position:  200% 0; }
         }
-        .cp-check-item.checking .cp-ci-icon {
-          background: rgba(245,158,11,0.15); color: #D97706;
-          animation: cpSpin 0.8s linear infinite;
+        .cp-skeleton {
+          background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+          background-size: 200% 100%;
+          animation: cp-shimmer 1.4s ease-in-out infinite;
+          border-radius: 4px;
         }
-        .cp-check-item.done {
-          border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.05);
+
+        /* Progress bar shimmer */
+        @keyframes cp-bar-shimmer {
+          0%   { background-position: -200% 0; }
+          100% { background-position:  200% 0; }
         }
-        .cp-check-item.done .cp-ci-icon {
-          background: #ECFDF5; color: #047857;
-        }
-        .cp-check-item.done .cp-ci-status { color: #047857; }
-        .cp-check-item.checking .cp-ci-status { color: #D97706; }
-        .cp-ci-icon {
-          width: 36px; height: 36px; border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 16px; flex-shrink: 0;
-          background: #E0DDF5; color: #7C75C9;
-          transition: all 0.4s; font-weight: 700;
-        }
-        @keyframes cpSpin { to { transform: rotate(360deg); } }
       `}</style>
-    </div>
+
+      <div
+        id="cp-root"
+        style={{
+          width: "100%", height: "100%",
+          background: "#F7F7F9",
+          fontFamily: "'Inter', system-ui, sans-serif",
+          position: "relative", overflow: "hidden",
+          opacity: 0,
+        }}
+      >
+        {/* ── App chrome top bar ── */}
+        <div style={{
+          height: 52, background: "#fff",
+          borderBottom: "1px solid #E8E8ED",
+          display: "flex", alignItems: "center",
+          padding: "0 28px", gap: 8, flexShrink: 0,
+        }}>
+          {/* Logo mark */}
+          <div style={{
+            width: 28, height: 28, borderRadius: 7,
+            background: "linear-gradient(135deg,#1E1B4B,#4A47A0)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 12, fontWeight: 800, color: "#fff", flexShrink: 0,
+          }}>N</div>
+
+          {/* Breadcrumb */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 4 }}>
+            {["Vendors","Precision Parts Pvt","Compliance Check"].map((b, i, arr) => (
+              <span key={b} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{
+                  fontSize: 13, fontWeight: i === arr.length - 1 ? 600 : 400,
+                  color: i === arr.length - 1 ? "#0F172A" : "#94A3B8",
+                }}>{b}</span>
+                {i < arr.length - 1 && <span style={{ color: "#CBD5E1", fontSize: 13 }}>/</span>}
+              </span>
+            ))}
+          </div>
+
+          {/* Right: Run button */}
+          <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center" }}>
+            <button
+              id="cp-run-btn"
+              style={{
+                background: "#1E1B4B", color: "#fff", border: "none",
+                borderRadius: 8, padding: "7px 18px",
+                fontSize: 13, fontWeight: 600, cursor: "pointer",
+                fontFamily: "inherit", transition: "background 0.15s ease, transform 0.12s ease",
+                display: "flex", alignItems: "center", gap: 7,
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path d="M2 2L11 6.5L2 11V2Z" fill="white"/>
+              </svg>
+              Run Checks
+            </button>
+          </div>
+        </div>
+
+        {/* ── Main content ── */}
+        <div style={{ padding: "28px 32px", position: "relative" }}>
+
+          {/* Vendor info card */}
+          <div style={{
+            background: "#fff", border: "1px solid #E8E8ED",
+            borderRadius: 12, padding: "18px 22px",
+            display: "flex", alignItems: "center", gap: 16,
+            marginBottom: 20,
+          }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: "50%",
+              background: "linear-gradient(135deg,#1E1B4B,#4A47A0)",
+              color: "#fff", display: "flex", alignItems: "center",
+              justifyContent: "center", fontSize: 15, fontWeight: 700, flexShrink: 0,
+            }}>PP</div>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>Precision Parts Pvt Ltd</div>
+              <div style={{ fontSize: 12, color: "#64748B", marginTop: 2 }}>GSTIN: 27AAPCP1234Q1Z5 &nbsp;·&nbsp; 🇮🇳 India &nbsp;·&nbsp; Vendor ID: SUP-0412</div>
+            </div>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, background: "#EFF6FF", color: "#3B82F6", border: "1px solid #BFDBFE", borderRadius: 100, padding: "3px 11px" }}>Manufacturing</span>
+              <span style={{ fontSize: 12, fontWeight: 600, background: "#F8FAFC", color: "#64748B", border: "1px solid #E2E8F0", borderRadius: 100, padding: "3px 11px" }}>New Vendor</span>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div
+            id="cp-progress-wrap"
+            style={{ marginBottom: 18, opacity: 0 }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B" }}>
+                Statutory Compliance Check
+              </span>
+              <span id="cp-progress-label" style={{ fontFamily: "'DM Mono',monospace", fontSize: 12, fontWeight: 500, color: "#1E1B4B" }}>0%</span>
+            </div>
+            <div style={{ height: 6, background: "#E8E8ED", borderRadius: 100, overflow: "hidden" }}>
+              <div
+                id="cp-progress-fill"
+                style={{
+                  height: "100%", width: "0%",
+                  background: "linear-gradient(90deg,#4A47A0,#10B981)",
+                  borderRadius: 100,
+                  transition: "width 0.6s cubic-bezier(0.22,1,0.36,1)",
+                }}
+              />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+              <span style={{ fontSize: 11, color: "#94A3B8" }}>{totalChecks} checks · Live government APIs</span>
+              <span style={{ fontSize: 11, color: "#94A3B8" }}>Est. time &lt; 4 seconds</span>
+            </div>
+          </div>
+
+          {/* Check rows */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {CHECKS.map((c, i) => (
+              <div
+                key={c.id}
+                id={`cp-row-${c.id}`}
+                className="cp-check-row"
+                data-state="idle"
+              >
+                {/* Row number */}
+                <div style={{
+                  width: 24, height: 24, borderRadius: "50%",
+                  background: "#F1F5F9", color: "#94A3B8",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 700, flexShrink: 0,
+                }}>{i + 1}</div>
+
+                {/* Icon */}
+                <div className="cp-row-icon" style={{ fontSize: 18, flexShrink: 0, width: 24, textAlign: "center" }}>{c.icon}</div>
+
+                {/* Label + source */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: "#0F172A" }}>{c.label}</div>
+                  <div style={{ fontSize: 11.5, color: "#94A3B8", marginTop: 1 }}>{c.source}</div>
+                </div>
+
+                {/* Spinner (hidden by default) */}
+                <div className="cp-row-spinner" style={{ display: "none", alignItems: "center", gap: 8 }}>
+                  <div className="cp-spinner" />
+                  <span style={{ fontSize: 12, color: "#D97706", fontWeight: 500 }}>Checking…</span>
+                </div>
+
+                {/* Verified pill (hidden by default) */}
+                <div className="cp-row-pill" style={{ display: "none" }}>
+                  <span className="cp-pill">
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                      <path d="M2 5.5L4.5 8L9 3" stroke="#059669" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Verified
+                  </span>
+                </div>
+
+                {/* Status text */}
+                <div className="cp-row-status" style={{ fontSize: 12, color: "#94A3B8", fontWeight: 500, marginLeft: 4, minWidth: 52, textAlign: "right" }}>
+                  Pending
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Success banner ── */}
+        <div id="cp-banner">
+          <div style={{
+            background: "#059669",
+            padding: "14px 32px",
+            display: "flex", alignItems: "center", gap: 12,
+          }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: "50%",
+              background: "rgba(255,255,255,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+            }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>All 6 compliance checks passed</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 1 }}>Vendor cleared · PAN · CIN · GST · MSME · ITR · EPF verified against live government APIs</div>
+            </div>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+              <button style={{ background: "#fff", color: "#059669", border: "none", borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                Proceed to Onboarding →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
-
-const W = 1394;
-const H = 732;
-
-const styles = {
-  root: {
-    width: W, height: H,
-    background: "linear-gradient(145deg, #F5F4FF 0%, #EDEAFF 100%)",
-    fontFamily: "'Inter', system-ui, sans-serif",
-    display: "flex", flexDirection: "column",
-    position: "relative", overflow: "hidden",
-    borderRadius: 20,
-  },
-  headerStrip: {
-    display: "flex", alignItems: "center", justifyContent: "space-between",
-    padding: "22px 56px",
-    background: "#fff",
-    borderBottom: "1.5px solid #E0DDF5",
-    flexShrink: 0,
-  },
-  headerLeft: { display: "flex", alignItems: "center", gap: 12 },
-  headerDot: {
-    width: 10, height: 10, borderRadius: "50%", background: "#4A47A0",
-  },
-  headerLabel: {
-    fontSize: 12, fontWeight: 800, letterSpacing: "0.16em",
-    color: "#1E1B4B",
-  },
-  liveChip: {
-    display: "flex", alignItems: "center", gap: 7,
-    background: "#ECFDF5", border: "1px solid rgba(16,185,129,0.3)",
-    borderRadius: 100, padding: "5px 14px",
-    fontSize: 12, fontWeight: 700, color: "#047857",
-  },
-  liveDot: {
-    width: 7, height: 7, borderRadius: "50%", background: "#10B981",
-    animation: "pulse 1.8s ease-in-out infinite",
-  },
-  main: {
-    display: "grid", gridTemplateColumns: "420px 1fr",
-    flex: 1, overflow: "hidden",
-  },
-  leftPanel: {
-    borderRight: "1.5px solid #E0DDF5",
-    background: "#fff",
-    padding: "44px 44px",
-    display: "flex", flexDirection: "column", gap: 28,
-  },
-  leftTitle: {
-    fontFamily: "'Outfit', system-ui, sans-serif",
-    fontSize: 28, fontWeight: 800, color: "#0F0D2E", letterSpacing: "-0.02em",
-  },
-  leftSub: {
-    fontSize: 15, color: "#64748B", lineHeight: 1.65, marginTop: -16,
-  },
-  stepsRow: {
-    display: "flex", alignItems: "center",
-  },
-  stepGroup: {
-    display: "flex", alignItems: "center", flex: 1,
-  },
-  stepNodeBase: {},
-  stepLineWrap: {
-    flex: 1, height: 3, background: "#E0DDF5",
-    borderRadius: 2, overflow: "hidden", marginLeft: -1,
-  },
-  stepLineFill: {
-    height: "100%", background: "#10B981",
-    borderRadius: 2, width: "0%",
-  },
-  stepLabels: {
-    display: "flex", justifyContent: "space-between",
-    marginTop: -20,
-  },
-  stepLabel: {
-    fontSize: 11, fontWeight: 600, color: "#94A3B8",
-    textAlign: "center", width: 44,
-  },
-  countryCard: {
-    display: "flex", alignItems: "center", gap: 16,
-    border: "2px solid #C4BFED", borderRadius: 14,
-    padding: "18px 20px", background: "#F5F4FF",
-  },
-  countryFlag: { fontSize: 32, flexShrink: 0 },
-  countryName: { fontSize: 18, fontWeight: 800, color: "#0F0D2E" },
-  countryCode: { fontSize: 12, color: "#94A3B8", marginTop: 2 },
-  countryBadge: {
-    marginLeft: "auto",
-    background: "#ECFDF5", color: "#047857",
-    border: "1px solid rgba(16,185,129,0.3)",
-    borderRadius: 100, padding: "5px 14px",
-    fontSize: 12, fontWeight: 700,
-  },
-  statsRow: {
-    display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12,
-    marginTop: "auto",
-  },
-  statCard: {
-    background: "#F5F4FF", border: "1.5px solid #E0DDF5",
-    borderRadius: 12, padding: "16px 12px", textAlign: "center",
-  },
-  statVal: {
-    fontFamily: "'Outfit', system-ui, sans-serif",
-    fontSize: 22, fontWeight: 800, color: "#1E1B4B",
-    letterSpacing: "-0.02em",
-  },
-  statLbl: { fontSize: 11, color: "#64748B", marginTop: 4, fontWeight: 600 },
-  rightPanel: {
-    padding: "44px 52px",
-    display: "flex", flexDirection: "column", gap: 24,
-    position: "relative",
-  },
-  checksHeader: {
-    display: "flex", alignItems: "center", justifyContent: "space-between",
-  },
-  checksTitle: {
-    fontFamily: "'Outfit', system-ui, sans-serif",
-    fontSize: 22, fontWeight: 800, color: "#0F0D2E",
-  },
-  checksCount: {
-    fontSize: 13, fontWeight: 700, color: "#94A3B8",
-    background: "#F1F5F9", borderRadius: 100, padding: "4px 12px",
-  },
-  checksGrid: {
-    display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, flex: 1,
-  },
-  checkItemBase: {},
-  checkIcon: {},
-  checkLabel: { fontSize: 14, fontWeight: 700, color: "#1E293B" },
-  checkStatus: { fontSize: 12, color: "#94A3B8", marginTop: 3, fontWeight: 500 },
-  checkArrow: { fontSize: 20, color: "#CBD5E1", flexShrink: 0 },
-  popup: {
-    position: "absolute", inset: 0,
-    background: "rgba(30,27,75,0.12)",
-    backdropFilter: "blur(8px)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    borderRadius: "0 0 20px 0",
-  },
-  popupCard: {
-    background: "#fff", borderRadius: 20,
-    padding: "44px 48px", width: 460, textAlign: "center",
-    boxShadow: "0 32px 80px rgba(30,27,75,0.22)",
-    border: "1.5px solid #E0DDF5",
-    transform: "scale(1)",
-  },
-  popupIconWrap: { marginBottom: 16 },
-  popupTitle: {
-    fontFamily: "'Outfit', system-ui, sans-serif",
-    fontSize: 24, fontWeight: 800, color: "#0F0D2E", marginBottom: 10,
-  },
-  popupBody: {
-    fontSize: 14, color: "#64748B", lineHeight: 1.65, marginBottom: 20,
-  },
-  popupBadgesRow: {
-    display: "flex", gap: 8, justifyContent: "center", marginBottom: 28, flexWrap: "wrap",
-  },
-  popupBadgeGreen: {
-    background: "#ECFDF5", color: "#047857",
-    border: "1px solid rgba(16,185,129,0.3)",
-    borderRadius: 100, padding: "4px 12px",
-    fontSize: 12, fontWeight: 700,
-  },
-  popupActions: { display: "flex", gap: 12, justifyContent: "center" },
-  popupBtnPrimary: {
-    background: "#1E1B4B", color: "#fff", border: "none",
-    borderRadius: 10, padding: "12px 28px",
-    fontSize: 14, fontWeight: 700, cursor: "pointer",
-    fontFamily: "inherit",
-  },
-  popupBtnSecondary: {
-    background: "transparent", color: "#64748B",
-    border: "1.5px solid #E2E8F0",
-    borderRadius: 10, padding: "11px 22px",
-    fontSize: 14, fontWeight: 600, cursor: "pointer",
-    fontFamily: "inherit",
-  },
-};

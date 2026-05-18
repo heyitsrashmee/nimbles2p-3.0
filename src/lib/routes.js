@@ -11,7 +11,6 @@ export const PAGE_SLUGS = [
   "finance",
   "getstarted",
   "terms",
-  "press",
   "resources",
 ];
 
@@ -24,7 +23,6 @@ export const FOOTER_LINKS = {
   "Invoice Processing": "invoice",
   "RFx Management": "rfq",
   "Supplier Analytics": "analytics",
-  "Press & Media": "press",
   "Blog": "resources",
   "Case Studies": "resources",
   "Automation Smiles": "resources",

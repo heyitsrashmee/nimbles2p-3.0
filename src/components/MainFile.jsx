@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import TermsPage from "./NimbleS2PTerms";
-import PressMediaPage from "./PressMediaPage";
 import ResourcesPage from "./ResourcesPage";
 import CompliancePortalDemo from "@gifs/CompliancePortal";
 import RFQAgentDemo from "@gifs/RFQAgent";
@@ -6638,15 +6637,6 @@ export default function NimbleS2PHomepage() {
   }
   if (page === "terms") {
     return <TermsPage onBack={goHome} onNavigate={navigate} />;
-  }
-  if (page === "press") {
-    return (
-      <>
-        <Nav onNavigate={navigate} onBack={goHome} pageName="Press & Media" />
-        <PressMediaPage />
-        <VDDFooter onNavigate={navigate} />
-      </>
-    );
   }
   if (page === "resources") {
     return (
