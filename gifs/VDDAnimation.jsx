@@ -6,11 +6,41 @@ import { useState, useEffect, useRef, useCallback } from "react";
    Check definitions
 ───────────────────────────────────────────── */
 const VDD_CHECKS = [
-  { id: "pan",  label: "PAN",                      source: "Income Tax Dept", icon: "🪪", accent: "#6366F1" },
-  { id: "cin",  label: "CIN",                      source: "MCA21 Portal",    icon: "🏛",  accent: "#0EA5E9" },
-  { id: "gst",  label: "GST",                      source: "GSTN Gateway",    icon: "📋", accent: "#F59E0B" },
-  { id: "msme", label: "MSME",                     source: "Udyam Registry",  icon: "🏭", accent: "#10B981" },
-  { id: "epf",  label: "GST Returns Verification", source: "GSTN Gateway",    icon: "🛡",  accent: "#8B5CF6" },
+  {
+    id: "pan",
+    label: "Tax Identification",
+    source: "✓ Duplicate tax ID detection ✓ Tax jurisdiction validation",
+    icon: "🪪",
+    accent: "#6366F1",
+  },
+  {
+    id: "cin",
+    label: "Entity Verification",
+    source: "✓ Legal entity name verified ✓ Incorporation date verified",
+    icon: "🏛",
+    accent: "#0EA5E9",
+  },
+  {
+    id: "gst",
+    label: "Business Registration Check",
+    source: "✓ Registered address matched ✓ Incorporation date verified",
+    icon: "📋",
+    accent: "#F59E0B",
+  },
+  {
+    id: "msme",
+    label: "Sanction Check",
+    source: "✓ Global sanctions list screening ✓ Politically Exposed Person (PEP) screening",
+    icon: "🏭",
+    accent: "#10B981",
+  },
+  {
+    id: "epf",
+    label: "Blacklist Check",
+    source: "✓ Fraud watchlist screening ✓ Debarred vendor verification",
+    icon: "🛡",
+    accent: "#8B5CF6",
+  },
 ];
 
 /* ─────────────────────────────────────────────
@@ -26,18 +56,18 @@ const VDD_CSS = `
   @keyframes vdd-countup  { 0%{transform:translateY(6px);opacity:0} 100%{transform:translateY(0);opacity:1} }
   @keyframes vdd-slidein  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
   @keyframes vdd-glow     { 0%,100%{opacity:.55} 50%{opacity:1} }
-  .vdd-pill-pop  { animation: vdd-pop .42s cubic-bezier(.34,1.56,.64,1) both; }
-  .vdd-banner-in { animation: vdd-slideup .5s cubic-bezier(.22,1,.36,1) both; }
-  .vdd-row-in    { animation: vdd-slidein .35s cubic-bezier(.22,1,.36,1) both; }
+  .vdd-pill-pop  { animation: vdd-pop .508s cubic-bezier(.34,1.56,.64,1) both; }
+  .vdd-banner-in { animation: vdd-slideup .605s cubic-bezier(.22,1,.36,1) both; }
+  .vdd-row-in    { animation: vdd-slidein .424s cubic-bezier(.22,1,.36,1) both; }
 `;
 
 /* ─────────────────────────────────────────────
    Component
 ───────────────────────────────────────────── */
 export default function VDDAnimation() {
-  const CI = 780;  // ms between checks starting
-  const CD = 560;  // ms each check takes
-  const CS = 1600; // ms before first check fires
+  const CI = 944;   // ms between checks starting
+  const CD = 678;   // ms each check takes
+  const CS = 1936;  // ms before first check fires
   const N  = VDD_CHECKS.length;
 
   const [states,   setStates]   = useState(() => Object.fromEntries(VDD_CHECKS.map(c => [c.id, "idle"])));
@@ -68,8 +98,8 @@ export default function VDDAnimation() {
     setProgress(0);    setElapsed(0);
     setStates(Object.fromEntries(VDD_CHECKS.map(c => [c.id, "idle"])));
 
-    sc(() => setVisible(true),  180);
-    sc(() => setPgReady(true),  700);
+    sc(() => setVisible(true),  218);
+    sc(() => setPgReady(true),  847);
 
     // start elapsed counter when checks begin
     sc(() => {
@@ -94,13 +124,13 @@ export default function VDDAnimation() {
       setProgress(100);
       if (elapsedRef.current) { clearInterval(elapsedRef.current); elapsedRef.current = null; }
     }, doneAt);
-    sc(() => setBanner(true),    doneAt + 340);
-    sc(() => setVisible(false),  doneAt + 3100);
-    sc(() => runCycle(),         doneAt + 4000);
+    sc(() => setBanner(true),    doneAt + 411);
+    sc(() => setVisible(false),  doneAt + 3751);
+    sc(() => runCycle(),         doneAt + 4840);
   }, [clearAll, sc, N]);
 
   useEffect(() => {
-    const id = setTimeout(runCycle, 280);
+    const id = setTimeout(runCycle, 339);
     return () => { clearTimeout(id); clearAll(); };
   }, [runCycle, clearAll]);
 
@@ -128,11 +158,11 @@ export default function VDDAnimation() {
 
       {/* ── Top chrome — dark glass ── */}
       <div style={{
-        height: 40, flexShrink: 0,
+        height: 44, flexShrink: 0,
         background: "linear-gradient(135deg,#1E1B4B 0%,#2D2A6E 100%)",
-        display: "flex", alignItems: "center", padding: "0 12px", gap: 6,
+        display: "flex", alignItems: "center", padding: "0 14px", gap: 8,
         boxShadow: "0 1px 0 rgba(255,255,255,.07), 0 2px 12px rgba(30,27,75,.25)",
-        position: "relative", zIndex: 2, overflow: "hidden",
+        position: "relative", zIndex: 2,
       }}>
         {/* Logo chip */}
         <div style={{
@@ -144,21 +174,16 @@ export default function VDDAnimation() {
         }}>N</div>
 
         {/* Breadcrumb */}
-        <div style={{ display: "flex", alignItems: "center", gap: 4, flex: 1, minWidth: 0, overflow: "hidden" }}>
         {["Vendors", "Precision Parts", "Due Diligence"].map((b, i, arr) => (
-          <span key={b} style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: i === arr.length - 1 ? 1 : 0, minWidth: 0 }}>
+          <span key={b} style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <span style={{
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: i === arr.length - 1 ? 600 : 400,
               color: i === arr.length - 1 ? "rgba(255,255,255,.9)" : "rgba(255,255,255,.38)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
             }}>{b}</span>
-            {i < arr.length - 1 && <span style={{ color: "rgba(255,255,255,.2)", fontSize: 10, flexShrink: 0 }}>/</span>}
+            {i < arr.length - 1 && <span style={{ color: "rgba(255,255,255,.2)", fontSize: 10 }}>/</span>}
           </span>
         ))}
-        </div>
 
         {/* Live badge */}
         <div style={{
@@ -168,7 +193,8 @@ export default function VDDAnimation() {
         }}>
           <span style={{
             width: 5, height: 5, borderRadius: "50%", background: "#4ADE80",
-            display: "inline-block", animation: "vdd-pulsedot 1.6s ease-in-out infinite",
+            display: "inline-block",
+            animation: "vdd-pulsedot 1.936s ease-in-out infinite",
             boxShadow: "0 0 6px rgba(74,222,128,.7)",
           }} />
           <span style={{ fontSize: 10, fontWeight: 700, color: "#4ADE80", letterSpacing: ".03em" }}>LIVE</span>
@@ -177,10 +203,10 @@ export default function VDDAnimation() {
 
       {/* ── Vendor card ── */}
       <div style={{
-        margin: "8px 8px 0",
-        background: "#fff", borderRadius: 10,
+        margin: "10px 10px 0",
+        background: "#fff", borderRadius: 12,
         border: "1px solid rgba(99,102,241,.12)",
-        padding: "8px 10px",
+        padding: "10px 12px",
         display: "flex", alignItems: "center", gap: 10,
         flexShrink: 0,
         boxShadow: "0 1px 4px rgba(99,102,241,.08), 0 4px 16px rgba(0,0,0,.04)",
@@ -208,19 +234,19 @@ export default function VDDAnimation() {
             Precision Parts Pvt Ltd
           </div>
           <div style={{ fontSize: 9.5, color: "#94A3B8", marginTop: 1.5, letterSpacing: ".01em" }}>
-            GSTIN: 27AAPCP1234Q1Z5 · SUP-0412
+            Tax ID: 27AAPCP1234Q1Z5 · SUP-0412
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 4, flexShrink: 1, minWidth: 0 }}>
-          <span style={{ fontSize: 9, fontWeight: 600, background: "#EFF6FF", color: "#3B82F6", border: "1px solid #BFDBFE", borderRadius: 6, padding: "2px 6px", whiteSpace: "nowrap" }}>Manufacturing</span>
-          <span style={{ fontSize: 9, fontWeight: 600, background: "#FFFBEB", color: "#B45309", border: "1px solid #FDE68A", borderRadius: 6, padding: "2px 6px", whiteSpace: "nowrap" }}>New</span>
+        <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
+          <span style={{ fontSize: 9.5, fontWeight: 600, background: "#EFF6FF", color: "#3B82F6", border: "1px solid #BFDBFE", borderRadius: 6, padding: "2px 7px" }}>Manufacturing</span>
+          <span style={{ fontSize: 9.5, fontWeight: 600, background: "#FFFBEB", color: "#B45309", border: "1px solid #FDE68A", borderRadius: 6, padding: "2px 7px" }}>New</span>
         </div>
       </div>
 
       {/* ── Progress area ── */}
       <div style={{
-        padding: "8px 8px 4px", flexShrink: 0,
+        padding: "10px 10px 6px", flexShrink: 0,
         opacity: pgReady ? 1 : 0, transition: "opacity 0.45s ease",
         position: "relative", zIndex: 1,
       }}>
@@ -271,7 +297,7 @@ export default function VDDAnimation() {
                     position: "absolute", inset: 0,
                     background: "linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent)",
                     backgroundSize: "200% 100%",
-                    animation: "vdd-scan 1s ease-in-out infinite",
+                    animation: "vdd-scan 1.21s ease-in-out infinite",
                   }} />
                 )}
               </div>
@@ -280,7 +306,7 @@ export default function VDDAnimation() {
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 9, color: "#94A3B8", letterSpacing: ".02em" }}>{N} CHECKS · LIVE GOVT APIS</span>
+          <span style={{ fontSize: 9, color: "#94A3B8", letterSpacing: ".02em" }}>{N} CHECKS · G2B APIs</span>
           <span style={{ fontSize: 9, color: "#94A3B8", fontFamily: "var(--fm)" }}>
             {elapsed > 0 ? `${elapsedSec}s elapsed` : "est. <5s"}
           </span>
@@ -288,22 +314,24 @@ export default function VDDAnimation() {
       </div>
 
       {/* ── Check rows ── */}
-      <div style={{ flex: 1, minHeight: 0, overflow: "hidden", padding: "2px 8px 6px", display: "flex", flexDirection: "column", gap: 4, position: "relative", zIndex: 1 }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: "hidden", padding: "2px 10px 6px", display: "flex", flexDirection: "column", gap: 4, position: "relative", zIndex: 1 }}>
         {VDD_CHECKS.map((c, i) => {
           const st = states[c.id];
           const isR = st === "running";
           const isD = st === "done";
 
-          const rowBg  = isR ? "#FFFDF5" : isD ? "#F0FDF8" : "#fff";
-          const rowBd  = isR ? "rgba(245,158,11,.22)" : isD ? "rgba(16,185,129,.2)" : "rgba(0,0,0,.07)";
+          const rowBg   = isR ? "#FFFDF5" : isD ? "#F0FDF8" : "#fff";
+          const rowBd   = isR ? "rgba(245,158,11,.22)" : isD ? "rgba(16,185,129,.2)" : "rgba(0,0,0,.07)";
           const accentL = isR ? c.accent : isD ? "#10B981" : "rgba(0,0,0,.1)";
 
           return (
             <div key={c.id} className="vdd-row-in" style={{
               display: "flex", alignItems: "center", gap: 10,
-              padding: "6px 8px 6px 0",
+              padding: "8px 10px 8px 0",
               background: rowBg,
-              border: `1px solid ${rowBd}`,
+              borderTop: `1px solid ${rowBd}`,
+              borderRight: `1px solid ${rowBd}`,
+              borderBottom: `1px solid ${rowBd}`,
               borderLeft: `3px solid ${accentL}`,
               borderRadius: 10,
               transition: "background .35s ease, border-color .35s ease, border-left-color .35s ease, box-shadow .35s ease",
@@ -321,7 +349,7 @@ export default function VDDAnimation() {
                   position: "absolute", inset: 0,
                   background: "linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)",
                   backgroundSize: "200% 100%",
-                  animation: "vdd-scan 1.3s ease-in-out infinite",
+                  animation: "vdd-scan 1.573s ease-in-out infinite",
                   pointerEvents: "none",
                 }} />
               )}
@@ -350,7 +378,11 @@ export default function VDDAnimation() {
                       <path d="M2 5.5L4.5 8L9 3" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   ) : isR ? (
-                    <div style={{ width: 7, height: 7, borderRadius: "50%", border: "1.5px solid rgba(255,255,255,.5)", borderTopColor: "#fff", animation: "vdd-spin 0.6s linear infinite" }} />
+                    <div style={{
+                      width: 7, height: 7, borderRadius: "50%",
+                      border: "1.5px solid rgba(255,255,255,.5)", borderTopColor: "#fff",
+                      animation: "vdd-spin 0.726s linear infinite",
+                    }} />
                   ) : (
                     i + 1
                   )}
@@ -378,15 +410,17 @@ export default function VDDAnimation() {
               {/* Label + source */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
-                  fontSize: 12, fontWeight: 700,
+                  fontSize: 11.5, fontWeight: 700,
                   color: isD ? "#065F46" : isR ? "#92400E" : "#1E293B",
                   letterSpacing: "-.02em", transition: "color .3s",
                 }}>{c.label}</div>
                 <div style={{
-                  fontSize: 9.5,
+                  fontSize: 8.5,
                   color: isD ? "#6EE7B7" : isR ? "#FCD34D" : "#94A3B8",
-                  marginTop: 1.5, fontWeight: 500, transition: "color .3s",
-                }}>{c.source}</div>
+                  marginTop: 2, fontWeight: 500,
+                  transition: "color .3s",
+                  lineHeight: 1.55, whiteSpace: "pre-wrap",
+                }}>{c.source.replace(/ ✓/g, "\n✓")}</div>
               </div>
 
               {/* Right status */}
@@ -462,7 +496,7 @@ export default function VDDAnimation() {
               <div style={{
                 position: "absolute", inset: 0, borderRadius: "50%",
                 border: "2px solid rgba(255,255,255,.5)",
-                animation: "vdd-ripple 1.1s ease-out forwards",
+                animation: "vdd-ripple 1.331s ease-out forwards",
               }} />
             </div>
 
@@ -471,7 +505,7 @@ export default function VDDAnimation() {
                 All 5 statutory checks passed
               </div>
               <div style={{ fontSize: 10, color: "rgba(255,255,255,.65)", marginTop: 2, letterSpacing: ".04em", textTransform: "uppercase", fontWeight: 600 }}>
-                PAN · CIN · GST · MSME · GST Returns
+                Tax ID · Entity · Business Reg · Sanction · Blacklist
               </div>
             </div>
 

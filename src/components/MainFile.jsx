@@ -6,7 +6,7 @@ import TermsPage from "./NimbleS2PTerms";
 import ResourcesPage from "./ResourcesPage";
 import VDDAnimation from "@gifs/VDDAnimation";
 import RFQAgentDemo from "@gifs/RFQAgent";
-import SupplierPortalDemo from "@gifs/SupplierPortal";
+import SupplierPortalAnimation from "@gifs/SupplierPortalAnimation";
 import InvoiceProcessingDemo from "@gifs/InvoiceProcessing";
 import SupplierAnalyticsDemo from "@gifs/SupplierAnalytics";
 import { assetUrl } from "@/lib/assetUrl";
@@ -211,12 +211,13 @@ function Hero({ onNavigate }) {
 const WORKFLOW_DEFAULT = { w: 1394, h: 732, fit: "cover" };
 const WORKFLOW_LAYOUTS = {
   vdd: { fit: "fill" },
+  supplier: { fit: "fill", zoom: 1.12 },
 };
 
 const WORKFLOW_DEMOS = {
   vdd: VDDAnimation,
   rfq: RFQAgentDemo,
-  supplier: SupplierPortalDemo,
+  supplier: SupplierPortalAnimation,
   invoice: InvoiceProcessingDemo,
   analytics: SupplierAnalyticsDemo,
 };
@@ -259,9 +260,29 @@ function ScaledWorkflowDemo({ modId }) {
   };
 
   if (fit === "fill") {
+    const zoom = layout.zoom ?? 1;
     return (
-      <div ref={wrapRef} style={shellStyle}>
-        <Demo />
+      <div
+        ref={wrapRef}
+        style={{
+          ...shellStyle,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            width: zoom > 1 ? `${100 / zoom}%` : "100%",
+            height: zoom > 1 ? `${100 / zoom}%` : "100%",
+            minWidth: 0,
+            minHeight: 0,
+            transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+            transformOrigin: "center center",
+          }}
+        >
+          <Demo />
+        </div>
       </div>
     );
   }
@@ -382,10 +403,10 @@ function LogoMarquee() {
 const MODULES = [
   {
     id:"vdd",
-    tab:"VDD & Onboarding",
+    tab:"Supplier Due Diligence",
     tabIcon:"🔍",
     badge:"SUPPLIER DUE DILIGENCE",
-    title:"VDD & Onboarding",
+    title:"Supplier Due Diligence",
     desc:"Real-time compliance scoring for every supplier and contract — flag risks before they become breaches.",
   },
   {
@@ -584,10 +605,12 @@ function PlatformModules({ onNavigate }) {
             {/* Sticky inner header */}
             <div style={{ padding: isMobile ? "16px 20px 12px" : "20px 32px 14px", borderBottom:`1px solid ${colour}14`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
               <span style={{ fontFamily:"var(--fb)", fontSize:14, fontWeight:700, color:"#0F172A" }}>{mod.tab}</span>
-              <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:`${colour}0e`, border:`1px solid ${colour}22`, borderRadius:100, padding:"4px 12px" }}>
-                <span style={{ width:5, height:5, borderRadius:"50%", background:colour, display:"inline-block" }} />
-                <span style={{ fontSize:11, fontWeight:700, color:colour, fontFamily:"var(--fb)" }}>Live Preview</span>
-              </div>
+              {mod.id !== "vdd" && (
+                <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:`${colour}0e`, border:`1px solid ${colour}22`, borderRadius:100, padding:"4px 12px" }}>
+                  <span style={{ width:5, height:5, borderRadius:"50%", background:colour, display:"inline-block" }} />
+                  <span style={{ fontSize:11, fontWeight:700, color:colour, fontFamily:"var(--fb)" }}>Live Preview</span>
+                </div>
+              )}
             </div>
 
             {/* GIF placeholder — intact */}
