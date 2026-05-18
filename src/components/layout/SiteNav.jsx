@@ -65,7 +65,15 @@ export function Nav({ onNavigate, onBack, pageName }) {
           </a>
 
           {/* Desktop links — always shown on every page */}
-          <div className="nav-links-desktop">
+          <div
+            className="nav-links-desktop"
+            style={{
+              display: isMobile ? "none" : "flex",
+              alignItems: "center",
+              gap: 36,
+              margin: "0 auto",
+            }}
+          >
             <button onClick={()=>setMegaOpen(o=>!o)} style={{
               display:"inline-flex", alignItems:"center", gap:5,
               fontSize:14.5, fontWeight: megaOpen ? 600 : 400,
@@ -95,7 +103,7 @@ export function Nav({ onNavigate, onBack, pageName }) {
 
           {/* CTA */}
           <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("demo"); }} className="nav-cta-desktop" href="#" style={{
-            display:"inline-flex", alignItems:"center", gap:6,
+            display: isMobile ? "none" : "inline-flex", alignItems:"center", gap:6,
             background:"linear-gradient(135deg,#E8960A,#F5A623)",
             color:"#fff", border:"none", borderRadius:9,
             padding:"10px 26px", fontSize:14.5, fontWeight:700,
@@ -110,7 +118,24 @@ export function Nav({ onNavigate, onBack, pageName }) {
           >Book a Demo →</a>
 
           {/* Hamburger */}
-          <button className="hamburger" onClick={() => setOpen(o=>!o)} aria-label="Toggle menu">
+          <button
+            className="hamburger"
+            onClick={() => setOpen(o=>!o)}
+            aria-label="Toggle menu"
+            style={{
+              display: isMobile ? "flex" : "none",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: 5,
+              width: 36,
+              height: 36,
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 4,
+              marginLeft: "auto",
+            }}
+          >
             <span style={{ background:hamClr, transform: open ? "rotate(45deg) translate(5px,5px)" : "none" }} />
             <span style={{ background:hamClr, opacity: open ? 0 : 1 }} />
             <span style={{ background:hamClr, transform: open ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
@@ -118,8 +143,25 @@ export function Nav({ onNavigate, onBack, pageName }) {
         </div>
       </nav>
 
-      {/* Mobile drawer */}
-      <div className={`mobile-menu${open ? " open" : ""}`} style={{ top:NAV_H }}>
+      {/* Mobile drawer — only mount on small screens */}
+      {isMobile && (
+      <div
+        className={`mobile-menu${open ? " open" : ""}`}
+        style={{
+          display: open ? "flex" : "none",
+          flexDirection: "column",
+          position: "fixed",
+          top: NAV_H,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "#1a1440",
+          zIndex: 99,
+          padding: "24px 20px",
+          gap: 4,
+          overflowY: "auto",
+        }}
+      >
         {/* Products accordion on mobile */}
         <div style={{ padding:"14px 16px", borderRadius:10 }}>
           <div style={{ fontSize:17, fontWeight:600, color:"rgba(255,255,255,.75)", fontFamily:"var(--fb)", marginBottom:12 }}>Products</div>
@@ -142,6 +184,7 @@ export function Nav({ onNavigate, onBack, pageName }) {
           marginTop:8,
         }} onClick={()=>{ setOpen(false); if(onNavigate) onNavigate("demo"); }}>Book a Demo →</a>
       </div>
+      )}
     </>
   );
 }

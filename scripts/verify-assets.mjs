@@ -31,7 +31,7 @@ const REQUIRED_IMAGES = [
 const REQUIRED_STATIC = ["arrow.png", "favicon.png"];
 
 const GIF_MODULES = [
-  "gifs/CompliancePortal.jsx",
+  "gifs/VDDAnimation.jsx",
   "gifs/RFQAgent.jsx",
   "gifs/SupplierPortal.jsx",
   "gifs/InvoiceProcessing.jsx",

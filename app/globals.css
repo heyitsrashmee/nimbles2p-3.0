@@ -1,11 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap');
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --ft: 'Inter', system-ui, sans-serif;
-  --fb: 'Inter', system-ui, sans-serif;
-  --fm: 'IBM Plex Mono', 'Courier New', monospace;
+  --ft: var(--font-inter, 'Inter'), system-ui, sans-serif;
+  --fb: var(--font-inter, 'Inter'), system-ui, sans-serif;
+  --fm: var(--font-mono, 'IBM Plex Mono'), 'Courier New', monospace;
   --p900:#1E0B4B; --p800:#2D1270; --p700:#391085; --p600:#4B1A9E;
   --p500:#6320E0; --p400:#7C3AED; --p300:#8B5CF6; --p200:#A78BFA;
   --p100:#C4B5FD; --p50:#EDE9FE; --p25:#F5F3FF;
@@ -77,6 +75,9 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 /* ── MOBILE MENU ── */
 .mobile-menu { display:none;flex-direction:column;position:fixed;top:72px;left:0;right:0;bottom:0;background:#1a1440;z-index:99;padding:24px 20px;gap:4px;overflow-y:auto; }
 .mobile-menu.open { display:flex; }
+@media (min-width: 769px) {
+  .mobile-menu { display: none !important; }
+}
 .mobile-nav-link { font-size:17px;font-weight:500;color:rgba(255,255,255,.75);text-decoration:none;padding:14px 16px;border-radius:10px;font-family:var(--fb);transition:background .15s,color .15s;display:block; }
 .mobile-nav-link:hover { background:rgba(255,255,255,.07);color:#fff; }
 .mobile-divider { height:1px;background:rgba(255,255,255,.08);margin:12px 0; }

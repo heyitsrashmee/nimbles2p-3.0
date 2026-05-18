@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import TermsPage from "./NimbleS2PTerms";
 import ResourcesPage from "./ResourcesPage";
-import CompliancePortalDemo from "@gifs/CompliancePortal";
+import VDDAnimation from "@gifs/VDDAnimation";
 import RFQAgentDemo from "@gifs/RFQAgent";
 import SupplierPortalDemo from "@gifs/SupplierPortal";
 import InvoiceProcessingDemo from "@gifs/InvoiceProcessing";
@@ -208,11 +208,13 @@ function Hero({ onNavigate }) {
 }
 
 
-const WORKFLOW_W = 1394;
-const WORKFLOW_H = 732;
+const WORKFLOW_DEFAULT = { w: 1394, h: 732, fit: "cover" };
+const WORKFLOW_LAYOUTS = {
+  vdd: { fit: "fill" },
+};
 
 const WORKFLOW_DEMOS = {
-  vdd: CompliancePortalDemo,
+  vdd: VDDAnimation,
   rfq: RFQAgentDemo,
   supplier: SupplierPortalDemo,
   invoice: InvoiceProcessingDemo,
@@ -223,49 +225,71 @@ function ScaledWorkflowDemo({ modId }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(0.4);
   const Demo = WORKFLOW_DEMOS[modId];
+  const layout = WORKFLOW_LAYOUTS[modId] || WORKFLOW_DEFAULT;
+  const fit = layout.fit || WORKFLOW_DEFAULT.fit;
+  const workflowW = layout.w ?? WORKFLOW_DEFAULT.w;
+  const workflowH = layout.h ?? WORKFLOW_DEFAULT.h;
 
   useEffect(() => {
+    if (fit === "fill") return;
     const el = wrapRef.current;
     if (!el) return;
     const measure = () => {
       const { width, height } = el.getBoundingClientRect();
       if (width < 8 || height < 8) return;
-      // Cover: fill the panel (no letterboxing top/bottom); sides clip via overflow:hidden.
-      const s = Math.max(width / WORKFLOW_W, height / WORKFLOW_H);
+      const sx = width / workflowW;
+      const sy = height / workflowH;
+      const s = fit === "contain" ? Math.min(sx, sy) : Math.max(sx, sy);
       setScale(Math.max(0.12, s));
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [modId]);
+  }, [modId, workflowW, workflowH, fit]);
 
   if (!Demo) return null;
+
+  const shellStyle = {
+    width: "100%",
+    height: "100%",
+    minHeight: 0,
+    overflow: "hidden",
+    background: "#F8FAFC",
+  };
+
+  if (fit === "fill") {
+    return (
+      <div ref={wrapRef} style={shellStyle}>
+        <Demo />
+      </div>
+    );
+  }
+
+  const scaledW = workflowW * scale;
+  const scaledH = workflowH * scale;
 
   return (
     <div
       ref={wrapRef}
       style={{
-        width: "100%",
-        height: "100%",
-        minHeight: 0,
+        ...shellStyle,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        overflow: "hidden",
-        background: "#F8FAFC",
       }}
     >
-      <div
-        style={{
-          width: WORKFLOW_W,
-          height: WORKFLOW_H,
-          transform: `scale(${scale})`,
-          transformOrigin: "center center",
-          flexShrink: 0,
-        }}
-      >
-        <Demo />
+      <div style={{ width: scaledW, height: scaledH, overflow: "hidden", flexShrink: 0 }}>
+        <div
+          style={{
+            width: workflowW,
+            height: workflowH,
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+          }}
+        >
+          <Demo />
+        </div>
       </div>
     </div>
   );
@@ -849,7 +873,7 @@ function IndustryIllustration({ ind }) {
 }
 
 function RealResults() {
-  const [active, setActive] = useState("steel");
+  const [active, setActive] = useState("chemical");
   const ind = INDUSTRIES.find(i => i.id === active) || INDUSTRIES[0];
   const ref = useReveal();
   const w = useWidth();
