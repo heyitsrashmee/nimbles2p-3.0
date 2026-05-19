@@ -298,8 +298,8 @@ export default function SupplierAnalytics() {
                   <svg viewBox="0 0 280 90" style={{ width: "100%", height: "100%" }}>
                     <path d="M0,68 L56,58 L112,52 L168,38 L224,28 L280,18" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 3" />
                     <path d="M0,74 L56,70 L112,64 L168,56 L224,46 L280,36" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" />
-                    <text x="6" y="15" fontSize="9" fill="#10B981" fontFamily="Inter,sans-serif" fontWeight="700">On-Time %</text>
-                    <text x="6" y="26" fontSize="9" fill="#3B82F6" fontFamily="Inter,sans-serif">Fill Rate %</text>
+                    <text x="6" y="15" fontSize="9" fill="#10B981" fontFamily="var(--fb)" fontWeight="700">On-Time %</text>
+                    <text x="6" y="26" fontSize="9" fill="#3B82F6" fontFamily="var(--fb)">Fill Rate %</text>
                   </svg>
                 </div>
                 <div style={styles.chartTitle}>SLA Breach by Category</div>
@@ -353,7 +353,7 @@ export default function SupplierAnalytics() {
                     { n: "97",  lbl: "Non-Compliant",   bg: "#FEF2F2", bc: "rgba(239,68,68,.2)",  tc: "#DC2626", lc: "#EF4444" },
                   ].map((s) => (
                     <div key={s.lbl} style={{ background: s.bg, border: `1.5px solid ${s.bc}`, borderRadius: 12, padding: "16px 10px", textAlign: "center" }}>
-                      <div style={{ fontFamily: "'Outfit',system-ui,sans-serif", fontSize: 26, fontWeight: 800, color: s.tc }}>{s.n}</div>
+                      <div style={{ fontFamily: "var(--fb)", fontSize: 26, fontWeight: 800, color: s.tc }}>{s.n}</div>
                       <div style={{ fontSize: 10, fontWeight: 700, color: s.lc, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 4 }}>{s.lbl}</div>
                     </div>
                   ))}
@@ -461,16 +461,13 @@ export default function SupplierAnalytics() {
   );
 }
 
-const W = 1394;
-const H = 732;
-
 const styles = {
   root: {
-    width: W, height: H,
+    width: "100%", height: "100%", minHeight: 0,
     background: "#F5F7FF",
-    fontFamily: "'Inter', system-ui, sans-serif",
+    fontFamily: "var(--fb)",
     display: "flex", flexDirection: "column",
-    borderRadius: 20, overflow: "hidden",
+    borderRadius: 0, overflow: "hidden",
   },
   header: {
     display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -518,7 +515,7 @@ const styles = {
     borderRadius: 14, padding: "18px 16px",
   },
   kpiVal: {
-    fontFamily: "'Outfit', system-ui, sans-serif",
+    fontFamily: "var(--fb)",
     fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em",
   },
   kpiLbl: { fontSize: 11, color: "#64748B", marginTop: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" },
@@ -546,7 +543,7 @@ const styles = {
     position: "absolute", inset: 0,
     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
   },
-  donutVal: { fontFamily: "'Outfit',system-ui,sans-serif", fontSize: 14, fontWeight: 800, color: "#0F0D2E" },
+  donutVal: { fontFamily: "var(--fb)", fontSize: 14, fontWeight: 800, color: "#0F0D2E" },
   donutSub: { fontSize: 9, color: "#94A3B8" },
   donutLegend: { display: "flex", flexDirection: "column", gap: 8 },
   legendItem: { display: "flex", alignItems: "center", gap: 8 },
@@ -595,7 +592,7 @@ const styles = {
     display: "flex", alignItems: "baseline", gap: 16, flexShrink: 0,
   },
   ratingsTitle: {
-    fontFamily: "'Outfit', system-ui, sans-serif",
+    fontFamily: "var(--fb)",
     fontSize: 22, fontWeight: 800, color: "#0F0D2E",
   },
   ratingsSub: { fontSize: 13, color: "#94A3B8" },
@@ -616,7 +613,7 @@ const styles = {
   },
   vcScore: { display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, minWidth: 120 },
   vcScoreVal: {
-    fontFamily: "'Outfit', system-ui, sans-serif",
+    fontFamily: "var(--fb)",
     fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em",
   },
   vcScoreBarTrack: { width: 100, height: 5, background: "#E0DDF5", borderRadius: 100, overflow: "hidden" },

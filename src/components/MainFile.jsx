@@ -211,7 +211,10 @@ function Hero({ onNavigate }) {
 const WORKFLOW_DEFAULT = { w: 1394, h: 732, fit: "cover" };
 const WORKFLOW_LAYOUTS = {
   vdd: { fit: "fill" },
+  rfq: { fit: "fill" },
   supplier: { fit: "fill", zoom: 1.12 },
+  invoice: { fit: "fill" },
+  analytics: { fit: "fill" },
 };
 
 const WORKFLOW_DEMOS = {

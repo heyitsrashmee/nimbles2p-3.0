@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { assetUrl } from "@/lib/assetUrl";
 import { MEGA_PRODUCTS } from "./megaMenuData";
 
 export function MegaMenu({ onClose, onNavigate }) {
@@ -147,19 +148,33 @@ export function MegaMenu({ onClose, onNavigate }) {
               {/* ── IMAGE — takes max space ── */}
               <div style={{
                 flex:1, position:"relative", overflow:"hidden",
-                minHeight:0,
+                minHeight:200,
                 background:`linear-gradient(145deg,${active.color}18 0%,${active.color}08 100%)`,
               }}>
-                {/* Dot grid */}
-                <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(0,0,0,.05) 1px,transparent 1px)", backgroundSize:"12px 12px", pointerEvents:"none", zIndex:1 }} />
-
-                {/* Placeholder icon centred */}
-                <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", zIndex:2 }}>
-                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
-                    <div style={{ width:56, height:56, borderRadius:16, background:`${active.color}18`, border:`1.5px dashed ${active.color}50`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:26 }}>{res.icon}</div>
-                    <span style={{ fontSize:9, fontWeight:700, letterSpacing:".1em", textTransform:"uppercase", color:active.color, fontFamily:"var(--fb)", opacity:.6 }}>Cover image placeholder</span>
+                {active.cover ? (
+                  <img
+                    key={active.id}
+                    src={assetUrl(active.cover.src)}
+                    alt=""
+                    draggable={false}
+                    style={{
+                      position:"absolute", inset:0,
+                      width:"100%", height:"100%",
+                      objectFit:"cover",
+                      objectPosition: active.cover.objectPosition ?? "center center",
+                      display:"block",
+                    }}
+                  />
+                ) : (
+                  <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", zIndex:2 }}>
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
+                      <div style={{ width:56, height:56, borderRadius:16, background:`${active.color}18`, border:`1.5px dashed ${active.color}50`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:26 }}>{res.icon}</div>
+                      <span style={{ fontSize:9, fontWeight:700, letterSpacing:".1em", textTransform:"uppercase", color:active.color, fontFamily:"var(--fb)", opacity:.6 }}>Cover image placeholder</span>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(0,0,0,.04) 1px,transparent 1px)", backgroundSize:"12px 12px", pointerEvents:"none", zIndex:1 }} />
 
                 {/* ── Overlay band at bottom of image ── */}
                 <div style={{

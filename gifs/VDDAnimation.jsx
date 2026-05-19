@@ -139,7 +139,7 @@ export default function VDDAnimation() {
 
   return (
     <div style={{
-      width: "100%", height: "100%",
+      width: "100%", height: "100%", minHeight: 0,
       background: "linear-gradient(160deg,#F0F2FF 0%,#F7F8FC 60%,#EEF5F2 100%)",
       fontFamily: "var(--fb)",
       position: "relative", overflow: "hidden",
@@ -314,7 +314,7 @@ export default function VDDAnimation() {
       </div>
 
       {/* ── Check rows ── */}
-      <div style={{ flex: 1, minHeight: 0, overflow: "hidden", padding: "2px 10px 6px", display: "flex", flexDirection: "column", gap: 4, position: "relative", zIndex: 1 }}>
+      <div style={{ flex: 1, overflow: "hidden", padding: "2px 10px 6px", display: "flex", flexDirection: "column", gap: 4, position: "relative", zIndex: 1 }}>
         {VDD_CHECKS.map((c, i) => {
           const st = states[c.id];
           const isR = st === "running";

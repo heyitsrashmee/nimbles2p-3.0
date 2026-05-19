@@ -20,6 +20,7 @@ export const MEGA_PRODUCTS = {
       color:"#231a67",
       tag:"Trending",
       resource: PRODUCT_PAGE_RESOURCES.vdd,
+      cover: { src: "mega-menu/vdd-cover.png", objectPosition: "center 12%" },
     },
     {
       id:"supplier",
@@ -28,6 +29,7 @@ export const MEGA_PRODUCTS = {
       desc:"Unified interface for suppliers to manage onboarding, documents, communication, and transactions.",
       color:"#6DB657",
       resource: PRODUCT_PAGE_RESOURCES.supplier,
+      cover: { src: "mega-menu/supplier-portal-cover.png", objectPosition: "left 8%" },
     },
     {
       id:"invoice",
@@ -53,6 +55,7 @@ export const MEGA_PRODUCTS = {
       color:"#E06B72",
       tag:"New",
       resource: PRODUCT_PAGE_RESOURCES.finance,
+      cover: { src: "mega-menu/early-financing-cover.png", objectPosition: "center 40%" },
     },
     {
       id:"analytics",
@@ -62,6 +65,7 @@ export const MEGA_PRODUCTS = {
       color:"#48A9A6",
       tag:"Beta",
       resource: PRODUCT_PAGE_RESOURCES.analytics,
+      cover: { src: "mega-menu/supplier-analytics-cover.png", objectPosition: "center 22%" },
     },
   ],
 };

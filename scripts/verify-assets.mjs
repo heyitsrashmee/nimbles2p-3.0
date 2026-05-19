@@ -30,6 +30,13 @@ const REQUIRED_IMAGES = [
 
 const REQUIRED_STATIC = ["arrow.png", "favicon.png"];
 
+const MEGA_MENU_COVERS = [
+  "mega-menu/vdd-cover.png",
+  "mega-menu/supplier-portal-cover.png",
+  "mega-menu/early-financing-cover.png",
+  "mega-menu/supplier-analytics-cover.png",
+];
+
 const GIF_MODULES = [
   "gifs/VDDAnimation.jsx",
   "gifs/RFQAgent.jsx",
@@ -54,7 +61,7 @@ console.log("--- source gifs ---");
 GIF_MODULES.forEach(check);
 
 console.log("\n--- public assets (run npm run prebuild first) ---");
-[...REQUIRED_LOGOS, ...REQUIRED_IMAGES, ...REQUIRED_STATIC].forEach((rel) =>
+[...REQUIRED_LOGOS, ...REQUIRED_IMAGES, ...REQUIRED_STATIC, ...MEGA_MENU_COVERS].forEach((rel) =>
   check(path.join("public", rel))
 );
 
