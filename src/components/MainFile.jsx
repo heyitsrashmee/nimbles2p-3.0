@@ -189,7 +189,7 @@ function Hero({ onNavigate }) {
             ))}
           </div>
           <span style={{ fontSize: isMobile ? 11 : 12.5, color:"rgba(255,255,255,.42)", fontFamily:"var(--fb)" }}>
-            Trusted by finance leaders across <strong style={{ color:"rgba(255,255,255,.82)", fontWeight:600 }}>9+ industries</strong> worldwide
+            Trusted across <strong style={{ color:"rgba(255,255,255,.82)", fontWeight:600 }}>9+ strategic industry verticals</strong> around the world
           </span>
         </div>
 

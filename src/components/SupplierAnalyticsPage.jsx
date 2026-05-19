@@ -152,7 +152,7 @@ function SAHero({ onNavigate }) {
         </h1>
 
         <p className="fade-up d2" style={{ fontSize: isMobile ? 15 : 18, color:"rgba(255,255,255,.52)", lineHeight:1.75, fontFamily:"var(--fb)", maxWidth:620, margin:"0 auto 36px" }}>
-          Track supplier risk, compliance, performance, and operational health across your entire supplier ecosystem.
+          Where supplier experience meets finance control. Enterprise automation that suppliers actually respond to.
         </p>
 
         {/* CTA buttons */}
