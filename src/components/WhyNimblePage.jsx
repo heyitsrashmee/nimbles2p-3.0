@@ -113,6 +113,7 @@ function WhyStory() {
             border:`1.5px solid ${ap.color}28`,
             borderRadius:24, padding: isMobile ? "32px 24px" : "44px 44px",
             boxSizing:"border-box",
+            height: isMobile ? "auto" : 420, minHeight: isMobile ? 300 : 420,
             display:"flex", flexDirection:"column", justifyContent:"space-between",
             boxShadow:`0 8px 40px ${ap.color}10`,
             transition:"all .35s cubic-bezier(.22,1,.36,1)",
