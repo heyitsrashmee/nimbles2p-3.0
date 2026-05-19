@@ -135,7 +135,7 @@ function PricingHero() {
 
         {/* Trust badges */}
         <div className="fade-up d3" style={{ display:"flex", justifyContent:"center", gap:8, flexWrap:"wrap" }}>
-          {[{label:"No seat limits per plan",dot:"#34D399"},{label:"ERP included",dot:"#A78BFA"},{label:"Dedicated support",dot:"#F5A623"}].map(p=>(
+          {[{label:"Hypercare Onboarding",dot:"#34D399"},{label:"High-touch Customer Success",dot:"#A78BFA"},{label:"Dedicated Enterprise Support",dot:"#F5A623"}].map(p=>(
             <div key={p.label} style={{ display:"inline-flex", alignItems:"center", gap:5, background:"rgba(255,255,255,.07)", border:"1px solid rgba(255,255,255,.14)", borderRadius:100, padding:"5px 14px", fontSize:12, fontWeight:500, color:"rgba(255,255,255,.75)", fontFamily:"var(--fb)" }}>
               <span style={{ width:5, height:5, borderRadius:"50%", background:p.dot, display:"inline-block" }} />
               {p.label}
@@ -331,7 +331,7 @@ function PricingTabs() {
             {/* Fixed bottom strip */}
             <div style={{ padding: isMobile ? "12px 24px" : "14px 36px", borderTop:`1px solid ${colour}14`, background:"#FAFBFF", display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
               <span style={{ fontSize:11, color:"#94A3B8", fontFamily:"var(--fb)" }}>💡</span>
-              <span style={{ fontSize:12, color:"#94A3B8", fontFamily:"var(--fb)", lineHeight:1.4 }}>Pricing scales with supplier count, invoice volume &amp; business units. No per-seat charges.</span>
+              <span style={{ fontSize:12, color:"#94A3B8", fontFamily:"var(--fb)", lineHeight:1.4 }}>Pricing scales with supplier count, invoice volume &amp; business units.</span>
             </div>
 
           </div>
@@ -339,7 +339,7 @@ function PricingTabs() {
 
         <div style={{ textAlign:"center", marginTop:20 }}>
           <p style={{ fontSize:13, color:"#94A3B8", fontFamily:"var(--fb)", lineHeight:1.7, margin:0 }}>
-            All plans include dedicated onboarding support, SLA-backed uptime, and ERP integration.
+            Every plan is built for global operations, cross-functional collaboration, and scalable process automation.
           </p>
         </div>
 
@@ -358,8 +358,8 @@ function PricingEnterpriseNote() {
   const items = [
     { icon:"🏗️", title:"Custom implementation", desc:"Tailored onboarding with dedicated project management and ERP configuration." },
     { icon:"📞", title:"Dedicated success team", desc:"A named account team available throughout your contract, not just at renewal." },
-    { icon:"🔐", title:"Enterprise security", desc:"SOC 2 Type II, ISO 27001, GDPR-ready. SSO, RBAC, and full audit trails included." },
-    { icon:"📈", title:"Volume-based pricing", desc:"Scales with your supplier count, invoice volume, and number of business units — nothing extra." },
+    { icon:"🔐", title:"Enterprise security", desc:"SOC 2 Type II, ISO 27001. SSO and full audit trails included." },
+    { icon:"📈", title:"Outcome-driven collaboration", desc:"Focused on transformation success, stakeholder adoption, and measurable operational improvements." },
   ];
 
   return (
@@ -378,7 +378,7 @@ function PricingEnterpriseNote() {
                 Every plan built<br />around your enterprise.
               </h2>
               <p style={{ fontSize:15, color:"rgba(255,255,255,.45)", lineHeight:1.75, fontFamily:"var(--fb)", marginBottom:28 }}>
-                No rigid tiers. No per-seat traps. A pricing model that respects the complexity of enterprise procurement.
+                A pricing model that respects the complexity of enterprise procurement.
               </p>
               <a href="#" style={{ display:"inline-flex", alignItems:"center", gap:7, background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", borderRadius:10, padding:"13px 32px", fontSize:15.5, fontWeight:700, textDecoration:"none", fontFamily:"var(--fb)", boxShadow:"0 6px 28px rgba(232,150,10,.5)", transition:"transform .2s,box-shadow .2s" }}
                 onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 12px 40px rgba(232,150,10,.65)"; }}
