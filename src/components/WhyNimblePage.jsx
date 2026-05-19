@@ -32,11 +32,11 @@ function WhyHero({ onNavigate }) {
         <h1 className="fade-up d1" style={{
           fontFamily:"var(--fb)", fontWeight:900,
           fontSize: isMobile ? "clamp(28px,8vw,42px)" : "clamp(40px,4.5vw,64px)",
-          lineHeight:1.0, letterSpacing:"-.04em", marginBottom:22,
+          lineHeight:1.0, letterSpacing:"-.04em", marginBottom:22, paddingBottom:8,
           background:"linear-gradient(160deg,#fff 0%,#fff 40%,#E2D9FE 60%,#F5C842 85%,#F5A623 100%)",
           WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
         }}>
-          Built for the Enterprise.<br />Designed for the Future.
+          Enterprise AI, Designed Right.
         </h1>
 
         <p className="fade-up d2" style={{ fontSize: isMobile ? 15 : 18, color:"rgba(255,255,255,.52)", lineHeight:1.75, fontFamily:"var(--fb)", maxWidth:620, margin:"0 auto 36px" }}>
@@ -95,7 +95,7 @@ function WhyStory() {
               The conviction behind<br />every line of code
             </h2>
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"#64748B", lineHeight:1.78, fontFamily:"var(--fb)", margin:0 }}>
-              From day one, NimbleS2P brings clarity to supplier operations — built on a high-performance architecture with intelligent automation and compliance-first design.
+              Where supplier experience meets finance control. Enterprise automation that suppliers actually respond to.
             </p>
           </div>
         </div>
