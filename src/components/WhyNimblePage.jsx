@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { ShieldCheck, Activity, Layers, Zap, Users } from "lucide-react";
 import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
@@ -69,11 +70,9 @@ function WhyHero({ onNavigate }) {
    2. PARAGRAPH STORY
 ════════════════════════════════════ */
 const storyPoints = [
-  { icon:"👁", color:"#6320E0", heading:"Total Visibility",               text:"Every transaction visible, every action traceable — from the moment a supplier is onboarded to the last rupee posted." },
-  { icon:"⚡", color:"#0369A1", heading:"High-Performance Architecture",   text:"Speed, stability, and reliability at enterprise scale. Built to handle millions of transactions without breaking a sweat." },
-  { icon:"🤖", color:"#DB2777", heading:"Intelligent Automation",          text:"Eliminates manual effort, removes exceptions, and drives disciplined efficiency across procurement, compliance, and finance." },
-  { icon:"🔒", color:"#059669", heading:"Compliance-First Design",         text:"Total cost of ownership stays firmly under control with built-in compliance guardrails that make audits effortless." },
-  { icon:"🔧", color:"#D97706", heading:"Hyper-Configurable",              text:"Adapts to your processes — not the other way around. Configure workflows, rules, and approvals without writing a line of code." },
+  { icon:"🔒", color:"#059669", heading:"Compliance-First Architecture", text:"Built to ensure governance, traceability, control, and enterprise-wide accountability without slowing operations." },
+  { icon:"🔧", color:"#D97706", heading:"Hyper-Configurable",            text:"Adapts to your processes — not the other way around. Configure workflows, rules, and approvals without writing a line of code." },
+  { icon:"⚡", color:"#0369A1", heading:"High-Performance Architecture", text:"Speed, stability, and reliability at enterprise scale. Built to handle millions of transactions without breaking a sweat." },
   { icon:"🤝", color:"#7C3AED", heading:"Responsive Partnership",          text:"A team that ensures continuity at every step — from implementation to scale, always on, always responsive." },
 ];
 
@@ -268,133 +267,200 @@ function WhyBeforeAfter() {
 }
 
 /* ════════════════════════════════════
-   4. NUMBERS — showcase layout
+   4. NUMBERS — flip card + proof panel
 ════════════════════════════════════ */
-const whyNumbers = [
-  { val:"$9.6", sup:"B+",  sub:"Transactional Value",           accent:"#F5A623", desc:"in enterprise spend managed on the platform" },
-  { val:"280",  sup:"K+",  sub:"Supplier Network",               accent:"#A78BFA", desc:"vendors across industries and geographies" },
-  { val:"120",  sup:"K+",  sub:"Monthly Transactions",           accent:"#34D399", desc:"processed without manual intervention" },
-  { val:"60",   sup:"K+",  sub:"Monthly Invoices Processed",     accent:"#60A5FA", desc:"end-to-end, from capture to ERP posting" },
-  { val:"90",   sup:"%",   sub:"Supplier Adoption in 60 days",   accent:"#F472B6", desc:"from go-live — fastest in the industry" },
-];
-
 function WhyNumbers() {
-  const w = useWidth(); const isMobile = w < 640; const isTablet = w < 960;
+  const w = useWidth(); const isMobile = w < 640;
   const ref = useReveal();
+  const [flipped, setFlipped] = useState(false);
 
-  /* 5 numbers — each gets a distinct treatment in the layout */
-  const nums = whyNumbers;
+  const proofRows = [
+    {
+      icon: <ShieldCheck size={18} color="var(--em700)" />,
+      iconBg:"var(--em50)",
+      name:"SOC 2 Type II + ISO 27001 certified",
+      desc:"Independently audited. Your security team won't need to ask twice.",
+      badge:{ label:"Verified", bg:"var(--em50)", color:"var(--em700)" },
+    },
+    {
+      icon: <Activity size={18} color="var(--p700)" />,
+      iconBg:"var(--p50)",
+      name:"99.97% uptime SLA",
+      desc:"Contractually guaranteed. Not a marketing claim.",
+      badge:{ label:"SLA-bound", bg:"var(--am50)", color:"var(--am600)" },
+    },
+    {
+      icon: <Layers size={18} color="var(--p600)" />,
+      iconBg:"var(--p50)",
+      name:"Multi-plant · Multi-BU · Multi-currency",
+      desc:"Complex org structures out of the box — no custom dev required.",
+      badge: null,
+    },
+    {
+      icon: <Zap size={18} color="var(--g700)" />,
+      iconBg:"var(--g50)",
+      name:"SAP · Oracle · Dynamics — native",
+      desc:"Direct connectors. No middleware. No data sync headaches.",
+      badge: null,
+    },
+    {
+      icon: <Users size={18} color="var(--em600)" />,
+      iconBg:"var(--em50)",
+      name:"Customer success driven implementation",
+      desc:"A dedicated CS team runs your rollout — not a ticket queue.",
+      badge: null,
+    },
+  ];
 
   return (
     <section style={{ background:"var(--slp)", padding: isMobile ? "64px 20px" : "clamp(64px,9vh,104px) 5vw", position:"relative", overflow:"hidden" }}>
-      {/* Subtle grid */}
       <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(57,16,133,.07) 1px,transparent 1px)", backgroundSize:"28px 28px", pointerEvents:"none" }} />
 
       <div style={{ maxWidth:1080, margin:"0 auto", position:"relative", zIndex:1 }}>
 
         {/* Header */}
-        <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:20, marginBottom: isMobile ? 40 : 56 }}>
-          <div>
-            <Eyebrow>By the Numbers</Eyebrow>
-            <h2 style={{ fontFamily:"var(--fb)", fontSize: isMobile ? "clamp(24px,6vw,34px)" : "clamp(28px,3.5vw,44px)", fontWeight:700, letterSpacing:"-.04em", lineHeight:1.05, color:"#0F172A", marginBottom:0 }}>
-              Scale that speaks<br />for itself
-            </h2>
-          </div>
-          <p style={{ fontSize:15, color:"#64748B", lineHeight:1.7, fontFamily:"var(--fb)", maxWidth:340, marginBottom:0 }}>
+        <div style={{ marginBottom: isMobile ? 36 : 52 }}>
+          <span className="pill pl-dk-pu" style={{ marginBottom:14, display:"inline-flex" }}>Why NimbleS2P</span>
+          <h2 className="sec-h2">
+            Most implementations drag on for <span style={{ color:"var(--p500)" }}>years.</span> Ours doesn't.
+          </h2>
+          <p className="sec-sub">
             Real numbers from real enterprises — running on NimbleS2P today.
           </p>
         </div>
 
-        {/* ── MAIN LAYOUT: big hero stat + 2×2 side grid ── */}
-        <div className="reveal" ref={ref} style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1.1fr 1fr", gap:16, alignItems:"stretch" }}>
+        {/* Two-column grid */}
+        <div className="reveal" ref={ref} style={{
+          display:"grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap:20,
+          alignItems:"stretch",
+        }}>
 
-          {/* LEFT: Big hero number — $9.6B */}
-          <div style={{
-            background:"linear-gradient(145deg,var(--p700) 0%,var(--p900) 100%)",
-            borderRadius:24, padding: isMobile ? "36px 28px" : "52px 52px",
-            display:"flex", flexDirection:"column", justifyContent:"space-between",
-            position:"relative", overflow:"hidden",
-            minHeight: isMobile ? 240 : 320,
-            boxShadow:"0 8px 48px rgba(57,16,133,.22)",
-          }}>
-            {/* Dot grid */}
-            <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px)", backgroundSize:"20px 20px", pointerEvents:"none" }} />
-            {/* Ghost symbol */}
-            <div style={{ position:"absolute", top:-16, right:20, fontFamily:"var(--fb)", fontSize:160, fontWeight:900, lineHeight:1, color:"rgba(255,255,255,.04)", userSelect:"none", pointerEvents:"none" }}>$</div>
-            {/* Glow orb */}
-            <div style={{ position:"absolute", bottom:"-20%", right:"-10%", width:"60%", height:"80%", borderRadius:"50%", background:"radial-gradient(circle,rgba(245,166,35,.18) 0%,transparent 70%)", pointerEvents:"none" }} />
-
-            <div style={{ position:"relative", zIndex:1 }}>
-              <div style={{ fontSize:10, fontWeight:800, letterSpacing:".14em", textTransform:"uppercase", color:"rgba(255,255,255,.35)", fontFamily:"var(--fb)", marginBottom: isMobile ? 16 : "clamp(14px,2vh,24px)" }}>Total platform value</div>
-              <div style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(60px,14vw,88px)" : "clamp(72px,8.5vw,112px)", lineHeight:.92, letterSpacing:"-.06em", color:"#fff" }}>
-                {nums[0].val}<span style={{ fontSize:"0.36em", verticalAlign:"super", fontWeight:900, color:"#F5A623" }}>{nums[0].sup}</span>
+          {/* LEFT — Flip Card */}
+          <div
+            onClick={() => setFlipped(f => !f)}
+            style={{
+              borderRadius:16, overflow:"hidden", cursor:"pointer",
+              minHeight: isMobile ? 300 : 360,
+              position:"relative",
+            }}
+          >
+            {/* FRONT */}
+            <div style={{
+              position:"absolute", inset:0,
+              background:"var(--p800)",
+              padding:"36px 30px",
+              display:"flex", flexDirection:"column",
+              opacity: flipped ? 0 : 1,
+              transform: flipped ? "translateY(-16px)" : "translateY(0)",
+              transition:"opacity 0.45s ease, transform 0.45s ease",
+              zIndex: flipped ? 1 : 2,
+            }}>
+              <div style={{ fontSize:10, fontWeight:700, letterSpacing:".15em", textTransform:"uppercase", color:"rgba(255,255,255,0.3)", marginBottom:14, fontFamily:"var(--fb)" }}>
+                The industry reality
               </div>
-              <div style={{ fontFamily:"var(--fb)", fontSize: isMobile ? 18 : 22, fontWeight:800, color:"rgba(255,255,255,.7)", letterSpacing:"-.03em", lineHeight:1.2, marginTop:14 }}>{nums[0].sub}</div>
+              <div style={{ display:"flex", alignItems:"flex-end", gap:8 }}>
+                <span style={{ fontFamily:"var(--fb)", fontSize:60, fontWeight:900, color:"var(--sw)", lineHeight:1 }}>9–14</span>
+                <span style={{ fontFamily:"var(--fb)", fontSize:26, color:"var(--sw)", opacity:0.55, paddingBottom:6 }}>mo</span>
+              </div>
+              <p style={{ marginTop:14, fontSize:14, color:"rgba(255,255,255,0.6)", lineHeight:1.65, fontStyle:"italic", fontFamily:"var(--fb)" }}>
+                "The average enterprise procurement implementation takes 9 to 14 months before a single supplier goes live."
+              </p>
+              <div style={{ marginTop:28, display:"flex", alignItems:"center", gap:8 }}>
+                <span className="pulse-anim" style={{ width:6, height:6, borderRadius:"50%", background:"rgba(255,255,255,0.4)", flexShrink:0, display:"inline-block" }} />
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.35)", fontFamily:"var(--fb)" }}>Click to see the NimbleS2P difference</span>
+              </div>
             </div>
 
-            {/* Bottom amber bar */}
-            <div style={{ position:"relative", zIndex:1, marginTop: isMobile ? 28 : 0 }}>
-              <div style={{ height:2, borderRadius:1, background:"linear-gradient(90deg,#F5A623,rgba(245,166,35,.2),transparent)" }} />
+            {/* BACK */}
+            <div style={{
+              position:"absolute", inset:0,
+              background:"var(--p600)",
+              padding:"36px 30px",
+              display:"flex", flexDirection:"column",
+              opacity: flipped ? 1 : 0,
+              transform: flipped ? "translateY(0)" : "translateY(16px)",
+              transition:"opacity 0.45s ease, transform 0.45s ease",
+              zIndex: flipped ? 2 : 1,
+            }}>
+              <div style={{
+                display:"flex", alignItems:"center", gap:6,
+                background:"rgba(255,255,255,0.14)", border:"1px solid rgba(255,255,255,0.22)",
+                borderRadius:100, padding:"4px 12px 4px 8px",
+                fontSize:11, color:"rgba(255,255,255,0.85)",
+                marginBottom:22, width:"fit-content", fontFamily:"var(--fb)",
+              }}>
+                <span className="pulse-anim" style={{ width:6, height:6, borderRadius:"50%", background:"rgba(255,255,255,0.4)", flexShrink:0, display:"inline-block" }} />
+                NimbleS2P
+              </div>
+              <div style={{ display:"flex", alignItems:"flex-end", gap:4 }}>
+                <span style={{ fontFamily:"var(--fb)", fontSize:68, fontWeight:900, color:"var(--sw)", lineHeight:1 }}>90</span>
+                <span style={{ fontFamily:"var(--fb)", fontSize:34, color:"var(--sw)", opacity:0.65, paddingBottom:8 }}>%</span>
+              </div>
+              <p style={{ marginTop:10, fontSize:14, color:"rgba(255,255,255,0.8)", lineHeight:1.55, fontFamily:"var(--fb)" }}>
+                Supplier adoption in just 60 days. Not 9 months. Not a year. 60 days.
+              </p>
+              <div style={{ marginTop:"auto", paddingTop:28, display:"flex", alignItems:"center", gap:8 }}>
+                <span className="pulse-anim" style={{ width:6, height:6, borderRadius:"50%", background:"rgba(255,255,255,0.4)", flexShrink:0, display:"inline-block" }} />
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.35)", fontFamily:"var(--fb)" }}>Click to flip back</span>
+              </div>
             </div>
           </div>
 
-          {/* RIGHT: 2×2 grid of 4 stats */}
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-            {nums.slice(1).map((n, i) => (
-              <div key={n.sub} style={{
-                background:"#fff",
-                borderRadius:18, padding: isMobile ? "20px 16px" : "24px 22px",
-                display:"flex", flexDirection:"column", justifyContent:"space-between",
-                border:`1px solid ${n.accent}20`,
-                position:"relative", overflow:"hidden",
-                boxShadow:`0 2px 12px ${n.accent}0c`,
-                transition:"all .22s cubic-bezier(.22,1,.36,1)",
-              }}
-                onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow=`0 10px 32px ${n.accent}22`; e.currentTarget.style.borderColor=`${n.accent}44`; }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=`0 2px 12px ${n.accent}0c`; e.currentTarget.style.borderColor=`${n.accent}20`; }}
-              >
-                {/* Top accent */}
-                <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${n.accent},${n.accent}44,transparent)` }} />
-                {/* Corner blob */}
-                <div style={{ position:"absolute", bottom:"-20%", right:"-20%", width:"70%", height:"70%", borderRadius:"50%", background:`${n.accent}07`, pointerEvents:"none" }} />
+          {/* RIGHT — Enterprise Proof Panel */}
+          <div style={{
+            background:"var(--sw)",
+            borderRadius:16,
+            border:"1px solid var(--bd-p)",
+            boxShadow:"var(--sh-md)",
+            padding:"32px 28px",
+            display:"flex", flexDirection:"column",
+          }}>
+            <div style={{ marginBottom:28 }}>
+              <div style={{ fontSize:15, fontWeight:700, color:"var(--t1)", fontFamily:"var(--fb)", marginBottom:4 }}>
+                Built for enterprise. Proven at scale.
+              </div>
+              <div style={{ fontSize:12, color:"var(--t3)", lineHeight:1.5, fontFamily:"var(--fb)" }}>
+                The things procurement committees actually ask about — answered.
+              </div>
+            </div>
 
-                <div style={{ position:"relative", zIndex:1 }}>
-                  <div style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(26px,7vw,34px)" : "clamp(28px,3vw,38px)", lineHeight:1, letterSpacing:"-.05em", color:n.accent, marginBottom:8 }}>
-                    {n.val}<span style={{ fontSize:"0.42em", verticalAlign:"super", fontWeight:900 }}>{n.sup}</span>
-                  </div>
-                  <div style={{ fontFamily:"var(--fb)", fontSize: isMobile ? 12 : 13.5, fontWeight:700, color:"#0F172A", letterSpacing:"-.01em", lineHeight:1.3 }}>{n.sub}</div>
+            {proofRows.map((row, i) => (
+              <div key={i} style={{
+                display:"flex", alignItems:"flex-start", gap:14,
+                padding:"16px 0",
+                borderTop:"1px solid var(--bd)",
+              }}>
+                <div style={{
+                  width:36, height:36, borderRadius:10,
+                  background:row.iconBg,
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  flexShrink:0,
+                }}>
+                  {row.icon}
                 </div>
-
-                {/* Bottom fill bar */}
-                <div style={{ height:2, borderRadius:1, background:`linear-gradient(90deg,${n.accent}44,${n.accent}11,transparent)`, marginTop:16, position:"relative", zIndex:1 }} />
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:13, fontWeight:600, color:"var(--t1)", marginBottom:2, lineHeight:1.3, fontFamily:"var(--fb)" }}>{row.name}</div>
+                  <div style={{ fontSize:12, color:"var(--t3)", lineHeight:1.5, fontFamily:"var(--fb)" }}>{row.desc}</div>
+                </div>
+                {row.badge && (
+                  <div style={{
+                    marginLeft:"auto", alignSelf:"center",
+                    fontSize:10, fontWeight:700,
+                    padding:"3px 8px", borderRadius:100,
+                    letterSpacing:"0.04em",
+                    background:row.badge.bg, color:row.badge.color,
+                    fontFamily:"var(--fb)", whiteSpace:"nowrap",
+                  }}>
+                    {row.badge.label}
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
         </div>
-
-        {/* ── BOTTOM: horizontal context strip ── */}
-        <div style={{
-          marginTop:16,
-          display:"grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)",
-          gap:14,
-        }}>
-          {[
-            { icon:"🏭", label:"Across industries", value:"Iron & Steel · FMCG · Infrastructure · Pharma · Auto" },
-            { icon:"🗺", label:"Pan-India coverage", value:"Multi-plant · Multi-BU · Multi-region support" },
-            { icon:"🔗", label:"ERP-integrated", value:"SAP · Oracle · Dynamics · Custom ERPs" },
-          ].map(item => (
-            <div key={item.label} style={{ background:"rgba(255,255,255,.7)", border:"1px solid rgba(57,16,133,.1)", borderRadius:14, padding: isMobile ? "16px 18px" : "18px 22px", display:"flex", alignItems:"center", gap:14, backdropFilter:"blur(6px)" }}>
-              <div style={{ width:40, height:40, borderRadius:11, background:"var(--p50)", border:"1px solid var(--bd-p)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{item.icon}</div>
-              <div>
-                <div style={{ fontSize:10.5, fontWeight:700, letterSpacing:".08em", textTransform:"uppercase", color:"var(--p500)", fontFamily:"var(--fb)", marginBottom:3 }}>{item.label}</div>
-                <div style={{ fontSize:13, color:"#334155", fontFamily:"var(--fb)", lineHeight:1.4 }}>{item.value}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
       </div>
     </section>
   );
@@ -448,7 +514,7 @@ function WhyCTA() {
               ))}
             </div>
             <span style={{ fontSize:13, color:"rgba(255,255,255,.4)", fontFamily:"var(--fb)" }}>
-              Joined by <strong style={{ color:"rgba(255,255,255,.75)", fontWeight:600 }}>200+ enterprise finance teams</strong>
+              Trusted across <strong style={{ color:"rgba(255,255,255,.75)", fontWeight:600 }}>9+ strategic industry verticals</strong> around the world
             </span>
           </div>
         </div>
