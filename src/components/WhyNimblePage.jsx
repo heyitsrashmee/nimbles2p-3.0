@@ -104,7 +104,7 @@ function WhyStory() {
           display:"grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "1fr 1fr",
           gap: isMobile ? 24 : 32,
-          height: isMobile ? "auto" : 540,
+          alignItems:"start",
         }}>
 
           {/* LEFT — card is static, never moves */}
@@ -112,7 +112,7 @@ function WhyStory() {
             background:`linear-gradient(145deg,${ap.color}0c 0%,${ap.color}04 100%)`,
             border:`1.5px solid ${ap.color}28`,
             borderRadius:24, padding: isMobile ? "32px 24px" : "44px 44px",
-            height:"100%", boxSizing:"border-box",
+            boxSizing:"border-box",
             display:"flex", flexDirection:"column", justifyContent:"space-between",
             boxShadow:`0 8px 40px ${ap.color}10`,
             transition:"all .35s cubic-bezier(.22,1,.36,1)",
@@ -141,9 +141,6 @@ function WhyStory() {
           {/* RIGHT — scrollable list, left card stays put */}
           <div style={{
             display:"flex", flexDirection:"column", gap:4,
-            overflowY: isMobile ? "visible" : "auto",
-            height:"100%", paddingRight: isMobile ? 0 : 4,
-            scrollbarWidth:"none",
           }}>
             {storyPoints.map((p, i) => {
               const isAct = active === i;
