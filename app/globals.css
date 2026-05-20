@@ -161,6 +161,16 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 
 /* ── LOGO MARQUEE ── */
 .lm-wrap { overflow:hidden;position:relative;padding:44px 0;background:#fff;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06); }
+.lm-track {
+  display:flex;
+  align-items:center;
+  width:max-content;
+  animation:marqueeScroll 36s linear infinite;
+  will-change:transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lm-track { animation-duration: 90s; }
+}
 
 /* ── FOLD SECTIONS — min-height 100vh on large screens ── */
 @media(min-width:1024px) {

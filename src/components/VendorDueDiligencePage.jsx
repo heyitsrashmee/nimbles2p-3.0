@@ -14,7 +14,7 @@ import { PRODUCT_PAGE_RESOURCES } from "@/components/layout/megaMenuData";
 
 /* ── DATA ── */
 const tableRows = [
-  ["Onboarding Speed","Weeks to months, manual & opaque","Onboard within hours"],
+  ["Onboarding Speed","Weeks to months, manual & opaque","Onboard within minutes"],
   ["Compliance","Reactive, one-time checks, audit shocks","24/7 continuous, always audit-ready"],
   ["IT Dependency","Heavy IT involvement for every change","Self Serve Workflows"],
   ["Operations","Chaotic, bottlenecks, no accountability","Predictable, frictionless, high-speed"],
@@ -68,7 +68,7 @@ function VDDHero({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640; const isTablet = w < 960;
 
   const stats = [
-    { val:"4 hrs",   label:"Average onboarding" },
+    { val:"21 min",   label:"Average onboarding" },
     { val:"100%",    label:"Compliance rate" },
     { val:"80%",     label:"Reduced follow-ups" },
     { val:"8×",      label:"Faster than legacy" },
@@ -370,7 +370,7 @@ function VideoTestimonial() {
   const ref = useReveal();
 
   const outcomes = [
-    { label:"Supplier onboarding time", prev:"45 days",     val:"4 hrs",  color:"#6320E0" },
+    { label:"Supplier onboarding time", prev:"45 days",     val:"21 min",  color:"#6320E0" },
     { label:"Audit compliance rate",    prev:"~60%",        val:"100%",   color:"#059669" },
     { label:"Manual follow-ups left",   prev:"Hundreds/mo", val:"Zero",   color:"#E06B72" },
   ];
@@ -415,7 +415,7 @@ function VideoTestimonial() {
 
                 <blockquote style={{ margin:0, marginBottom:28 }}>
                   <p style={{ fontFamily:"var(--fb)", fontSize: isMobile ? 19 : 24, fontWeight:700, color:"#fff", lineHeight:1.42, letterSpacing:"-.025em", marginBottom:18 }}>
-                    From 45-day supplier cycles to 4 hours. NimbleS2P didn't just improve our process — it replaced it entirely.
+                    From 45-day supplier cycles to 21 minutes. NimbleS2P didn't just improve our process — it replaced it entirely.
                   </p>
                   <p style={{ fontSize:14.5, color:"rgba(255,255,255,.52)", lineHeight:1.75, fontFamily:"var(--fb)" }}>
                     Our compliance team went from chasing documents to reviewing dashboards. The AI agents handle everything in between.

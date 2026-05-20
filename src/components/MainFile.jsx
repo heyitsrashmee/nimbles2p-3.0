@@ -69,7 +69,7 @@ function Hero({ onNavigate }) {
   ];
 
   const pills = [
-    {label:"4 hrs onboarding", dot:"#F5A623", border:"rgba(245,166,35,.38)", color:"#F5C060"},
+    {label:"21 minutes onboarding", dot:"#F5A623", border:"rgba(245,166,35,.38)", color:"#F5C060"},
     {label:"100% compliance",  dot:"#34D399", border:"rgba(52,211,153,.32)", color:"#6EE7B7"},
     {label:"Live in 8 weeks",  dot:null,      border:"rgba(167,139,250,.3)", color:"#C4B5FD"},
   ];
@@ -347,7 +347,7 @@ function LogoTile({ logo, showDivider }) {
 }
 
 function LogoMarquee() {
-  const [paused, setPaused] = useState(false);
+  const n = LOGOS.length;
   const track = [...LOGOS, ...LOGOS];
 
   return (
@@ -370,20 +370,10 @@ function LogoMarquee() {
         The CFO's #1 Choice — Powering 1M+ suppliers across enterprises
       </div>
 
-      {/* Scrolling track */}
-      <div
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        style={{
-          display:"flex",
-          alignItems:"center",
-          width:"max-content",
-          animation:"marqueeScroll 36s linear infinite",
-          animationPlayState: paused ? "paused" : "running",
-        }}
-      >
+      {/* Scrolling track — duplicated row + translateX(-50%) = seamless infinite loop */}
+      <div className="lm-track">
         {track.map((logo, i) => (
-          <LogoTile key={`${logo.label}-${i}`} logo={logo} showDivider={i > 0} />
+          <LogoTile key={`${logo.label}-${i}`} logo={logo} showDivider={n > 1 && i % n !== 0} />
         ))}
       </div>
     </div>
@@ -1406,12 +1396,12 @@ function HearFromThem() {
                 <span style={{ fontSize:10, fontWeight:700, letterSpacing:".12em", textTransform:"uppercase", background:"rgba(255,255,255,.15)", border:"1px solid rgba(255,255,255,.25)", borderRadius:100, padding:"4px 12px", color:"#fff", fontFamily:"var(--fb)" }}>✦ Blog</span>
                 <span style={{ fontSize:11, color:"rgba(255,255,255,.5)", fontFamily:"var(--fb)" }}>5 min read</span>
               </div>
-              <h4 style={{ position:"relative", zIndex:1, fontFamily:"var(--fb)", fontSize:17, fontWeight:800, color:"#fff", lineHeight:1.28, letterSpacing:"-.02em" }}>How Indian Enterprises Cut Supplier Onboarding from 21 Days to 4 Hours</h4>
+              <h4 style={{ position:"relative", zIndex:1, fontFamily:"var(--fb)", fontSize:17, fontWeight:800, color:"#fff", lineHeight:1.28, letterSpacing:"-.02em" }}>How Indian Enterprises Cut Supplier Onboarding from 21 Days to 21 Minutes</h4>
             </div>
             <div style={{ display:"flex", padding:"0 20px", marginTop:-14, marginBottom:12, position:"relative", zIndex:2 }}>
               <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#fff", border:"1px solid #E2E8F0", borderRadius:100, padding:"4px 12px", boxShadow:"0 2px 8px rgba(0,0,0,.1)" }}>
-                <span style={{ fontFamily:"var(--fb)", fontSize:14, fontWeight:800, color:"#391085" }}>21→4</span>
-                <span style={{ fontSize:11, color:"#64748B", fontFamily:"var(--fb)" }}>days to hours</span>
+                <span style={{ fontFamily:"var(--fb)", fontSize:14, fontWeight:800, color:"#391085" }}>21d→21m</span>
+                <span style={{ fontSize:11, color:"#64748B", fontFamily:"var(--fb)" }}>days to minutes</span>
               </div>
             </div>
             <div style={{ padding:"0 22px", flex:1 }}>

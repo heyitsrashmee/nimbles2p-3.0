@@ -82,6 +82,8 @@ const storyPoints = [
   { icon:"🤝", color:"#7C3AED", heading:"Responsive Partnership",          text:"A team that ensures continuity at every step — from implementation to scale, always on, always responsive." },
 ];
 
+const STORY_CARD_HEIGHT = 420;
+
 function WhyStory() {
   const w = useWidth(); const isMobile = w < 640; const isTablet = w < 960;
   const [active, setActive] = useState(0);
@@ -95,40 +97,38 @@ function WhyStory() {
         {/* Eyebrow + intro — full width top */}
         <div style={{ marginBottom: isMobile ? 40 : 56 }}>
           <Eyebrow>Our Promise</Eyebrow>
-          <div style={{ display:"grid", gridTemplateColumns: isTablet ? "1fr" : "1fr 1fr", gap: isTablet ? 16 : 64, alignItems:"end" }}>
-            <h2 style={{ fontFamily:"var(--fb)", fontSize: isMobile ? "clamp(24px,6vw,34px)" : "clamp(28px,3vw,42px)", fontWeight:700, letterSpacing:"-.04em", lineHeight:1.06, color:"#0F172A", margin:0 }}>
-              The conviction behind<br />every line of code
-            </h2>
-            <p style={{ fontSize: isMobile ? 14.5 : 16, color:"#64748B", lineHeight:1.78, fontFamily:"var(--fb)", margin:0 }}>
-              Where supplier experience meets finance control. Enterprise automation that suppliers actually respond to.
-            </p>
-          </div>
+          <h2 style={{ fontFamily:"var(--fb)", fontSize: isMobile ? "clamp(24px,6vw,34px)" : "clamp(28px,3vw,42px)", fontWeight:700, letterSpacing:"-.04em", lineHeight:1.06, color:"#0F172A", margin:0 }}>
+            Where supplier experience meets finance control.
+          </h2>
         </div>
 
-        {/* Main content — fixed-height container, left static, right scrollable */}
+        {/* Main content — LHS fixed height; RHS matches for top/bottom alignment */}
         <div className="reveal" ref={ref} style={{
           display:"grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "1fr 1fr",
           gap: isMobile ? 24 : 32,
-          alignItems:"start",
+          alignItems: isMobile ? "start" : "stretch",
         }}>
 
-          {/* LEFT — card is static, never moves */}
+          {/* LEFT — fixed-size feature card */}
           <div style={{
             background:`linear-gradient(145deg,${ap.color}0c 0%,${ap.color}04 100%)`,
             border:`1.5px solid ${ap.color}28`,
             borderRadius:24, padding: isMobile ? "32px 24px" : "44px 44px",
             boxSizing:"border-box",
-            height: isMobile ? "auto" : 420, minHeight: isMobile ? 300 : 420,
+            width:"100%",
+            height: isMobile ? "auto" : STORY_CARD_HEIGHT,
+            minHeight: isMobile ? 300 : STORY_CARD_HEIGHT,
+            flexShrink:0,
             display:"flex", flexDirection:"column", justifyContent:"space-between",
             boxShadow:`0 8px 40px ${ap.color}10`,
-            transition:"all .35s cubic-bezier(.22,1,.36,1)",
+            transition:"background .35s cubic-bezier(.22,1,.36,1), border-color .35s cubic-bezier(.22,1,.36,1), box-shadow .35s cubic-bezier(.22,1,.36,1)",
             overflow:"hidden", position:"relative",
           }}>
             {/* Background glow */}
             <div style={{ position:"absolute", top:"-20%", right:"-10%", width:"60%", height:"60%", borderRadius:"50%", background:`radial-gradient(circle,${ap.color}14 0%,transparent 70%)`, pointerEvents:"none", transition:"background .35s" }} />
 
-            <div style={{ position:"relative", zIndex:1 }}>
+            <div style={{ position:"relative", zIndex:1, flex:1, minHeight:0, overflow:"hidden" }}>
               <div style={{ width:64, height:64, borderRadius:18, background:`linear-gradient(135deg,${ap.color},${ap.color}bb)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:24, boxShadow:`0 8px 28px ${ap.color}44` }}>{ap.icon}</div>
               <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:`${ap.color}12`, border:`1px solid ${ap.color}28`, borderRadius:100, padding:"3px 12px", marginBottom:16 }}>
                 <span style={{ fontSize:9.5, fontWeight:800, letterSpacing:".1em", textTransform:"uppercase", color:ap.color, fontFamily:"var(--fb)" }}>{String(active+1).padStart(2,"0")} of {storyPoints.length}</span>
@@ -145,20 +145,26 @@ function WhyStory() {
             </div>
           </div>
 
-          {/* RIGHT — scrollable list, left card stays put */}
+          {/* RIGHT — same height as LHS; rows share space evenly */}
           <div style={{
             display:"flex", flexDirection:"column", gap:4,
+            height: isMobile ? "auto" : STORY_CARD_HEIGHT,
+            minHeight: isMobile ? 0 : STORY_CARD_HEIGHT,
+            boxSizing:"border-box",
           }}>
             {storyPoints.map((p, i) => {
               const isAct = active === i;
               return (
                 <button key={p.heading} onClick={()=>setActive(i)} style={{
-                  display:"flex", alignItems:"center", gap:14, flexShrink:0,
+                  display:"flex", alignItems: isAct ? "flex-start" : "center", gap:14,
+                  flex: isMobile ? "0 0 auto" : 1,
+                  minHeight: isMobile ? undefined : 0,
+                  overflow:"hidden",
                   background: isAct ? `${p.color}08` : "transparent",
                   border:`1px solid ${isAct ? p.color+"28" : "transparent"}`,
                   borderRadius:14, padding: isMobile ? "14px 16px" : "16px 20px",
                   cursor:"pointer", textAlign:"left", width:"100%",
-                  transition:"all .2s cubic-bezier(.22,1,.36,1)",
+                  transition:"background .2s cubic-bezier(.22,1,.36,1), border-color .2s cubic-bezier(.22,1,.36,1), box-shadow .2s cubic-bezier(.22,1,.36,1)",
                 }}>
                   <div style={{
                     width:46, height:46, borderRadius:12, flexShrink:0,
@@ -168,9 +174,9 @@ function WhyStory() {
                     fontSize:20, transition:"all .2s",
                     boxShadow: isAct ? `0 4px 14px ${p.color}44` : "none",
                   }}>{p.icon}</div>
-                  <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ flex:1, minWidth:0, minHeight:0, overflow:"hidden" }}>
                     <div style={{ fontFamily:"var(--fb)", fontSize: isMobile ? 14.5 : 16, fontWeight:700, color: isAct ? "#0F172A" : "#475569", letterSpacing:"-.015em", lineHeight:1.2, marginBottom: isAct ? 5 : 0, transition:"color .2s" }}>{p.heading}</div>
-                    {isAct && <div style={{ fontSize:13, color:"#64748B", lineHeight:1.55, fontFamily:"var(--fb)" }}>{p.text}</div>}
+                    {isAct && <div style={{ fontSize:13, color:"#64748B", lineHeight:1.55, fontFamily:"var(--fb)", overflow:"hidden" }}>{p.text}</div>}
                   </div>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink:0, opacity: isAct ? 1 : 0.25, transition:"opacity .2s, transform .2s", transform: isAct ? "rotate(90deg)" : "none" }}>
                     <path d="M6 4l4 4-4 4" stroke={isAct ? p.color : "#94A3B8"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -190,7 +196,7 @@ function WhyStory() {
    3. BEFORE / AFTER
 ════════════════════════════════════ */
 const beforeAfterRows = [
-  { before:"Slow, labour-intensive onboarding taking weeks",           after:"4-hour self-service onboarding" },
+  { before:"Slow, labour-intensive onboarding taking weeks",           after:"21-minute self-service onboarding" },
   { before:"Compliance gaps & regulatory fines",                       after:"100% all-time audit-ready compliance" },
   { before:"Email-driven sourcing",                                    after:"60% faster sourcing" },
   { before:"High manual workload & frequent errors",                   after:"40%+ straight-through processing" },
@@ -324,9 +330,11 @@ function WhyNumbers() {
 
         {/* Header */}
         <div style={{ marginBottom: isMobile ? 36 : 52 }}>
-          <span className="pill pl-dk-pu" style={{ marginBottom:14, display:"inline-flex" }}>Why NimbleS2P</span>
+          <Eyebrow>The Nimble Advantage</Eyebrow>
           <h2 className="sec-h2">
-            Most implementations drag on for <span style={{ color:"var(--p500)" }}>years.</span> Ours doesn't.
+            Most implementations drag on for <span style={{ color:"var(--p500)" }}>years.</span>
+            <br />
+            Ours doesn't.
           </h2>
           <p className="sec-sub">
             Real numbers from real enterprises — running on NimbleS2P today.
@@ -353,17 +361,19 @@ function WhyNumbers() {
             {/* FRONT */}
             <div style={{
               position:"absolute", inset:0,
-              background:"var(--p800)",
+              background:"#717C89",
               padding:"36px 30px",
               display:"flex", flexDirection:"column",
               opacity: flipped ? 0 : 1,
               transform: flipped ? "translateY(-16px)" : "translateY(0)",
               transition:"opacity 0.45s ease, transform 0.45s ease",
               zIndex: flipped ? 1 : 2,
+              overflow:"hidden",
             }}>
-              <div style={{ fontSize:10, fontWeight:700, letterSpacing:".15em", textTransform:"uppercase", color:"rgba(255,255,255,0.3)", marginBottom:14, fontFamily:"var(--fb)" }}>
-                The industry reality
-              </div>
+              <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px)", backgroundSize:"18px 18px", pointerEvents:"none" }} />
+              <div style={{ position:"absolute", bottom:"-20%", right:"-20%", width:"70%", height:"70%", borderRadius:"50%", background:"rgba(255,255,255,.1)", pointerEvents:"none" }} />
+              <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", flex:1, height:"100%" }}>
+              <Eyebrow dark>The industry reality</Eyebrow>
               <div style={{ display:"flex", alignItems:"flex-end", gap:8 }}>
                 <span style={{ fontFamily:"var(--fb)", fontSize:60, fontWeight:900, color:"var(--sw)", lineHeight:1 }}>9–14</span>
                 <span style={{ fontFamily:"var(--fb)", fontSize:26, color:"var(--sw)", opacity:0.55, paddingBottom:6 }}>mo</span>
@@ -371,32 +381,35 @@ function WhyNumbers() {
               <p style={{ marginTop:14, fontSize:14, color:"rgba(255,255,255,0.6)", lineHeight:1.65, fontStyle:"italic", fontFamily:"var(--fb)" }}>
                 "The average enterprise procurement implementation takes 9 to 14 months before a single supplier goes live."
               </p>
-              <div style={{ marginTop:28, display:"flex", alignItems:"center", gap:8 }}>
+              <div style={{ marginTop:"auto", paddingTop:28, display:"flex", alignItems:"center", gap:8 }}>
                 <span className="pulse-anim" style={{ width:6, height:6, borderRadius:"50%", background:"rgba(255,255,255,0.4)", flexShrink:0, display:"inline-block" }} />
                 <span style={{ fontSize:11, color:"rgba(255,255,255,0.35)", fontFamily:"var(--fb)" }}>Click to see the NimbleS2P difference</span>
+              </div>
               </div>
             </div>
 
             {/* BACK */}
             <div style={{
               position:"absolute", inset:0,
-              background:"var(--p600)",
+              background:"#391085",
               padding:"36px 30px",
               display:"flex", flexDirection:"column",
               opacity: flipped ? 1 : 0,
               transform: flipped ? "translateY(0)" : "translateY(16px)",
               transition:"opacity 0.45s ease, transform 0.45s ease",
               zIndex: flipped ? 2 : 1,
+              overflow:"hidden",
             }}>
+              <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px)", backgroundSize:"18px 18px", pointerEvents:"none" }} />
+              <div style={{ position:"absolute", bottom:"-20%", right:"-20%", width:"70%", height:"70%", borderRadius:"50%", background:"rgba(255,255,255,.1)", pointerEvents:"none" }} />
+              <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", flex:1, height:"100%" }}>
               <div style={{
-                display:"flex", alignItems:"center", gap:6,
-                background:"rgba(255,255,255,0.14)", border:"1px solid rgba(255,255,255,0.22)",
-                borderRadius:100, padding:"4px 12px 4px 8px",
-                fontSize:11, color:"rgba(255,255,255,0.85)",
+                display:"inline-flex", alignItems:"center", gap:6,
+                fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:"rgba(255,255,255,0.45)",
                 marginBottom:22, width:"fit-content", fontFamily:"var(--fb)",
               }}>
-                <span className="pulse-anim" style={{ width:6, height:6, borderRadius:"50%", background:"rgba(255,255,255,0.4)", flexShrink:0, display:"inline-block" }} />
-                NimbleS2P
+                <span style={{ width:16, height:2, background:"linear-gradient(90deg,var(--p500),var(--g400))", borderRadius:1, display:"inline-block", flexShrink:0 }} />
+                <span style={{ letterSpacing:"0.04em" }}>NimbleS2P</span>
               </div>
               <div style={{ display:"flex", alignItems:"flex-end", gap:4 }}>
                 <span style={{ fontFamily:"var(--fb)", fontSize:68, fontWeight:900, color:"var(--sw)", lineHeight:1 }}>90</span>
@@ -408,6 +421,7 @@ function WhyNumbers() {
               <div style={{ marginTop:"auto", paddingTop:28, display:"flex", alignItems:"center", gap:8 }}>
                 <span className="pulse-anim" style={{ width:6, height:6, borderRadius:"50%", background:"rgba(255,255,255,0.4)", flexShrink:0, display:"inline-block" }} />
                 <span style={{ fontSize:11, color:"rgba(255,255,255,0.35)", fontFamily:"var(--fb)" }}>Click to flip back</span>
+              </div>
               </div>
             </div>
           </div>

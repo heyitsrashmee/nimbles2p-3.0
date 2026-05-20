@@ -20,7 +20,8 @@ export const MEGA_PRODUCTS = {
       color:"#231a67",
       tag:"Trending",
       resource: PRODUCT_PAGE_RESOURCES.vdd,
-      cover: { src: "mega-menu/vdd-cover.png", objectPosition: "center 12%" },
+      /* Crop top (logo); keep mid headline in view — object-fit:cover + lower Y anchor */
+      cover: { src: "mega-menu/vdd-cover.png", objectPosition: "center 46%" },
     },
     {
       id:"supplier",
