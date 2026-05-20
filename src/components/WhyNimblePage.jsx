@@ -1,8 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShieldCheck, Activity, Layers, Zap, Users } from "lucide-react";
 import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
+import {
+  ShieldCheckIcon,
+  ActivityIcon,
+  LayersIcon,
+  ZapIcon,
+  UsersIcon,
+} from "@/components/shared/whyIcons";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 
@@ -274,35 +280,35 @@ function WhyNumbers() {
 
   const proofRows = [
     {
-      icon: <ShieldCheck size={18} color="var(--em700)" />,
+      icon: <ShieldCheckIcon size={18} color="var(--em700)" />,
       iconBg:"var(--em50)",
       name:"SOC 2 Type II + ISO 27001 certified",
       desc:"Independently audited. Your security team won't need to ask twice.",
       badge:{ label:"Verified", bg:"var(--em50)", color:"var(--em700)" },
     },
     {
-      icon: <Activity size={18} color="var(--p700)" />,
+      icon: <ActivityIcon size={18} color="var(--p700)" />,
       iconBg:"var(--p50)",
       name:"99.97% uptime SLA",
       desc:"Contractually guaranteed. Not a marketing claim.",
       badge:{ label:"SLA-bound", bg:"var(--am50)", color:"var(--am600)" },
     },
     {
-      icon: <Layers size={18} color="var(--p600)" />,
+      icon: <LayersIcon size={18} color="var(--p600)" />,
       iconBg:"var(--p50)",
       name:"Multi-plant · Multi-BU · Multi-currency",
       desc:"Complex org structures out of the box — no custom dev required.",
       badge: null,
     },
     {
-      icon: <Zap size={18} color="var(--g700)" />,
+      icon: <ZapIcon size={18} color="var(--g700)" />,
       iconBg:"var(--g50)",
       name:"SAP · Oracle · Dynamics — native",
       desc:"Direct connectors. No middleware. No data sync headaches.",
       badge: null,
     },
     {
-      icon: <Users size={18} color="var(--em600)" />,
+      icon: <UsersIcon size={18} color="var(--em600)" />,
       iconBg:"var(--em50)",
       name:"Customer success driven implementation",
       desc:"A dedicated CS team runs your rollout — not a ticket queue.",
