@@ -374,13 +374,13 @@ function IPArchDiagram() {
 
           {/* ══ ROW 1: INTAKE ══ */}
           <Lane color={C.purple} label="Invoice Intake — Sequential Start">
-            <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"nowrap" }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, flexWrap:"nowrap" }}>
               <Chip id="email"  icon="📧" label="Email"           color={C.purple} step={0} side="bottom" />
-              <HArrow color={C.purple.dot} step={0} />
+              <div style={{ width:1, height:28, background:"#DDD6FE", flexShrink:0 }} />
               <Chip id="portal" icon="🌐" label="Supplier Portal" color={C.purple} step={0} side="bottom" />
-              <HArrow color={C.purple.dot} step={0} />
+              <div style={{ width:1, height:28, background:"#DDD6FE", flexShrink:0 }} />
               <Chip id="scan"   icon="📁" label="Scan Drive"      color={C.purple} step={0} side="bottom" />
-              <HArrow color={C.purple.dot} step={0} />
+              <div style={{ width:1, height:28, background:"#DDD6FE", flexShrink:0 }} />
               <Chip id="api"    icon="🔌" label="API Integration" color={C.purple} step={0} side="bottom" />
             </div>
           </Lane>
@@ -389,7 +389,7 @@ function IPArchDiagram() {
 
           {/* ══ ROW 2: AI OPERATIONAL ══ */}
           <Lane color={C.blue} label="AI Operational Layer">
-            <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"nowrap" }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, flexWrap:"nowrap" }}>
 
               {/* Hygiene */}
               <Chip id="hygiene" icon="🧹" label="Hygiene Check" color={C.blue} step={1} side="bottom" />
@@ -419,7 +419,7 @@ function IPArchDiagram() {
 
           {/* ══ ROW 3: AGENTIC MATCHING ══ */}
           <Lane color={C.violet} label="Agentic Workflow Layer">
-            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
               <Chip id="matching" icon="🤖" label="Agentic Matching" color={C.violet} step={5} side="bottom" />
               <HArrow color={C.yellow.dot} step={5} />
 
@@ -447,14 +447,14 @@ function IPArchDiagram() {
 
             {/* STP path */}
             <Lane color={C.emerald} label="✅ STP Path — Auto">
-              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
                 <Chip id="autopost" icon="⚡" label="Auto Posting" color={C.emerald} step={7} side="top" />
               </div>
             </Lane>
 
             {/* Exception path */}
             <Lane color={C.red} label="⚠️ Exception Path">
-              <div style={{ display:"flex", alignItems:"center", gap:5, flexWrap:"nowrap" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5, flexWrap:"nowrap" }}>
                 <Chip id="workorq" icon="🔀" label="Workflow Orchestration" color={C.red} step={8} side="top" />
                 <HArrow color={C.red.dot} step={8} />
                 <Chip id="excmgmt" icon="🚨" label="Exception Mgmt"        color={C.red} step={9} side="top" />
@@ -470,7 +470,7 @@ function IPArchDiagram() {
 
           {/* ══ ROW 5: POSTING LAYER ══ */}
           <Lane color={C.indigo} label="Posting Layer — Parallel Options">
-            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"nowrap" }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, flexWrap:"nowrap" }}>
               <Chip id="apipost"  icon="🔗" label="API Auto Posting"      color={C.indigo} step={10} side="top" />
               <div style={{ width:1, height:28, background:"#C7D2FE", flexShrink:0 }} />
               <Chip id="filepost" icon="📂" label="File-Based Scheduling" color={C.indigo} step={10} side="top" />
@@ -493,7 +493,7 @@ function IPArchDiagram() {
             <div style={{ fontSize:9.5, fontWeight:700, letterSpacing:".08em", textTransform:"uppercase", color:"#94A3B8", fontFamily:"var(--fb)", marginBottom:10 }}>
               ⟳ Continuous Parallel Oversight
             </div>
-            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, flexWrap:"wrap" }}>
               {[
                 { id:"audit",     icon:"📜", label:"Audit Trail",         color:{ border:"#475569", dot:"#64748B", bg:"rgba(255,255,255,.05)", text:"#E2E8F0", light:"transparent" } },
                 { id:"notif",     icon:"🔔", label:"Notifications",        color:{ border:"#475569", dot:"#64748B", bg:"rgba(255,255,255,.05)", text:"#E2E8F0", light:"transparent" } },
@@ -523,7 +523,7 @@ function IPArchDiagram() {
             <div style={{ fontSize:9.5, fontWeight:700, letterSpacing:".08em", textTransform:"uppercase", color:"#818CF8", fontFamily:"var(--fb)", marginBottom:8 }}>
               ⚙️ Foundation Layer — Always Active
             </div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+            <div style={{ display:"flex", justifyContent:"center", flexWrap:"wrap", gap:6 }}>
               {["🔒 Security","⚙️ Hyper Configuration","📈 Scalability","✅ Reliability","👁️ Observability"].map(item => (
                 <div key={item} style={{ background:"rgba(129,140,248,.12)", border:"1px solid rgba(129,140,248,.28)", borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:600, color:"#C7D2FE", fontFamily:"var(--fb)" }}>{item}</div>
               ))}
