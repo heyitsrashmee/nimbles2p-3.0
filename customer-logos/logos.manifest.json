@@ -1,0 +1,11 @@
+[
+  { "label": "Mafatlal", "file": "mafatlal-logo.webp" },
+  { "label": "India Today", "file": "india-today-logo.png" },
+  { "label": "Hero Future Energies", "file": "hero-future-energies-logo.png" },
+  { "label": "Pernod Ricard", "file": "Pernod_Ricard_logo.png" },
+  { "label": "The Oberoi", "file": "oberoi-logo.jpeg" },
+  { "label": "Sud Chemie India", "file": "sud-chemie-india-logo.svg" },
+  { "label": "Cycle", "file": "cycle-logo.jpg" },
+  { "label": "SJCPL", "file": "SJCPL-logo.jpg" },
+  { "label": "UCB", "file": "ucb.png" }
+]

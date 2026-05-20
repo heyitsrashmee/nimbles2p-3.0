@@ -613,7 +613,6 @@ function SPCTA() {
    SP ROOT PAGE
 ════════════════════════════════════ */
 export default function SupplierPortalPage({ onBack, onNavigate }) {
-  useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <>
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="Supplier Portal" />

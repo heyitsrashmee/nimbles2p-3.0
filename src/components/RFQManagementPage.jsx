@@ -501,7 +501,6 @@ function RFQDomainStatement() {
 }
 
 export default function RFQManagementPage({ onBack, onNavigate }) {
-  useEffect(()=>{ window.scrollTo(0,0); },[]);
   return (
     <>
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="RFx Management" />

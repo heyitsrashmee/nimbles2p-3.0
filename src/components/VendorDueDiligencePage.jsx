@@ -638,7 +638,6 @@ function LeadMagnetCTA() {
    ROOT PRODUCT PAGE
 ════════════════════════════════════ */
 export default function VendorDueDiligencePage({ onBack, onNavigate }) {
-  useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <>
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="Supplier Due Diligence" />

@@ -2,16 +2,13 @@
 
 import { useWidth, useTypewriter } from "@/components/shared/pageUi";
 import { NimbleLogo } from "./logos";
-import { goFooterLink, goLegalPage } from "./footerUtils";
+import { FOOTER_COLUMNS, footerHref, isFooterPlaceholder } from "@/lib/routes";
+import { goLegalPage, handleFooterLinkClick } from "./footerUtils";
 
 export function VDDFooter({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const twWord = useTypewriter(["Security","Diligence","Results","Compliance","Scale"]);
-  const cols = [
-    ["PRODUCT",["Supplier Due Diligence","Supplier Portal","Invoice Processing","RFx Management","Supplier Analytics"]],
-    ["COMPANY",["About Us","Careers","Press & Media","Partners","Contact"]],
-    ["RESOURCES",["Blog","Case Studies","Automation Smiles","Guides & Whitepapers","Trust Center"]],
-  ];
+  const cols = FOOTER_COLUMNS;
   const socials = [{ label:"in",title:"LinkedIn" },{ label:"𝕏",title:"X / Twitter" },{ label:"▶",title:"YouTube" }];
 
   /* Constellation dots — 5 fixed positions, pale violet */
@@ -90,13 +87,22 @@ export function VDDFooter({ onNavigate }) {
             <div key={title}>
               <div style={{ fontSize:10, fontWeight:700, letterSpacing:".15em", textTransform:"uppercase", color:"rgba(255,255,255,.22)", marginBottom:18, fontFamily:"var(--fb)" }}>{title}</div>
               <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-                {links.map(l=>(
-                  <a key={l} href="#" style={{ fontSize:14, color:"rgba(255,255,255,.5)", textDecoration:"none", fontFamily:"var(--fb)", fontWeight:400, transition:"color .15s" }}
-                    onClick={e=>{ if(footerLabelToPage(l)){ e.preventDefault(); goFooterLink(l, onNavigate); } }}
-                    onMouseEnter={e=>e.target.style.color="rgba(255,255,255,.9)"}
-                    onMouseLeave={e=>e.target.style.color="rgba(255,255,255,.5)"}
+                {links.map(l=>{
+                  const placeholder = isFooterPlaceholder(l);
+                  const href = footerHref(l) ?? "#";
+                  return (
+                  <a key={l} href={href} title={placeholder ? "Coming soon" : undefined}
+                    style={{
+                      fontSize:14, color: placeholder ? "rgba(255,255,255,.28)" : "rgba(255,255,255,.5)",
+                      textDecoration:"none", fontFamily:"var(--fb)", fontWeight:400,
+                      transition:"color .15s", cursor: placeholder ? "default" : "pointer",
+                    }}
+                    onClick={e=>handleFooterLinkClick(e, l, onNavigate)}
+                    onMouseEnter={e=>{ if(!placeholder) e.target.style.color="rgba(255,255,255,.9)"; }}
+                    onMouseLeave={e=>{ if(!placeholder) e.target.style.color="rgba(255,255,255,.5)"; }}
                   >{l}</a>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}

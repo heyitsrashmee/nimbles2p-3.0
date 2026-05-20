@@ -5,17 +5,10 @@ import { fileURLToPath } from "url";
 const root = path.dirname(fileURLToPath(import.meta.url)) + "/..";
 const publicDir = path.join(root, "public");
 
-const REQUIRED_LOGOS = [
-  "customer-logos/Mafatlal-logo.jpg",
-  "customer-logos/india-today-logo.png",
-  "customer-logos/hero_future_energies_logo.jpeg",
-  "customer-logos/Pernod_Ricard_logo.png",
-  "customer-logos/oberoi-logo.jpeg",
-  "customer-logos/sud_chemie_india_logo.jpeg",
-  "customer-logos/cycle-logo.jpeg",
-  "customer-logos/SJCPL-logo.jpg",
-  "customer-logos/ucb.png",
-];
+const logoManifest = JSON.parse(
+  fs.readFileSync(path.join(root, "customer-logos", "logos.manifest.json"), "utf8")
+);
+const REQUIRED_LOGOS = logoManifest.map(({ file }) => `customer-logos/${file}`);
 
 const REQUIRED_IMAGES = [
   "images/chemical.jpg",

@@ -947,7 +947,6 @@ function IPCTA() {
    ROOT PAGE
 ════════════════════════════════════ */
 export default function InvoiceProcessingPage({ onBack, onNavigate }) {
-  useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <>
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="Invoice Processing Automation" />

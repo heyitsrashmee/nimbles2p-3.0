@@ -20,7 +20,6 @@ export default function BookDemoPage({ onBack, onNavigate }) {
   const [errors,  setErrors]  = useState({});
   const [touched, setTouched] = useState({});
 
-  useEffect(()=>{ window.scrollTo(0,0); },[]);
 
   const INDUSTRIES  = ["Manufacturing","Energy & Utilities","Chemical","FMCG","Infra & Construction","Textile","Hospitality","Media","Financial Services","Healthcare","Other"];
   const SIZES       = ["1–50","51–200","201–500","501–1000","1001–5000","5000+"];

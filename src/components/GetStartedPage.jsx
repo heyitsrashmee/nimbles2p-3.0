@@ -16,7 +16,6 @@ function isPersonalEmail(email) {
 }
 
 export default function GetStartedPage({ onBack, onNavigate }) {
-  useEffect(() => { window.scrollTo(0, 0); }, []);
   const w = useWidth(); const isMobile = w < 640;
 
   const [form, setForm]   = useState({ name:"", email:"", phone:"", designation:"", company:"" });

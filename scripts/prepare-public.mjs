@@ -67,8 +67,27 @@ async function syncImages() {
   }
 }
 
+function validateCustomerLogos() {
+  const manifestPath = path.join(root, "customer-logos", "logos.manifest.json");
+  if (!fs.existsSync(manifestPath)) {
+    console.warn("[prepare-public] skip: customer-logos/logos.manifest.json missing");
+    return;
+  }
+  const entries = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const logosDir = path.join(root, "customer-logos");
+  for (const { label, file } of entries) {
+    const filePath = path.join(logosDir, file);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`[prepare-public] missing customer logo for "${label}": ${file}`);
+    }
+  }
+  console.log(`[prepare-public] validated ${entries.length} customer logos`);
+}
+
 async function main() {
   fs.mkdirSync(publicDir, { recursive: true });
+
+  validateCustomerLogos();
 
   for (const name of STATIC_DIRS) {
     const src = path.join(root, name);

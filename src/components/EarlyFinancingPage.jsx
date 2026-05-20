@@ -991,7 +991,6 @@ function EFCTA({ onNavigate }) {
    EF ROOT PAGE
 ════════════════════════════════════ */
 export default function EarlyFinancingPage({ onBack, onNavigate }) {
-  useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <>
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="Early Financing" />

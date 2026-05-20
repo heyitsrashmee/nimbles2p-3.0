@@ -31,6 +31,9 @@
 
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { resourceHashToFilter } from "@/lib/routes";
+import { Nav } from "@/components/layout/SiteNav";
+import { VDDFooter } from "@/components/layout/VDDFooter";
 
 /* ── Design tokens (mirrors globalStyles in main artifact) ── */
 const TOKEN = {
@@ -266,7 +269,6 @@ function ResourcesHero({ isMobile }) {
       <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:"radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px)", backgroundSize:"28px 28px" }} />
 
       <div style={{ position:"relative", zIndex:1, maxWidth:720, margin:"0 auto" }}>
-        <Eyebrow dark>Knowledge Hub</Eyebrow>
         <h1 style={{
           fontFamily:TOKEN.fb, fontWeight:900,
           fontSize: isMobile ? "clamp(28px,8vw,40px)" : "clamp(38px,4.5vw,60px)",
@@ -292,29 +294,58 @@ function ResourcesHero({ isMobile }) {
       </div>
 
       {/* Bottom wave */}
-      <div style={{ position:"absolute", bottom:0, left:0, right:0, height:40, overflow:"hidden", pointerEvents:"none" }}>
-        <svg viewBox="0 0 1440 40" preserveAspectRatio="none" style={{ width:"100%", height:"100%" }}>
-          <path d="M0,20 C360,0 1080,40 1440,20 L1440,40 L0,40 Z" fill={TOKEN.slp} />
+      <div style={{ position:"absolute", bottom:0, left:0, right:0, height:48, overflow:"hidden", pointerEvents:"none" }}>
+        <svg viewBox="0 0 1440 48" preserveAspectRatio="none" style={{ position:"absolute", bottom:0, left:0, width:"200%", height:"100%", animation:"waveSlide 10s linear infinite" }}>
+          <path d="M0,24 C240,6 480,40 720,24 C960,8 1200,40 1440,24 L1440,48 L0,48 Z" fill="rgba(255,255,255,.05)" />
         </svg>
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:1, background:"linear-gradient(90deg,transparent,rgba(255,255,255,.1) 30%,rgba(255,255,255,.1) 70%,transparent)" }} />
       </div>
     </section>
   );
 }
 
+function categoryMatchesFilter(postCategory, activeCategory) {
+  if (activeCategory === "All") return true;
+  if (activeCategory === "Guides & Whitepapers") {
+    return postCategory === "Guide" || postCategory === "Whitepaper";
+  }
+  return postCategory === activeCategory;
+}
+
 /* ── Main content grid ── */
-function ResourcesGrid({ featuredPost, posts, isMobile }) {
+function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const ref = useReveal();
+  const gridRef = useRef(null);
+
+  const applySectionHash = useCallback((hash) => {
+    const filter = resourceHashToFilter(hash);
+    if (filter) setActiveCategory(filter);
+  }, []);
+
+  useEffect(() => {
+    if (!sectionHash) return;
+    applySectionHash(sectionHash);
+    const t = setTimeout(() => {
+      const anchor = document.getElementById(`resources-${sectionHash}`) ?? gridRef.current;
+      anchor?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+    return () => clearTimeout(t);
+  }, [sectionHash, applySectionHash]);
 
   const filtered = posts.filter(p => {
-    const matchCat = activeCategory === "All" || p.category === activeCategory;
+    const matchCat = categoryMatchesFilter(p.category, activeCategory);
     const matchSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.excerpt.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
 
   return (
-    <section style={{ background:TOKEN.slp, padding: isMobile ? "48px 20px 72px" : "clamp(48px,7vh,88px) 5vw" }}>
+    <section
+      id="resources-grid"
+      ref={gridRef}
+      style={{ background:TOKEN.slp, padding: isMobile ? "48px 20px 72px" : "clamp(48px,7vh,88px) 5vw", scrollMarginTop: 88 }}
+    >
       <div style={{ maxWidth:1080, margin:"0 auto" }}>
 
         {/* Featured post */}
@@ -375,12 +406,12 @@ function ResourcesGrid({ featuredPost, posts, isMobile }) {
 /* ── Content type showcase strip ── */
 function ContentTypeStrip({ isMobile }) {
   const types = [
-    { icon:"✍️", label:"Blogs",             desc:"Thought leadership & trends" },
-    { icon:"📋", label:"Playbooks",          desc:"Step-by-step implementation" },
-    { icon:"📖", label:"Guides",             desc:"Deep-dive technical guides" },
-    { icon:"📈", label:"Case Studies",       desc:"Real enterprise outcomes" },
-    { icon:"😊", label:"Automation Smiles",  desc:"Visual transformation stories" },
-    { icon:"📄", label:"Whitepapers",        desc:"Research & benchmark data" },
+    { icon:"✍️", label:"Blogs",             desc:"Thought leadership & trends",     sectionId:"blog" },
+    { icon:"📋", label:"Playbooks",          desc:"Step-by-step implementation",     sectionId:null },
+    { icon:"📖", label:"Guides",             desc:"Deep-dive technical guides",      sectionId:"guides-whitepapers" },
+    { icon:"📈", label:"Case Studies",       desc:"Real enterprise outcomes",        sectionId:"case-studies" },
+    { icon:"😊", label:"Automation Smiles",  desc:"Visual transformation stories", sectionId:"automation-smiles" },
+    { icon:"📄", label:"Whitepapers",        desc:"Research & benchmark data",       sectionId:null },
   ];
   return (
     <section style={{ background:"#fff", padding: isMobile ? "48px 20px" : "clamp(48px,6vh,72px) 5vw", borderTop:`1px solid ${TOKEN.bd}` }}>
@@ -394,9 +425,10 @@ function ContentTypeStrip({ isMobile }) {
         </div>
         <div style={{ display:"grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(6,1fr)", gap:12 }}>
           {types.map(t => (
-            <div key={t.label} style={{
+            <div key={t.label} id={t.sectionId ? `resources-${t.sectionId}` : undefined} style={{
               background:TOKEN.p25, border:`1px solid ${TOKEN.bdP}`, borderRadius:14, padding:"20px 14px",
               textAlign:"center", cursor:"pointer", transition:"all .2s cubic-bezier(.22,1,.36,1)",
+              scrollMarginTop: 88,
             }}
               onMouseEnter={e => { e.currentTarget.style.background = TOKEN.p50; e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow=`0 6px 20px rgba(57,16,133,.1)`; }}
               onMouseLeave={e => { e.currentTarget.style.background = TOKEN.p25; e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="none"; }}
@@ -467,40 +499,47 @@ function NewsletterCTA({ isMobile, data }) {  // ← CMS: data prop for heading/
    Props are injected by Next.js getStaticProps / getServerSideProps
 ══════════════════════════════════════════════════════════ */
 export default function ResourcesPage({
+  onBack,
+  onNavigate,
   featuredPost = PLACEHOLDER_FEATURED,   // ← CMS: replace with real fetch
   posts = PLACEHOLDER_POSTS,            // ← CMS: replace with real fetch
   newsletterCta = null,                 // ← CMS: optional
+  resourceSection = "",
 }) {
   const w = useWidth();
   const isMobile = w < 640;
+  const [sectionHash, setSectionHash] = useState(() =>
+    typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : resourceSection
+  );
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => {
+    if (resourceSection) setSectionHash(resourceSection);
+  }, [resourceSection]);
+
+  useEffect(() => {
+    const syncHash = () => {
+      const fromUrl = window.location.hash.replace(/^#/, "");
+      if (fromUrl) setSectionHash(fromUrl);
+    };
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
+
+  useEffect(() => {
+    if (!sectionHash && !resourceSection) window.scrollTo(0, 0);
+  }, [sectionHash, resourceSection]);
 
   return (
     <>
-      {/*
-        ── NAV & FOOTER ────────────────────────────────────────────────────────
-        In your Next.js app, wrap this page in your shared layout that includes
-        <Nav> and <VDDFooter> (see nimbles2p-header-footer skill for source).
-        Example:
-          // app/resources/layout.jsx
-          export default function Layout({ children }) {
-            return (
-              <>
-                <Nav onNavigate={...} onBack={...} pageName="Resources" />
-                <main>{children}</main>
-                <VDDFooter />
-              </>
-            );
-          }
-        ── ──────────────────────────────────────────────────────────────────
-      */}
+      <Nav onNavigate={onNavigate} onBack={onBack} pageName="Resources" />
       <main style={{ paddingTop:72 /* NAV_H */ }}>
         <ResourcesHero isMobile={isMobile} />
         <ContentTypeStrip isMobile={isMobile} />
-        <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} />
+        <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} />
         <NewsletterCTA isMobile={isMobile} data={newsletterCta} />
       </main>
+      <VDDFooter onNavigate={onNavigate} />
     </>
   );
 }

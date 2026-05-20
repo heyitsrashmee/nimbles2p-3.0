@@ -500,7 +500,7 @@ const styles = {
     whiteSpace: "nowrap",
   },
   tabActive: {
-    color: "#1E1B4B", borderBottomColor: "#4A47A0", fontWeight: 700,
+    color: "#1E1B4B", borderBottom: "2.5px solid #4A47A0", fontWeight: 700,
   },
   viewArea: {
     flex: 1, overflow: "hidden", background: "#fff",
