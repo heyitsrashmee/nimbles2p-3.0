@@ -246,24 +246,17 @@ function SADomainStatement() {
           }}>"</div>
 
           <blockquote style={{ margin:0, padding:0 }}>
-            <p style={{
-              fontFamily:"'Kalam', cursive",
-              fontWeight:700,
+            <p className="kalam" style={{
               fontSize: isMobile ? "clamp(22px,6vw,34px)" : "clamp(32px,3vw,46px)",
               lineHeight:1.45, letterSpacing:".005em",
               color:"#1a1a3e", margin:0,
             }}>
               Without connected supplier analytics,{" "}
-              <span style={{ color:"#3B2EC4", fontWeight:700 }}>critical supplier knowledge</span>
+              <span className="kalam-accent">critical supplier knowledge</span>
               {" "}remains buried across{" "}
-              <span style={{ color:"#3B2EC4", fontWeight:700 }}>systems, reports, emails,</span>
+              <span className="kalam-accent">systems, reports, emails,</span>
               {" "}and teams — instead of driving{" "}
-              <span style={{
-                color:"#3B2EC4",
-                display:"inline-block",
-                borderBottom:"3px solid #3B2EC4",
-                paddingBottom:2,
-              }}>proactive decisions.</span>
+              <span className="kalam-highlight">proactive decisions.</span>
             </p>
           </blockquote>
 

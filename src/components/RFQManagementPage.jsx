@@ -465,10 +465,8 @@ function RFQDomainStatement() {
         }}>"</div>
 
         {/* Main statement */}
-        <p style={{
-          fontFamily:"'Kalam', cursive",
+        <p className="kalam" style={{
           fontSize: isMobile ? "clamp(22px,6.5vw,32px)" : "clamp(28px,3vw,44px)",
-          fontWeight:700,
           lineHeight:1.55,
           color:"#1a1a3e",
           marginBottom: isMobile ? 32 : 52,
@@ -476,11 +474,11 @@ function RFQDomainStatement() {
           textAlign:"center",
         }}>
           At{" "}
-          <span style={{ color:"#3B2EC4", display:"inline-block", borderBottom:"3px solid #3B2EC4", paddingBottom:1 }}>USD 50 Million spend</span>
+          <span className="kalam-highlight">USD 50 Million spend</span>
           {", inefficient sourcing silently leaks "}
-          <span style={{ color:"#3B2EC4", display:"inline-block", borderBottom:"3px solid #3B2EC4", paddingBottom:1 }}>2–5% annually</span>
+          <span className="kalam-highlight">2–5% annually</span>
           {" while locking "}
-          <span style={{ color:"#3B2EC4", whiteSpace:"nowrap", display:"inline-block", borderBottom:"3px solid #3B2EC4", paddingBottom:1 }}>20–30% of spend</span>
+          <span className="kalam-highlight" style={{ whiteSpace:"nowrap" }}>20–30% of spend</span>
           {" outside negotiation control."}
         </p>
 

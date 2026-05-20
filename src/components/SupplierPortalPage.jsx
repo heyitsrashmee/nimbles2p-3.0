@@ -360,8 +360,7 @@ function SPUrgency() {
 
           {/* THE MAIN STATEMENT — massive, emotional */}
           <blockquote style={{ margin:0, padding:0 }}>
-            <p style={{
-              fontFamily:"'Kalam',cursive", fontWeight:700,
+            <p className="kalam" style={{
               fontSize: isMobile ? "clamp(22px,6vw,32px)" : "clamp(26px,2.9vw,44px)",
               lineHeight:1.35, letterSpacing:".005em",
               color:"#1a1a3e", margin:0,
@@ -369,12 +368,7 @@ function SPUrgency() {
               If suppliers still chase you<br />through inboxes, you're not{" "}
               <span>"future-ready."</span>
               <br />
-              <span style={{
-                color:"#3B2EC4",
-                display:"inline-block",
-                borderBottom:"3px solid #3B2EC4",
-                paddingBottom:2,
-              }}>You're just future-pretending.</span>
+              <span className="kalam-highlight">You're just future-pretending.</span>
             </p>
           </blockquote>
 

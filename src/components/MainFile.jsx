@@ -1074,10 +1074,8 @@ function DomainStatement() {
         }}>"</div>
 
         {/* Main statement */}
-        <p style={{
-          fontFamily:"'Kalam', cursive",
+        <p className="kalam" style={{
           fontSize: isMobile ? "clamp(24px,6.5vw,34px)" : "clamp(28px,3vw,44px)",
-          fontWeight:700,
           lineHeight:1.45,
           color:"#1a1a3e",
           marginBottom: isMobile ? 32 : 48,
@@ -1085,11 +1083,11 @@ function DomainStatement() {
           textAlign:"center",
         }}>
           We've baked decades of domain expertise into workflows that are{" "}
-          <span style={{ color:"#3B2EC4", display:"inline-block", borderBottom:"3px solid #3B2EC4", paddingBottom:1 }}>ready-to-use</span>
+          <span className="kalam-highlight">ready-to-use</span>
           , AI that handles the{" "}
-          <span style={{ color:"#3B2EC4", display:"inline-block", borderBottom:"3px solid #3B2EC4", paddingBottom:1 }}>heavy lifting</span>
+          <span className="kalam-highlight">heavy lifting</span>
           , and compliance that keeps you{" "}
-          <span style={{ color:"#3B2EC4", display:"inline-block", borderBottom:"3px solid #3B2EC4", paddingBottom:1 }}>audit-proof</span>.
+          <span className="kalam-highlight">audit-proof</span>.
         </p>
 
         {/* Arrow */}
@@ -1098,10 +1096,8 @@ function DomainStatement() {
         </div>
 
         {/* Sub-statement */}
-        <p style={{
-          fontFamily:"'Kalam', cursive",
+        <p className="kalam" style={{
           fontSize: isMobile ? "clamp(20px,5.5vw,28px)" : "clamp(22px,2.2vw,32px)",
-          fontWeight:700,
           color:"#2a2a50",
           lineHeight:1.5,
           fontStyle:"normal",

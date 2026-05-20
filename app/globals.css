@@ -141,8 +141,23 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 @media(max-width:540px) { .ft-grid { grid-template-columns:1fr;gap:24px; } }
 .ft-bottom { border-top:1px solid rgba(255,255,255,.07);padding:20px 0 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px; }
 
-/* ── DOMAIN STATEMENT ── */
+/* ── DOMAIN STATEMENT (Kalam handwriting) ── */
 .ds-wrap { max-width:760px;margin:0 auto;text-align:center; }
+.kalam {
+  font-family: var(--font-kalam, "Kalam"), cursive;
+  font-weight: 700;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+.kalam-highlight {
+  color: #3B2EC4;
+  text-decoration-line: underline;
+  text-decoration-color: #3B2EC4;
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+}
+.kalam-accent { color: #3B2EC4; font-weight: 700; }
 
 /* ── LOGO MARQUEE ── */
 .lm-wrap { overflow:hidden;position:relative;padding:44px 0;background:#fff;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06); }
