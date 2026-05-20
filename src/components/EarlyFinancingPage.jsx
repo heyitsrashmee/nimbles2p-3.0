@@ -148,11 +148,11 @@ function EFHero({ onNavigate }) {
         {/* H1 */}
         <h1 className="fade-up d1" style={{
           fontFamily:"var(--fb)", fontWeight:900,
-          fontSize: isMobile ? "clamp(30px,8.5vw,44px)" : "clamp(40px,4.8vw,64px)",
-          lineHeight:1.06, letterSpacing:"-.05em", marginBottom:22,
-          paddingBottom:8,
+          fontSize: isMobile ? "clamp(27px,7.7vw,40px)" : "clamp(40px,4.7vw,65px)",
+          lineHeight:1.08, letterSpacing:"-.05em", marginBottom:22,
           background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)",
           WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
+          paddingBottom:"0.12em",
         }}>
           Unlock Working Capital With<br />One Integrated Platform
         </h1>

@@ -12,6 +12,7 @@ export const PAGE_SLUGS = [
   "getstarted",
   "terms",
   "resources",
+  "blog",
 ];
 
 const SLUG_SET = new Set(PAGE_SLUGS);

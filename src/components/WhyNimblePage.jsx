@@ -309,7 +309,7 @@ function WhyNumbers() {
     {
       icon: <ZapIcon size={18} color="var(--g700)" />,
       iconBg:"var(--g50)",
-      name:"SAP · Oracle · Dynamics — native",
+      name:"SAP · Oracle · Dynamics — any ERP",
       desc:"Direct connectors. No middleware. No data sync headaches.",
       badge: null,
     },

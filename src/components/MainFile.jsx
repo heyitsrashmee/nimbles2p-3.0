@@ -22,6 +22,7 @@ import BookDemoPage from "./BookDemoPage";
 import SupplierAnalyticsPage from "./SupplierAnalyticsPage";
 import EarlyFinancingPage from "./EarlyFinancingPage";
 import GetStartedPage from "./GetStartedPage";
+import BlogPostPage from "./BlogPostPage";
 
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
@@ -1631,6 +1632,9 @@ export default function NimbleS2PHomepage() {
         resourceSection={resourceSection}
       />
     );
+  }
+  if (page === "blog") {
+    return <BlogPostPage onBack={goHome} onNavigate={navigate} />;
   }
 
   return (

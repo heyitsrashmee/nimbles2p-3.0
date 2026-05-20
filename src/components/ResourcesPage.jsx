@@ -155,10 +155,10 @@ function FilterBar({ search, onSearch, active, onFilter, isMobile }) {
 }
 
 /* ── Featured hero card ── */
-function FeaturedCard({ post, isMobile }) {
+function FeaturedCard({ post, isMobile, onNavigate }) {
   const cs = catStyle(post.category);
   return (
-    <a href={post.slug} style={{ textDecoration:"none", display:"block", marginBottom:48 }}>
+    <a href={post.slug} onClick={e => { if (post.category === "Blog" && typeof onNavigate === "function") { e.preventDefault(); onNavigate("blog"); } }} style={{ textDecoration:"none", display:"block", marginBottom:48 }}>
       <div style={{
         display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
         borderRadius:20, overflow:"hidden", border:`1.5px solid ${TOKEN.bdP}`,
@@ -214,10 +214,10 @@ function FeaturedCard({ post, isMobile }) {
 }
 
 /* ── Resource card ── */
-function ResourceCard({ post, isMobile }) {
+function ResourceCard({ post, isMobile, onNavigate }) {
   const cs = catStyle(post.category);
   return (
-    <a href={post.slug} style={{ textDecoration:"none", display:"block" }}>
+    <a href={post.slug} onClick={e => { if (post.category === "Blog" && typeof onNavigate === "function") { e.preventDefault(); onNavigate("blog"); } }} style={{ textDecoration:"none", display:"block" }}>
       <div style={{
         background:"#fff", border:`1px solid ${TOKEN.bd}`, borderRadius:16,
         overflow:"hidden", height:"100%", display:"flex", flexDirection:"column",
@@ -313,7 +313,7 @@ function categoryMatchesFilter(postCategory, activeCategory) {
 }
 
 /* ── Main content grid ── */
-function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
+function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash, onNavigate }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const ref = useReveal();
@@ -350,7 +350,7 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
 
         {/* Featured post */}
         {activeCategory === "All" && !search && featuredPost && (
-          <FeaturedCard post={featuredPost} isMobile={isMobile} />
+          <FeaturedCard post={featuredPost} isMobile={isMobile} onNavigate={onNavigate} />
         )}
 
         {/* Filter bar */}
@@ -369,7 +369,7 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
           gap:16,
         }}>
           {filtered.length > 0
-            ? filtered.map(post => <ResourceCard key={post.id} post={post} isMobile={isMobile} />)
+            ? filtered.map(post => <ResourceCard key={post.id} post={post} isMobile={isMobile} onNavigate={onNavigate} />)
             : (
               <div style={{ gridColumn:"1/-1", textAlign:"center", padding:"64px 20px", color:TOKEN.t4, fontFamily:TOKEN.fb }}>
                 <div style={{ fontSize:40, marginBottom:12 }}>🔍</div>
@@ -536,7 +536,7 @@ export default function ResourcesPage({
       <main style={{ paddingTop:72 /* NAV_H */ }}>
         <ResourcesHero isMobile={isMobile} />
         <ContentTypeStrip isMobile={isMobile} />
-        <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} />
+        <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} onNavigate={onNavigate} />
         <NewsletterCTA isMobile={isMobile} data={newsletterCta} />
       </main>
       <VDDFooter onNavigate={onNavigate} />
