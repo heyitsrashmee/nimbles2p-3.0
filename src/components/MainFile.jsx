@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, Fragment } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import TermsPage from "./NimbleS2PTerms";
 import ResourcesPage from "./ResourcesPage";
@@ -327,29 +327,65 @@ const LOGOS = CUSTOMER_LOGOS.map(({ label, file }) => ({
   src: customerLogoPath(file),
 }));
 
-/* Each logo tile — spacing only, no box */
-function LogoTile({ logo, showDivider }) {
+/* Each logo tile — logo then trailing divider (divider after every logo = loop seams stay consistent) */
+function LogoTile({ logo }) {
   const src = assetUrl(logo.src);
   return (
-    <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-      {showDivider && (
-        <div style={{ width: 1, height: 28, background: "#E2E8F0", marginRight: 28, flexShrink: 0 }} />
-      )}
-      <div style={{ height: 40, minWidth: 88, maxWidth: 140, paddingRight: 28, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div className="lm-tile">
+      <div className="lm-logo">
         <img
           src={src}
           alt={logo.label}
           draggable={false}
-          style={{ maxHeight: 36, maxWidth: "100%", width: "auto", height: "auto", objectFit: "contain", display: "block" }}
+          loading="eager"
+          decoding="async"
         />
       </div>
+      <div className="lm-divider" aria-hidden="true" />
     </div>
   );
 }
 
 function LogoMarquee() {
-  const n = LOGOS.length;
-  const track = [...LOGOS, ...LOGOS];
+  const trackRef = useRef(null);
+  const setRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const track = trackRef.current;
+    const set = setRef.current;
+    if (!track || !set) return;
+
+    const measure = () => {
+      const w = set.offsetWidth;
+      if (w > 0) track.style.setProperty("--marquee-shift", `${-w}px`);
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(set);
+    window.addEventListener("resize", measure);
+
+    const imgs = set.querySelectorAll("img");
+    const onImg = () => measure();
+    imgs.forEach((img) => {
+      if (!img.complete) img.addEventListener("load", onImg, { once: true });
+      img.addEventListener("error", onImg, { once: true });
+    });
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+      imgs.forEach((img) => {
+        img.removeEventListener("load", onImg);
+        img.removeEventListener("error", onImg);
+      });
+    };
+  }, []);
+
+  const renderSet = (keyPrefix) =>
+    LOGOS.map((logo) => (
+      <LogoTile key={`${keyPrefix}-${logo.label}`} logo={logo} />
+    ));
 
   return (
     <div className="lm-wrap" style={{ position:"relative" }}>
@@ -371,11 +407,14 @@ function LogoMarquee() {
         The CFO's #1 Choice — Powering 1M+ suppliers across enterprises
       </div>
 
-      {/* Scrolling track — duplicated row + translateX(-50%) = seamless infinite loop */}
-      <div className="lm-track">
-        {track.map((logo, i) => (
-          <LogoTile key={`${logo.label}-${i}`} logo={logo} showDivider={n > 1 && i % n !== 0} />
-        ))}
+      {/* Two identical sets; pixel-accurate --marquee-shift = seamless loop */}
+      <div className="lm-track" ref={trackRef}>
+        <div className="lm-set" ref={setRef}>
+          {renderSet("a")}
+        </div>
+        <div className="lm-set" aria-hidden="true">
+          {renderSet("b")}
+        </div>
       </div>
     </div>
   );
@@ -896,7 +935,8 @@ function RealResults() {
         <div style={{ marginBottom:20 }}>
           <Eyebrow>Outcomes That Follow</Eyebrow>
           <h2 style={{
-            fontFamily:"var(--fb)", fontSize:"clamp(32px,4.5vw,56px)",
+            fontFamily:"var(--fb)",
+            fontSize: isMobile ? "clamp(18px,4.9vw,27px)" : "clamp(25px,2.8vw,39px)",
             fontWeight:700, letterSpacing:"-.03em", color:"#0F172A",
             lineHeight:1.08, marginBottom:14,
           }}>
@@ -1302,7 +1342,11 @@ function HearFromThem() {
       <div className="sec-inner">
         <div style={{ marginBottom:32 }}>
           <Eyebrow>Testimonials</Eyebrow>
-          <h2 style={{ fontFamily:"var(--fb)", fontSize:"clamp(28px,4vw,48px)", fontWeight:700, letterSpacing:"-.035em", color:"#0F172A", lineHeight:1.05 }}>Hear From Them</h2>
+          <h2 style={{
+            fontFamily:"var(--fb)",
+            fontSize: isMobile ? "clamp(18px,4.9vw,27px)" : "clamp(25px,2.8vw,39px)",
+            fontWeight:700, letterSpacing:"-.035em", color:"#0F172A", lineHeight:1.05,
+          }}>Hear From Them</h2>
         </div>
 
         {/*

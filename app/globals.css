@@ -165,8 +165,45 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
   display:flex;
   align-items:center;
   width:max-content;
-  animation:marqueeScroll 36s linear infinite;
-  will-change:transform;
+  animation:marqueeScroll var(--marquee-duration, 48s) linear infinite;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.lm-set {
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+}
+.lm-tile {
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+}
+.lm-logo {
+  height:40px;
+  min-width:88px;
+  max-width:140px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.lm-logo img {
+  max-height:36px;
+  max-width:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  display:block;
+  flex-shrink:0;
+}
+.lm-divider {
+  width:1px;
+  min-width:1px;
+  height:28px;
+  background:#CBD5E1;
+  margin:0 28px;
+  flex-shrink:0;
 }
 @media (prefers-reduced-motion: reduce) {
   .lm-track { animation-duration: 90s; }
@@ -200,4 +237,7 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 .tw-cursor { display:inline-block;width:2px;height:.85em;background:#A78BFA;margin-left:3px;vertical-align:middle;animation:blink .72s step-end infinite;border-radius:1px; }
 
 /* ── MARQUEE ANIMATION ── */
-@keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes marqueeScroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(var(--marquee-shift, -50%), 0, 0); }
+}

@@ -863,7 +863,7 @@ function EFEnterprise() {
       <div style={{ maxWidth:1080, margin:"0 auto", position:"relative", zIndex:1 }}>
         <div style={{ marginBottom: isMobile ? 36 : 52 }}>
           <Eyebrow dark>Compliance Ready</Eyebrow>
-          <h2 style={{ fontFamily:"var(--fb)", fontSize: isMobile ? "clamp(22px,6vw,32px)" : "clamp(26px,3vw,42px)", fontWeight:900, letterSpacing:"-.04em", lineHeight:1.05, background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:10, textAlign:"left" }}>
+          <h2 style={{ fontFamily:"var(--fb)", fontSize: isMobile ? "clamp(22px,6vw,32px)" : "clamp(26px,3vw,42px)", fontWeight:900, letterSpacing:"-.04em", lineHeight:1.12, paddingBottom:"0.12em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:10, textAlign:"left" }}>
             Designed for Enterprise Scale
           </h2>
           <p style={{ fontSize:15, color:"rgba(255,255,255,.45)", lineHeight:1.7, fontFamily:"var(--fb)", maxWidth:480 }}>Architecture for the complexities of large enterprises — multi-entity, multi-country, high-volume, and configurable.</p>

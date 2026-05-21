@@ -32,6 +32,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { resourceHashToFilter } from "@/lib/routes";
+import { fetchResources } from "@/lib/wordpress";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 
@@ -155,10 +156,10 @@ function FilterBar({ search, onSearch, active, onFilter, isMobile }) {
 }
 
 /* ── Featured hero card ── */
-function FeaturedCard({ post, isMobile, onNavigate }) {
+function FeaturedCard({ post, isMobile }) {
   const cs = catStyle(post.category);
   return (
-    <a href={post.slug} onClick={e => { if (post.category === "Blog" && typeof onNavigate === "function") { e.preventDefault(); onNavigate("blog"); } }} style={{ textDecoration:"none", display:"block", marginBottom:48 }}>
+    <a href={post.slug} style={{ textDecoration:"none", display:"block", marginBottom:48 }}>
       <div style={{
         display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
         borderRadius:20, overflow:"hidden", border:`1.5px solid ${TOKEN.bdP}`,
@@ -174,15 +175,22 @@ function FeaturedCard({ post, isMobile, onNavigate }) {
           background:"linear-gradient(140deg,#14104A 0%,#1E1660 50%,#261d6b 100%)",
           display:"flex", alignItems:"center", justifyContent:"center",
         }}>
+          {/* Featured image (WordPress) — fills the existing cover slot; placeholder shows when absent */}
+          {post.coverImage && (
+            <img src={post.coverImage} alt={post.coverAlt || post.title} loading="lazy"
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />
+          )}
           {/* Dot grid */}
           <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px)", backgroundSize:"24px 24px", pointerEvents:"none" }} />
           {/* Glow */}
           <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 60% 60% at 50% 40%,rgba(99,32,224,.35) 0%,transparent 70%)", pointerEvents:"none" }} />
-          {/* Placeholder icon */}
-          <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:10 }}>
-            <div style={{ width:64, height:64, borderRadius:18, background:"rgba(255,255,255,.1)", border:"1.5px dashed rgba(255,255,255,.3)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28 }}>📖</div>
-            <span style={{ fontSize:10, fontWeight:700, letterSpacing:".1em", textTransform:"uppercase", color:"rgba(255,255,255,.3)", fontFamily:TOKEN.fb }}>Cover image</span>
-          </div>
+          {/* Placeholder icon — only when no WordPress cover image */}
+          {!post.coverImage && (
+            <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:10 }}>
+              <div style={{ width:64, height:64, borderRadius:18, background:"rgba(255,255,255,.1)", border:"1.5px dashed rgba(255,255,255,.3)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28 }}>📖</div>
+              <span style={{ fontSize:10, fontWeight:700, letterSpacing:".1em", textTransform:"uppercase", color:"rgba(255,255,255,.3)", fontFamily:TOKEN.fb }}>Cover image</span>
+            </div>
+          )}
           {/* Featured badge */}
           <div style={{ position:"absolute", top:16, left:16, display:"inline-flex", alignItems:"center", gap:5, background:"linear-gradient(135deg,#E8960A,#F5A623)", borderRadius:100, padding:"5px 12px" }}>
             <span style={{ width:5, height:5, borderRadius:"50%", background:"#fff", display:"inline-block" }} />
@@ -214,12 +222,12 @@ function FeaturedCard({ post, isMobile, onNavigate }) {
 }
 
 /* ── Resource card ── */
-function ResourceCard({ post, isMobile, onNavigate }) {
+function ResourceCard({ post, isMobile }) {
   const cs = catStyle(post.category);
   return (
-    <a href={post.slug} onClick={e => { if (post.category === "Blog" && typeof onNavigate === "function") { e.preventDefault(); onNavigate("blog"); } }} style={{ textDecoration:"none", display:"block" }}>
+    <a href={post.slug} style={{ textDecoration:"none", display:"block" }}>
       <div style={{
-        background:"#fff", border:`1px solid ${TOKEN.bd}`, borderRadius:16,
+        background:"#fff", borderWidth:1, borderStyle:"solid", borderColor:TOKEN.bd, borderRadius:16,
         overflow:"hidden", height:"100%", display:"flex", flexDirection:"column",
         transition:"all .22s cubic-bezier(.22,1,.36,1)",
         boxShadow:"0 1px 4px rgba(0,0,0,.05)",
@@ -227,12 +235,18 @@ function ResourceCard({ post, isMobile, onNavigate }) {
         onMouseEnter={e => { e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 12px 36px rgba(57,16,133,.12)"; e.currentTarget.style.borderColor=TOKEN.p500+"44"; }}
         onMouseLeave={e => { e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.05)"; e.currentTarget.style.borderColor=TOKEN.bd; }}
       >
-        {/* Image placeholder */}
-        <div style={{ height:160, background:`linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)`, position:"relative", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+        {/* Image — WordPress featured image, falling back to the icon placeholder */}
+        <div style={{ height:160, background:`linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)`, position:"relative", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+          {post.coverImage && (
+            <img src={post.coverImage} alt={post.coverAlt || post.title} loading="lazy"
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />
+          )}
           <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(99,32,224,.05) 1px,transparent 1px)", backgroundSize:"16px 16px" }} />
-          <div style={{ width:48, height:48, borderRadius:14, background:"rgba(99,32,224,.08)", border:`1.5px dashed rgba(99,32,224,.2)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22 }}>
-            {post.category === "Blog" ? "✍️" : post.category === "Case Study" ? "📈" : post.category === "Automation Smile" ? "😊" : post.category === "Webinar" ? "🎥" : post.category === "Whitepaper" ? "📄" : "📋"}
-          </div>
+          {!post.coverImage && (
+            <div style={{ width:48, height:48, borderRadius:14, background:"rgba(99,32,224,.08)", border:`1.5px dashed rgba(99,32,224,.2)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22 }}>
+              {post.category === "Blog" ? "✍️" : post.category === "Case Study" ? "📈" : post.category === "Automation Smile" ? "😊" : post.category === "Webinar" ? "🎥" : post.category === "Whitepaper" ? "📄" : "📋"}
+            </div>
+          )}
         </div>
 
         {/* Card body */}
@@ -313,7 +327,7 @@ function categoryMatchesFilter(postCategory, activeCategory) {
 }
 
 /* ── Main content grid ── */
-function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash, onNavigate }) {
+function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const ref = useReveal();
@@ -350,7 +364,7 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash, onNavigate 
 
         {/* Featured post — pinned for every category tab (hidden while searching) */}
         {!search && featuredPost && (
-          <FeaturedCard post={featuredPost} isMobile={isMobile} onNavigate={onNavigate} />
+          <FeaturedCard post={featuredPost} isMobile={isMobile} />
         )}
 
         {/* Filter bar */}
@@ -369,7 +383,7 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash, onNavigate 
           gap:16,
         }}>
           {filtered.length > 0
-            ? filtered.map(post => <ResourceCard key={post.id} post={post} isMobile={isMobile} onNavigate={onNavigate} />)
+            ? filtered.map(post => <ResourceCard key={post.id} post={post} isMobile={isMobile} />)
             : (
               <div style={{ gridColumn:"1/-1", textAlign:"center", padding:"64px 20px", color:TOKEN.t4, fontFamily:TOKEN.fb }}>
                 <div style={{ fontSize:40, marginBottom:12 }}>🔍</div>
@@ -501,13 +515,31 @@ function NewsletterCTA({ isMobile, data }) {  // ← CMS: data prop for heading/
 export default function ResourcesPage({
   onBack,
   onNavigate,
-  featuredPost = PLACEHOLDER_FEATURED,   // ← CMS: replace with real fetch
-  posts = PLACEHOLDER_POSTS,            // ← CMS: replace with real fetch
+  featuredPost: featuredProp = null,    // optional SSR/override — else live WP fetch below
+  posts: postsProp = null,              // optional SSR/override — else live WP fetch below
   newsletterCta = null,                 // ← CMS: optional
   resourceSection = "",
 }) {
   const w = useWidth();
   const isMobile = w < 640;
+
+  /* ── Live WordPress content ──
+     Fetched client-side from the WP REST API and mapped into the existing card
+     model (see @/lib/wordpress). A parent may still inject data via props
+     (SSR/override); PLACEHOLDER_* stays as the graceful fallback while loading
+     or if the API is unreachable. */
+  const [live, setLive] = useState(null);
+  useEffect(() => {
+    if (featuredProp || (postsProp && postsProp.length)) return; // parent supplied data
+    const ctrl = new AbortController();
+    fetchResources({ signal: ctrl.signal })
+      .then((res) => { if (res && (res.featuredPost || res.posts?.length)) setLive(res); })
+      .catch(() => {}); // network/API failure → keep placeholders
+    return () => ctrl.abort();
+  }, [featuredProp, postsProp]);
+
+  const featuredPost = featuredProp ?? live?.featuredPost ?? PLACEHOLDER_FEATURED;
+  const posts = postsProp ?? (live?.posts?.length ? live.posts : PLACEHOLDER_POSTS);
   const [sectionHash, setSectionHash] = useState(() =>
     typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : resourceSection
   );
@@ -536,7 +568,7 @@ export default function ResourcesPage({
       <main style={{ paddingTop:72 /* NAV_H */ }}>
         <ResourcesHero isMobile={isMobile} />
         <ContentTypeStrip isMobile={isMobile} />
-        <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} onNavigate={onNavigate} />
+        <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} />
         <NewsletterCTA isMobile={isMobile} data={newsletterCta} />
       </main>
       <VDDFooter onNavigate={onNavigate} />

@@ -31,8 +31,8 @@ function useSEOHead(post) {
     const base="https://nimbles2p.com";
     document.title=`${post.title} | NimbleS2P Blog`;
     const sm=(n,c,p=false)=>{const s=p?`meta[property="${n}"]`:`meta[name="${n}"]`;let e=document.querySelector(s);if(!e){e=document.createElement("meta");p?e.setAttribute("property",n):e.setAttribute("name",n);document.head.appendChild(e);}e.setAttribute("content",c);};
-    sm("description",post.excerpt);sm("og:title",post.title,true);sm("og:description",post.excerpt,true);sm("og:type","article",true);sm("og:url",`${base}/blog/${post.slug}`,true);sm("twitter:card","summary_large_image");sm("twitter:title",post.title);sm("twitter:description",post.excerpt);
-    const ld={"@context":"https://schema.org","@type":"BlogPosting",headline:post.title,description:post.excerpt,datePublished:post.publishedAt,author:{"@type":"Person",name:post.author.name},publisher:{"@type":"Organization",name:"NimbleS2P"},mainEntityOfPage:{"@type":"WebPage","@id":`${base}/blog/${post.slug}`}};
+    sm("description",post.excerpt);sm("og:title",post.title,true);sm("og:description",post.excerpt,true);sm("og:type","article",true);sm("og:url",`${base}/resources/${post.slug}`,true);sm("twitter:card","summary_large_image");sm("twitter:title",post.title);sm("twitter:description",post.excerpt);
+    const ld={"@context":"https://schema.org","@type":"BlogPosting",headline:post.title,description:post.excerpt,datePublished:post.publishedAt,author:{"@type":"Person",name:post.author.name},publisher:{"@type":"Organization",name:"NimbleS2P"},mainEntityOfPage:{"@type":"WebPage","@id":`${base}/resources/${post.slug}`}};
     let el=document.getElementById("jsonld-blog");if(!el){el=document.createElement("script");el.id="jsonld-blog";el.type="application/ld+json";document.head.appendChild(el);}el.textContent=JSON.stringify(ld);
   },[post]);
 }
@@ -74,6 +74,7 @@ function ContentBlock({block}){
   if(block.type==="h2")      return <h2 style={{fontFamily:T.fb,fontSize:24,fontWeight:800,color:T.t1,letterSpacing:"-.03em",lineHeight:1.2,margin:"44px 0 16px"}}>{block.text}</h2>;
   if(block.type==="p")       return <p style={prose}>{block.text}</p>;
   if(block.type==="callout") return <div style={{background:T.p25,border:`1px solid ${T.p500}22`,borderLeft:`4px solid ${T.p500}`,borderRadius:"0 12px 12px 0",padding:"18px 22px",margin:"28px 0",display:"flex",gap:14,alignItems:"flex-start"}}><span style={{fontSize:22,flexShrink:0,marginTop:2}}>{block.icon}</span><p style={{fontFamily:T.fb,fontSize:15.5,color:T.p600,lineHeight:1.65,margin:0,fontWeight:500}}>{block.text}</p></div>;
+  if(block.type==="html")    return <div className="wp-article" dangerouslySetInnerHTML={{__html:block.html}}/>;
   return null;
 }
 
@@ -93,6 +94,19 @@ export default function BlogPostPage({ onBack, onNavigate, post = SAMPLE_POST })
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
         @keyframes driftX{0%{transform:translate3d(-5%,0,0)}50%{transform:translate3d(5%,-2%,0)}100%{transform:translate3d(-5%,0,0)}}
         @keyframes driftXRev{0%{transform:translate3d(5%,0,0)}50%{transform:translate3d(-5%,2%,0)}100%{transform:translate3d(5%,0,0)}}
+
+        /* WordPress article body — mirrors the inline prose tokens used above */
+        .wp-article{font-family:${T.fb};font-size:17px;color:${T.t2};line-height:1.85;}
+        .wp-article p{margin:0 0 24px;}
+        .wp-article h2{font-size:24px;font-weight:800;color:${T.t1};letter-spacing:-.03em;line-height:1.2;margin:44px 0 16px;}
+        .wp-article h3{font-size:20px;font-weight:800;color:${T.t1};letter-spacing:-.02em;line-height:1.25;margin:36px 0 14px;}
+        .wp-article h4{font-size:17px;font-weight:700;color:${T.t1};margin:28px 0 12px;}
+        .wp-article ul,.wp-article ol{margin:0 0 24px;padding-left:24px;}
+        .wp-article li{margin:0 0 10px;}
+        .wp-article a{color:${T.p600};text-decoration:underline;}
+        .wp-article strong{font-weight:700;color:${T.t1};}
+        .wp-article img{max-width:100%;height:auto;border-radius:12px;margin:24px 0;}
+        .wp-article blockquote{margin:28px 0;padding:4px 0 4px 20px;border-left:3px solid ${T.p500};color:${T.t1};font-style:italic;}
       `}</style>
 
       {/* ── Header — shared homepage Nav ── */}
@@ -118,7 +132,7 @@ export default function BlogPostPage({ onBack, onNavigate, post = SAMPLE_POST })
               ].map(({label,page,hash},i)=>{
                 const href = page ? (page==="home" ? "/" : hash ? `/${page}#${hash}` : `/${page}`) : null;
                 return (
-                  <li key={label} style={{display:"flex",alignItems:"center",gap:6}}>
+                  <li key={`${label}-${i}`} style={{display:"flex",alignItems:"center",gap:6}}>
                     {i>0&&<span style={{color:"rgba(255,255,255,.25)",fontSize:12}}>›</span>}
                     {href
                       ? <a href={href} onClick={e=>{e.preventDefault(); onNavigate?.(page, hash?{hash}:undefined);}} style={{fontSize:12,color:"rgba(255,255,255,.45)",textDecoration:"none",fontFamily:T.fb,fontWeight:500,cursor:"pointer"}}>{label}</a>
@@ -161,17 +175,23 @@ export default function BlogPostPage({ onBack, onNavigate, post = SAMPLE_POST })
       </header>
 
       {/* ── CONTENT ── */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:isMobile?"0 20px":"0 5vw",display:"grid",gridTemplateColumns:isTablet?"1fr":"1fr 300px",gap:60,paddingTop:56,paddingBottom:80}}>
+      <div style={{maxWidth:1200,margin:"0 auto",paddingLeft:isMobile?20:"5vw",paddingRight:isMobile?20:"5vw",display:"grid",gridTemplateColumns:isTablet?"1fr":"1fr 300px",gap:60,paddingTop:56,paddingBottom:80}}>
 
         {/* Article */}
         <article>
           {/* Cover image placeholder */}
           <div style={{height:isMobile?180:300,background:"linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)",borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:40,position:"relative",overflow:"hidden",border:`1px solid ${T.bdP}`}}>
-            <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(rgba(99,32,224,.05) 1px,transparent 1px)",backgroundSize:"20px 20px"}}/>
-            <div style={{position:"relative",zIndex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
-              <div style={{width:52,height:52,borderRadius:15,background:"rgba(99,32,224,.1)",border:"1.5px dashed rgba(99,32,224,.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}}>✍️</div>
-              <span style={{fontSize:11,fontWeight:600,color:"rgba(99,32,224,.4)",fontFamily:T.fb,letterSpacing:".08em",textTransform:"uppercase"}}>Cover image</span>
-            </div>
+            {post.coverImage ? (
+              <img src={post.coverImage} alt={post.coverAlt||post.title} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
+            ) : (
+              <>
+                <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(rgba(99,32,224,.05) 1px,transparent 1px)",backgroundSize:"20px 20px"}}/>
+                <div style={{position:"relative",zIndex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
+                  <div style={{width:52,height:52,borderRadius:15,background:"rgba(99,32,224,.1)",border:"1.5px dashed rgba(99,32,224,.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}}>✍️</div>
+                  <span style={{fontSize:11,fontWeight:600,color:"rgba(99,32,224,.4)",fontFamily:T.fb,letterSpacing:".08em",textTransform:"uppercase"}}>Cover image</span>
+                </div>
+              </>
+            )}
           </div>
 
           <div style={{maxWidth:680}}>
@@ -182,7 +202,7 @@ export default function BlogPostPage({ onBack, onNavigate, post = SAMPLE_POST })
           <div style={{marginTop:44,paddingTop:24,borderTop:`1px solid ${T.bd}`,display:"flex",flexWrap:"wrap",gap:8,alignItems:"center"}}>
             <span style={{fontFamily:T.fb,fontSize:12,fontWeight:600,color:T.t4}}>Tagged:</span>
             {post.tags.map(tag=>(
-              <a key={tag} href={`/blog/tag/${tag.toLowerCase().replace(/ /g,"-")}`} style={{background:T.p25,border:`1px solid ${T.bdP}`,borderRadius:100,padding:"4px 12px",fontSize:12,fontWeight:600,color:T.p600,textDecoration:"none",fontFamily:T.fb,transition:"background .15s"}}
+              <a key={tag} href="/resources" style={{background:T.p25,border:`1px solid ${T.bdP}`,borderRadius:100,padding:"4px 12px",fontSize:12,fontWeight:600,color:T.p600,textDecoration:"none",fontFamily:T.fb,transition:"background .15s"}}
                 onMouseEnter={e=>e.currentTarget.style.background=T.p50}
                 onMouseLeave={e=>e.currentTarget.style.background=T.p25}>#{tag}</a>
             ))}
@@ -208,7 +228,7 @@ export default function BlogPostPage({ onBack, onNavigate, post = SAMPLE_POST })
               <div style={{fontFamily:T.fb,fontSize:11,fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:T.p600,marginBottom:14}}>Related Reading</div>
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {post.relatedPosts.map(rp=>(
-                  <a key={rp.slug} href={`/blog/${rp.slug}`} style={{display:"flex",flexDirection:"column",gap:3,padding:"12px",background:"#fff",borderRadius:10,border:`1px solid ${T.bd}`,textDecoration:"none",transition:"all .18s"}}
+                  <a key={rp.slug} href={`/resources/${rp.slug}`} style={{display:"flex",flexDirection:"column",gap:3,padding:"12px",background:"#fff",borderRadius:10,border:`1px solid ${T.bd}`,textDecoration:"none",transition:"all .18s"}}
                     onMouseEnter={e=>{e.currentTarget.style.borderColor=T.p500+"44";e.currentTarget.style.boxShadow="0 4px 16px rgba(57,16,133,.1)";}}
                     onMouseLeave={e=>{e.currentTarget.style.borderColor=T.bd;e.currentTarget.style.boxShadow="";}}>
                     <span style={{fontFamily:T.fb,fontSize:10.5,fontWeight:600,color:T.p600,letterSpacing:".04em",textTransform:"uppercase"}}>{rp.category}</span>
