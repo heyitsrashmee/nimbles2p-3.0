@@ -348,8 +348,8 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash, onNavigate 
     >
       <div style={{ maxWidth:1080, margin:"0 auto" }}>
 
-        {/* Featured post */}
-        {activeCategory === "All" && !search && featuredPost && (
+        {/* Featured post — pinned for every category tab (hidden while searching) */}
+        {!search && featuredPost && (
           <FeaturedCard post={featuredPost} isMobile={isMobile} onNavigate={onNavigate} />
         )}
 
