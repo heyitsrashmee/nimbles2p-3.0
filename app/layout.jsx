@@ -42,7 +42,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} ${kalam.variable}`}>
-      <body className={inter.className} style={{ fontFamily: "var(--fb)" }}>
+      <body
+        className={inter.className}
+        style={{
+          fontFamily: "var(--fb, var(--font-inter)), Inter, system-ui, sans-serif",
+        }}
+      >
         {children}
       </body>
     </html>

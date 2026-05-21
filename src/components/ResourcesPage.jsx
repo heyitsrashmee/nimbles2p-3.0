@@ -35,6 +35,7 @@ import { resourceHashToFilter } from "@/lib/routes";
 import { fetchResources } from "@/lib/wordpress";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
+import { useWidth } from "@/components/shared/pageUi";
 
 /* ── Design tokens (mirrors globalStyles in main artifact) ── */
 const TOKEN = {
@@ -43,17 +44,6 @@ const TOKEN = {
   slp: "#F5F3FF", t1: "#0F172A", t2: "#334155", t3: "#64748B", t4: "#94A3B8",
   bd: "#E2E8F0", bdP: "rgba(57,16,133,.18)",
 };
-
-/* ── Shared hooks ── */
-function useWidth() {
-  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
-  useEffect(() => {
-    const h = () => setW(window.innerWidth);
-    window.addEventListener("resize", h);
-    return () => window.removeEventListener("resize", h);
-  }, []);
-  return w;
-}
 
 function useReveal() {
   const ref = useRef(null);
@@ -326,6 +316,29 @@ function categoryMatchesFilter(postCategory, activeCategory) {
   return postCategory === activeCategory;
 }
 
+/* ── Loading skeleton (avoids flashing placeholder cards before WP data) ── */
+function ResourcesGridSkeleton({ isMobile }) {
+  const shimmer = {
+    background: "linear-gradient(90deg, #EDE9FE 0%, #F5F3FF 50%, #EDE9FE 100%)",
+    backgroundSize: "200% 100%",
+    animation: "resourcesShimmer 1.2s ease-in-out infinite",
+    borderRadius: 16,
+  };
+  return (
+    <section style={{ background: TOKEN.slp, padding: isMobile ? "48px 20px 72px" : "clamp(48px,7vh,88px) 5vw" }}>
+      <style>{`@keyframes resourcesShimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}`}</style>
+      <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+        <div style={{ ...shimmer, height: isMobile ? 320 : 280, marginBottom: 32, borderRadius: 20 }} />
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} style={{ ...shimmer, height: 220 }} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ── Main content grid ── */
 function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
   const [search, setSearch] = useState("");
@@ -523,26 +536,33 @@ export default function ResourcesPage({
   const w = useWidth();
   const isMobile = w < 640;
 
-  /* ── Live WordPress content ──
-     Fetched client-side from the WP REST API and mapped into the existing card
-     model (see @/lib/wordpress). A parent may still inject data via props
-     (SSR/override); PLACEHOLDER_* stays as the graceful fallback while loading
-     or if the API is unreachable. */
+  /* Server page (app/resources/page.jsx) passes WP data as props.
+     Client fetch + placeholders only run when props are missing (dev fallback). */
+  const hasServerData = Boolean(featuredProp || (postsProp && postsProp.length));
   const [live, setLive] = useState(null);
-  useEffect(() => {
-    if (featuredProp || (postsProp && postsProp.length)) return; // parent supplied data
-    const ctrl = new AbortController();
-    fetchResources({ signal: ctrl.signal })
-      .then((res) => { if (res && (res.featuredPost || res.posts?.length)) setLive(res); })
-      .catch(() => {}); // network/API failure → keep placeholders
-    return () => ctrl.abort();
-  }, [featuredProp, postsProp]);
+  const [loadState, setLoadState] = useState(hasServerData ? "ready" : "loading");
 
-  const featuredPost = featuredProp ?? live?.featuredPost ?? PLACEHOLDER_FEATURED;
-  const posts = postsProp ?? (live?.posts?.length ? live.posts : PLACEHOLDER_POSTS);
-  const [sectionHash, setSectionHash] = useState(() =>
-    typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : resourceSection
-  );
+  useEffect(() => {
+    if (hasServerData) return;
+    const ctrl = new AbortController();
+    setLoadState("loading");
+    fetchResources({ signal: ctrl.signal })
+      .then((res) => {
+        if (res && (res.featuredPost || res.posts?.length)) setLive(res);
+        setLoadState("ready");
+      })
+      .catch(() => setLoadState("error"));
+    return () => ctrl.abort();
+  }, [hasServerData]);
+
+  const featuredPost =
+    featuredProp ??
+    live?.featuredPost ??
+    (loadState === "error" ? PLACEHOLDER_FEATURED : null);
+  const posts =
+    postsProp ??
+    (live?.posts?.length ? live.posts : loadState === "error" ? PLACEHOLDER_POSTS : []);
+  const [sectionHash, setSectionHash] = useState(resourceSection ?? "");
 
   useEffect(() => {
     if (resourceSection) setSectionHash(resourceSection);
@@ -568,7 +588,11 @@ export default function ResourcesPage({
       <main style={{ paddingTop:72 /* NAV_H */ }}>
         <ResourcesHero isMobile={isMobile} />
         <ContentTypeStrip isMobile={isMobile} />
-        <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} />
+        {loadState === "loading" && !hasServerData ? (
+          <ResourcesGridSkeleton isMobile={isMobile} />
+        ) : (
+          <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} />
+        )}
         <NewsletterCTA isMobile={isMobile} data={newsletterCta} />
       </main>
       <VDDFooter onNavigate={onNavigate} />

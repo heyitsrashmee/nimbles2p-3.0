@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
+import { useWidth } from "@/components/shared/pageUi";
 
 /* ════════════════════════════════════════════
    DESIGN TOKENS
@@ -20,12 +21,6 @@ const T = {
 /* ════════════════════════════════════════════
    HOOKS
 ════════════════════════════════════════════ */
-function useWidth() {
-  const [w,setW]=useState(typeof window!=="undefined"?window.innerWidth:1200);
-  useEffect(()=>{const h=()=>setW(window.innerWidth);window.addEventListener("resize",h);return()=>window.removeEventListener("resize",h);},[]);
-  return w;
-}
-
 function useSEOHead(post) {
   useEffect(()=>{
     const base="https://nimbles2p.com";

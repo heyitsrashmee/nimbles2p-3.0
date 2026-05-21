@@ -117,6 +117,7 @@ export async function fetchResources({ perPage = 24, signal } = {}) {
   const res = await fetch(`${WP_ENDPOINT}?_embed&per_page=${perPage}`, {
     signal,
     headers: { Accept: "application/json" },
+    next: { revalidate: 3600 },
   });
   if (!res.ok) throw new Error(`WordPress responded ${res.status}`);
 

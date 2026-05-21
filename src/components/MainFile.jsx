@@ -3,7 +3,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import TermsPage from "./NimbleS2PTerms";
-import ResourcesPage from "./ResourcesPage";
 import VDDAnimation from "@gifs/VDDAnimation";
 import RFQAgentDemo from "@gifs/RFQAgent";
 import SupplierPortalAnimation from "@gifs/SupplierPortalAnimation";
@@ -1631,7 +1630,7 @@ function FinalCTA({ onNavigate }) {
 export default function NimbleS2PHomepage() {
   const pathname = usePathname();
   const router = useRouter();
-  const { navigate, resourceSection, page } = useSiteNavigation(pathname, router);
+  const { navigate, page } = useSiteNavigation(pathname, router);
 
   const goHome = useCallback(() => navigate("home"), [navigate]);
 
@@ -1667,15 +1666,6 @@ export default function NimbleS2PHomepage() {
   }
   if (page === "terms") {
     return <TermsPage onBack={goHome} onNavigate={navigate} />;
-  }
-  if (page === "resources") {
-    return (
-      <ResourcesPage
-        onBack={goHome}
-        onNavigate={navigate}
-        resourceSection={resourceSection}
-      />
-    );
   }
   if (page === "blog") {
     return <BlogPostPage onBack={goHome} onNavigate={navigate} />;
