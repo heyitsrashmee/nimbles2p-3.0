@@ -29,6 +29,11 @@ export function useSiteNavigation(pathname, router) {
       else setResourceSection("");
 
       if (pathname !== target) {
+        try {
+          router.prefetch(target);
+        } catch {
+          /* prefetch is best-effort */
+        }
         router.push(url);
       } else if (hash) {
         window.history.replaceState(null, "", url);

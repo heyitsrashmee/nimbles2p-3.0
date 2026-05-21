@@ -1,3 +1,6 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+
 /**
  * WordPress → Resources adapter.
  *
@@ -126,6 +129,21 @@ export async function fetchResources({ perPage = 24, signal } = {}) {
 
   const [featuredPost, ...posts] = raw.map(mapPost);
   return { featuredPost, posts };
+}
+
+/** Dedupe within a single server render. */
+export const fetchResourcesCached = cache(() => fetchResources({ perPage: 24 }));
+
+/**
+ * Cross-request cache for /resources — avoids refetching WordPress on every client nav.
+ * Revalidate hourly; keeps second visit to Resources near-instant.
+ */
+export async function getResourcesForPage() {
+  return unstable_cache(
+    () => fetchResources({ perPage: 24 }),
+    ["nimbles2p-resources-index"],
+    { revalidate: 3600, tags: ["wp-resources"] }
+  )();
 }
 
 /* ══════════════════════════════════════════════════════════

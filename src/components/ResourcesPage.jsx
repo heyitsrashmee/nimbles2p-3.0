@@ -317,7 +317,7 @@ function categoryMatchesFilter(postCategory, activeCategory) {
 }
 
 /* ── Loading skeleton (avoids flashing placeholder cards before WP data) ── */
-function ResourcesGridSkeleton({ isMobile }) {
+export function ResourcesGridSkeleton({ isMobile }) {
   const shimmer = {
     background: "linear-gradient(90deg, #EDE9FE 0%, #F5F3FF 50%, #EDE9FE 100%)",
     backgroundSize: "200% 100%",
@@ -528,40 +528,45 @@ function NewsletterCTA({ isMobile, data }) {  // ← CMS: data prop for heading/
 export default function ResourcesPage({
   onBack,
   onNavigate,
-  featuredPost: featuredProp = null,    // optional SSR/override — else live WP fetch below
-  posts: postsProp = null,              // optional SSR/override — else live WP fetch below
-  newsletterCta = null,                 // ← CMS: optional
+  featuredPost: featuredProp = null,
+  posts: postsProp = [],
+  dataFromServer = false,
+  newsletterCta = null,
   resourceSection = "",
 }) {
   const w = useWidth();
   const isMobile = w < 640;
 
-  /* Server page (app/resources/page.jsx) passes WP data as props.
-     Client fetch + placeholders only run when props are missing (dev fallback). */
-  const hasServerData = Boolean(featuredProp || (postsProp && postsProp.length));
+  /* /resources: data is fetched on the server (getResourcesForPage). Client fetch only
+     when the server could not reach WordPress — never show placeholder cards while waiting. */
   const [live, setLive] = useState(null);
-  const [loadState, setLoadState] = useState(hasServerData ? "ready" : "loading");
+  const [loadState, setLoadState] = useState(
+    dataFromServer ? "ready" : "loading"
+  );
 
   useEffect(() => {
-    if (hasServerData) return;
+    if (dataFromServer) return;
     const ctrl = new AbortController();
     setLoadState("loading");
     fetchResources({ signal: ctrl.signal })
       .then((res) => {
-        if (res && (res.featuredPost || res.posts?.length)) setLive(res);
+        if (res) setLive(res);
         setLoadState("ready");
       })
       .catch(() => setLoadState("error"));
     return () => ctrl.abort();
-  }, [hasServerData]);
+  }, [dataFromServer]);
 
-  const featuredPost =
-    featuredProp ??
-    live?.featuredPost ??
-    (loadState === "error" ? PLACEHOLDER_FEATURED : null);
-  const posts =
-    postsProp ??
-    (live?.posts?.length ? live.posts : loadState === "error" ? PLACEHOLDER_POSTS : []);
+  const featuredPost = dataFromServer
+    ? featuredProp
+    : live?.featuredPost ?? (loadState === "error" ? PLACEHOLDER_FEATURED : null);
+  const posts = dataFromServer
+    ? postsProp
+    : live?.posts?.length
+      ? live.posts
+      : loadState === "error"
+        ? PLACEHOLDER_POSTS
+        : [];
   const [sectionHash, setSectionHash] = useState(resourceSection ?? "");
 
   useEffect(() => {
@@ -588,8 +593,12 @@ export default function ResourcesPage({
       <main style={{ paddingTop:72 /* NAV_H */ }}>
         <ResourcesHero isMobile={isMobile} />
         <ContentTypeStrip isMobile={isMobile} />
-        {loadState === "loading" && !hasServerData ? (
+        {loadState === "loading" ? (
           <ResourcesGridSkeleton isMobile={isMobile} />
+        ) : loadState === "error" && !featuredPost && posts.length === 0 ? (
+          <div style={{ maxWidth: 1080, margin: "0 auto", padding: "48px 0", textAlign: "center", fontFamily: TOKEN.fb, color: TOKEN.t3 }}>
+            Unable to load resources right now. Please refresh or try again shortly.
+          </div>
         ) : (
           <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} />
         )}

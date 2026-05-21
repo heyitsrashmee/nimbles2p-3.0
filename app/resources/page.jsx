@@ -1,19 +1,26 @@
-import { fetchResources } from "@/lib/wordpress";
+import { getResourcesForPage } from "@/lib/wordpress";
 import ResourcesRoute from "@/components/ResourcesRoute";
 
 export const revalidate = 3600;
 
 export default async function ResourcesPageRoute() {
-  let featuredPost = null;
-  let posts = null;
-
   try {
-    const data = await fetchResources({ perPage: 24 });
-    featuredPost = data.featuredPost;
-    posts = data.posts?.length ? data.posts : null;
-  } catch {
-    /* ResourcesPage falls back to client fetch + placeholders */
+    const { featuredPost, posts } = await getResourcesForPage();
+    return (
+      <ResourcesRoute
+        featuredPost={featuredPost}
+        posts={posts}
+        dataFromServer
+      />
+    );
+  } catch (err) {
+    console.error("[resources] WordPress fetch failed:", err);
+    return (
+      <ResourcesRoute
+        featuredPost={null}
+        posts={[]}
+        dataFromServer={false}
+      />
+    );
   }
-
-  return <ResourcesRoute featuredPost={featuredPost} posts={posts} />;
 }
