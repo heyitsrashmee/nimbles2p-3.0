@@ -9,7 +9,10 @@ export function VDDFooter({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const twWord = useTypewriter(["Security","Diligence","Results","Compliance","Scale"]);
   const cols = FOOTER_COLUMNS;
-  const socials = [{ label:"in",title:"LinkedIn" },{ label:"𝕏",title:"X / Twitter" },{ label:"▶",title:"YouTube" }];
+  const socials = [
+    { label:"in", title:"LinkedIn", href:"https://www.linkedin.com/company/techpanion/", external:true },
+    { label:"✉", title:"Email", href:"mailto:info@techpanion.com", external:false },
+  ];
 
   /* Constellation dots — 5 fixed positions, pale violet */
   const dots = [
@@ -76,7 +79,12 @@ export function VDDFooter({ onNavigate }) {
             <p style={{ fontSize:13, color:"rgba(255,255,255,.35)", lineHeight:1.7, fontFamily:"var(--fb)", maxWidth:260, marginBottom: isMobile ? 16 : "clamp(14px,2vh,24px)" }}>AI-orchestrated source-to-pay — purpose-built for the Indian enterprise.</p>
             <div style={{ display:"flex", gap:8 }}>
               {socials.map(s=>(
-                <a key={s.label} href="#" title={s.title} style={{ width:36, height:36, borderRadius:8, background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.12)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, color:"rgba(255,255,255,.45)", textDecoration:"none", transition:"background .18s,color .18s,border-color .18s", fontFamily:"var(--fb)", fontWeight:500 }}
+                <a
+                  key={s.title}
+                  href={s.href}
+                  title={s.title}
+                  {...(s.external ? { target:"_blank", rel:"noopener noreferrer" } : {})}
+                  style={{ width:36, height:36, borderRadius:8, background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.12)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, color:"rgba(255,255,255,.45)", textDecoration:"none", transition:"background .18s,color .18s,border-color .18s", fontFamily:"var(--fb)", fontWeight:500 }}
                   onMouseEnter={e=>{ e.currentTarget.style.background="rgba(255,255,255,.12)"; e.currentTarget.style.color="#fff"; e.currentTarget.style.borderColor="rgba(255,255,255,.25)"; }}
                   onMouseLeave={e=>{ e.currentTarget.style.background="rgba(255,255,255,.06)"; e.currentTarget.style.color="rgba(255,255,255,.45)"; e.currentTarget.style.borderColor="rgba(255,255,255,.12)"; }}
                 >{s.label}</a>

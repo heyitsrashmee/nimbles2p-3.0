@@ -120,7 +120,7 @@ function Hero({ onNavigate }) {
           paddingBottom:"0.12em",
         }}>
           <span style={{ display:"block" }}>Purpose Built for Suppliers,</span>
-          <span style={{ display:"block" }}>Procurement &amp; Payables</span>
+          <span style={{ display:"block" }}>Procurement &amp; Finance</span>
         </h1>
 
         {/* 3. SUBHEADLINE */}
