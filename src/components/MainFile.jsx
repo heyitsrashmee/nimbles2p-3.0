@@ -209,8 +209,6 @@ function Hero({ onNavigate }) {
 
 
 const WORKFLOW_DEFAULT = { w: 1394, h: 732, fit: "cover" };
-/** Design canvas for fill-mode demos — scaled down on tablet/mobile via ScaledWorkflowDemo */
-const WORKFLOW_FILL_REF = { w: 960, h: 520 };
 const WORKFLOW_LAYOUTS = {
   vdd: { fit: "fill" },
   rfq: { fit: "fill" },
@@ -230,28 +228,20 @@ const WORKFLOW_DEMOS = {
 function ScaledWorkflowDemo({ modId }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(0.4);
-  const [fillScale, setFillScale] = useState(1);
   const Demo = WORKFLOW_DEMOS[modId];
   const layout = WORKFLOW_LAYOUTS[modId] || WORKFLOW_DEFAULT;
   const fit = layout.fit || WORKFLOW_DEFAULT.fit;
   const workflowW = layout.w ?? WORKFLOW_DEFAULT.w;
   const workflowH = layout.h ?? WORKFLOW_DEFAULT.h;
-  const fillRefW = WORKFLOW_FILL_REF.w;
-  const fillRefH = WORKFLOW_FILL_REF.h;
   const zoom = layout.zoom ?? 1;
 
   useEffect(() => {
+    if (fit === "fill") return; // fill mode fills the panel edge-to-edge via CSS — no measuring needed
     const el = wrapRef.current;
     if (!el) return;
     const measure = () => {
       const { width, height } = el.getBoundingClientRect();
       if (width < 8 || height < 8) return;
-      if (fit === "fill") {
-        const sx = width / fillRefW;
-        const sy = height / fillRefH;
-        setFillScale(Math.max(0.28, Math.min(sx, sy, 1)));
-        return;
-      }
       const sx = width / workflowW;
       const sy = height / workflowH;
       const s = fit === "contain" ? Math.min(sx, sy) : Math.max(sx, sy);
@@ -261,7 +251,7 @@ function ScaledWorkflowDemo({ modId }) {
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [modId, workflowW, workflowH, fit, fillRefW, fillRefH]);
+  }, [modId, workflowW, workflowH, fit]);
 
   if (!Demo) return null;
 
@@ -274,7 +264,6 @@ function ScaledWorkflowDemo({ modId }) {
   };
 
   if (fit === "fill") {
-    const visual = fillScale * zoom;
     return (
       <div
         ref={wrapRef}
@@ -287,23 +276,15 @@ function ScaledWorkflowDemo({ modId }) {
       >
         <div
           style={{
-            width: fillRefW * fillScale,
-            height: fillRefH * fillScale,
-            overflow: "hidden",
-            flexShrink: 0,
-            borderRadius: 2,
+            width: zoom > 1 ? `${100 / zoom}%` : "100%",
+            height: zoom > 1 ? `${100 / zoom}%` : "100%",
+            minWidth: 0,
+            minHeight: 0,
+            transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+            transformOrigin: "center center",
           }}
         >
-          <div
-            style={{
-              width: fillRefW,
-              height: fillRefH,
-              transform: `scale(${visual})`,
-              transformOrigin: "top left",
-            }}
-          >
-            <Demo />
-          </div>
+          <Demo />
         </div>
       </div>
     );
@@ -1333,10 +1314,20 @@ function SupplierLoveUs() {
         position:"relative", zIndex:1,
       }}>
         <div style={{
-          fontSize:10, fontWeight:700, letterSpacing:".16em",
-          textTransform:"uppercase", color:"rgba(255,255,255,.3)",
-          fontFamily:"var(--fb)", marginBottom:20,
-        }}>WHAT SUPPLIERS CAN DO</div>
+          display:"flex", alignItems:"center", gap:10,
+          marginBottom:20,
+        }}>
+          <span style={{
+            width:20, height:2, flexShrink:0, borderRadius:1,
+            background:"linear-gradient(90deg,#F5D060,#F5A623)",
+          }} />
+          <span style={{
+            fontSize:11, fontWeight:700, letterSpacing:".14em",
+            textTransform:"uppercase",
+            color:"rgba(255,255,255,.55)",
+            fontFamily:"var(--fb)",
+          }}>WHAT SUPPLIERS CAN DO</span>
+        </div>
 
         {/* Pill tags — two wrapping rows */}
         <div style={{ display:"flex", flexWrap:"wrap", gap: isMobile ? 8 : 10 }}>
@@ -1512,7 +1503,7 @@ function HearFromThem() {
               <div style={{ width:34, height:34, borderRadius:"50%", background:"linear-gradient(135deg,#6320E0,#8B5CF6)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"var(--fb)", fontSize:12, fontWeight:700, color:"#fff", flexShrink:0 }}>AM</div>
               <div>
                 <div style={{ fontSize:12.5, fontWeight:600, color:"#fff", fontFamily:"var(--fb)" }}>Ramesh Verma</div>
-                <div style={{ fontSize:11, color:"rgba(255,255,255,.4)", fontFamily:"var(--fb)" }}>Director, Precision Parts Supplier</div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,.4)", fontFamily:"var(--fb)" }}>Supplier at Manufacturing Firm</div>
               </div>
             </div>
           </div>
