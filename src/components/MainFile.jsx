@@ -11,6 +11,7 @@ import SupplierAnalyticsDemo from "@gifs/SupplierAnalytics";
 import { assetUrl } from "@/lib/assetUrl";
 import { CUSTOMER_LOGOS, customerLogoPath } from "@/lib/customerLogos";
 import { useSiteNavigation } from "@/lib/siteNavigation";
+import { pageToPath } from "@/lib/routes";
 import WhyNimblePage from "./WhyNimblePage";
 import PricingPage from "./PricingPage";
 import VendorDueDiligencePage from "./VendorDueDiligencePage";
@@ -630,7 +631,13 @@ function PlatformModules({ onNavigate }) {
 
             {/* CTAs pinned to bottom */}
             <div style={{ position:"relative", zIndex:1, marginTop: isStacked ? 20 : 28, display:"flex", flexDirection: isMobile ? "row" : "column", gap:10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
-              <a href="#" style={{
+              <a
+                href={pageToPath(mod.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (typeof onNavigate === "function") onNavigate(mod.id);
+                }}
+                style={{
                 display:"flex", alignItems:"center", justifyContent:"center",
                 background:"#fff", color:colour,
                 borderRadius:10, padding:"11px 20px",
@@ -639,11 +646,18 @@ function PlatformModules({ onNavigate }) {
                 boxShadow:"0 4px 16px rgba(0,0,0,.15)",
                 transition:"all .2s",
                 flex: isMobile ? "1 1 140px" : undefined,
+                cursor:"pointer",
               }}
                 onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,.2)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,.15)"; }}
               >Know More →</a>
-              <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }} href="#" style={{
+              <a
+                href={pageToPath("getstarted")}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (typeof onNavigate === "function") onNavigate("getstarted");
+                }}
+                style={{
                 display:"flex", alignItems:"center", justifyContent:"center",
                 background:"rgba(255,255,255,.15)", color:"#fff",
                 border:"1px solid rgba(255,255,255,.3)", borderRadius:10,
@@ -651,6 +665,7 @@ function PlatformModules({ onNavigate }) {
                 textDecoration:"none", fontFamily:"var(--fb)",
                 transition:"background .18s",
                 flex: isMobile ? "1 1 140px" : undefined,
+                cursor:"pointer",
               }}
                 onMouseEnter={e=>{ e.currentTarget.style.background="rgba(255,255,255,.25)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.background="rgba(255,255,255,.15)"; }}
@@ -1422,36 +1437,57 @@ function HearFromThem() {
             <Avatar initials="RP" bg="#391085" name="Sooraj PS" role="Asst Manager Internal Audit, Sud Chemie" />
           </div>
 
-          {/* Video — spans col 2-3, rows 1-2 */}
+          {/* Featured testimonial — spans col 2-3, rows 1-2 */}
           <div style={{
             position:"relative", borderRadius:18, overflow:"hidden",
             gridColumn: isTablet ? "2" : "2 / 4",
             gridRow: isTablet ? "1" : "1 / 3",
             minHeight: isMobile ? 260 : 360,
-            display:"flex", flexDirection:"column", justifyContent:"flex-end",
+            display:"flex", flexDirection:"column", justifyContent:"center",
             background:"linear-gradient(135deg,#0f0c29,#302b63,#24243e)",
-            boxShadow:"0 8px 32px rgba(0,0,0,.22)", cursor:"pointer",
+            boxShadow:"0 8px 32px rgba(0,0,0,.22)",
           }}>
             <div style={{ position:"absolute", inset:0, pointerEvents:"none", background:"radial-gradient(ellipse 70% 60% at 25% 30%, rgba(99,60,200,.35) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 70%, rgba(245,166,35,.18) 0%, transparent 55%)" }} />
             <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:"linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px)", backgroundSize:"32px 32px" }} />
-            <div style={{ position:"absolute", top:16, right:16, zIndex:3, background:"rgba(0,0,0,.6)", backdropFilter:"blur(8px)", borderRadius:6, padding:"3px 10px", fontSize:11, fontWeight:700, color:"#fff", fontFamily:"var(--fm)", border:"1px solid rgba(255,255,255,.15)" }}>2:34</div>
             <div style={{ position:"absolute", top:16, left:16, zIndex:3, display:"inline-flex", alignItems:"center", gap:6, background:"rgba(245,166,35,.18)", backdropFilter:"blur(8px)", border:"1px solid rgba(245,166,35,.4)", borderRadius:100, padding:"4px 12px" }}>
-              <span style={{ width:6, height:6, borderRadius:"50%", background:"#F5A623", display:"inline-block", boxShadow:"0 0 6px #F5A623", animation:"pulse-dot 2s ease-in-out infinite" }} />
-              <span style={{ fontSize:10, fontWeight:700, letterSpacing:".1em", textTransform:"uppercase", color:"#F5D060", fontFamily:"var(--fb)" }}>Video Testimonial</span>
+              <span style={{ width:6, height:6, borderRadius:"50%", background:"#F5A623", display:"inline-block", boxShadow:"0 0 6px #F5A623" }} />
+              <span style={{ fontSize:10, fontWeight:700, letterSpacing:".1em", textTransform:"uppercase", color:"#F5D060", fontFamily:"var(--fb)" }}>Customer Story</span>
             </div>
-            <div style={{ position:"absolute", top:"45%", left:"50%", transform:"translate(-50%,-50%)", width:64, height:64, borderRadius:"50%", background:"rgba(255,255,255,.15)", backdropFilter:"blur(12px)", border:"2px solid rgba(255,255,255,.35)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 0 8px rgba(255,255,255,.06), 0 8px 24px rgba(0,0,0,.3)", transition:"transform .2s, background .2s", zIndex:3 }}
-              onMouseEnter={e=>{ e.currentTarget.style.background="rgba(245,166,35,.35)"; e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"; }}
-              onMouseLeave={e=>{ e.currentTarget.style.background="rgba(255,255,255,.15)"; e.currentTarget.style.transform="translate(-50%,-50%) scale(1)"; }}
-            ><svg width="22" height="22" viewBox="0 0 22 22" fill="white"><path d="M7 4l12 7-12 7V4z"/></svg></div>
-            <div style={{ position:"relative", zIndex:3, background:"linear-gradient(0deg, rgba(0,0,0,.82) 0%, rgba(0,0,0,.4) 70%, transparent 100%)", padding: isMobile ? "24px 20px 20px" : "28px 36px 22px", display:"flex", alignItems:"flex-end", justifyContent:"space-between", gap:24, flexWrap: isMobile ? "wrap" : "nowrap" }}>
-              <p style={{ fontSize: isMobile ? 14 : 16, fontWeight:600, color:"rgba(255,255,255,.92)", fontFamily:"var(--fb)", lineHeight:1.4, margin:0, flex:1, letterSpacing:"-.01em" }}>"From 45-day invoice cycles to 2 days. This is what transformation looks like."</p>
-              <div style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
-                <div style={{ width:36, height:36, borderRadius:"50%", background:"#F59E0B", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"var(--fb)", fontSize:12, fontWeight:700, color:"#fff", flexShrink:0 }}>SK</div>
-                <div>
-                  <div style={{ fontSize:13, fontWeight:600, color:"#fff", fontFamily:"var(--fb)" }}>Sanjana Kumar</div>
-                  <div style={{ fontSize:11, color:"rgba(255,255,255,.5)", fontFamily:"var(--fb)" }}>Head of Finance Ops, FMCG Group</div>
-                </div>
-                <div style={{ marginLeft:16, fontSize:11, color:"rgba(255,255,255,.55)", fontFamily:"var(--fb)", fontWeight:500, whiteSpace:"nowrap" }}>Watch Story →</div>
+            {/* decorative quote glyph */}
+            <div style={{ position:"absolute", top: isMobile ? 40 : 30, right: isMobile ? 20 : 40, zIndex:2, fontFamily:"Georgia, serif", fontSize: isMobile ? 110 : 150, lineHeight:1, color:"rgba(245,166,35,.10)", userSelect:"none", pointerEvents:"none" }}>&ldquo;</div>
+
+            <div style={{ position:"relative", zIndex:3, padding: isMobile ? "46px 22px 26px" : "38px 44px", display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", gap: isMobile ? 12 : 16 }}>
+              {/* photo with glowing gradient ring */}
+              <div style={{ borderRadius:"50%", padding:3, background:"linear-gradient(135deg,#FFC861 0%,#F5A623 35%,#8B5CF6 100%)", boxShadow:"0 0 44px rgba(245,166,35,.4), 0 12px 32px rgba(0,0,0,.5)", flexShrink:0 }}>
+                <img src={assetUrl("images/pankaj-narang.jpg")} alt="Pankaj Narang, Internal Audit at Benetton" loading="lazy" style={{ display:"block", width: isMobile ? 88 : 112, height: isMobile ? 88 : 112, borderRadius:"50%", objectFit:"cover", border:"3px solid #16122f" }} />
+              </div>
+
+              {/* rating */}
+              <div style={{ color:"#F5A623", fontSize:14, letterSpacing:3, textShadow:"0 0 16px rgba(245,166,35,.45)" }}>★★★★★</div>
+
+              {/* quote with highlighted phrases */}
+              <p style={{ fontSize: isMobile ? 15.5 : 20, fontWeight:600, color:"rgba(255,255,255,.86)", fontFamily:"var(--fb)", lineHeight:1.5, margin:0, maxWidth:560, letterSpacing:"-.012em" }}>
+                &ldquo;With <span style={{ color:"#FFCE73", fontWeight:800, textShadow:"0 0 24px rgba(245,166,35,.45)" }}>real-time vendor data validation</span>, we <span style={{ color:"#fff", fontWeight:800 }}>eliminated manual checks</span> and reduced onboarding time significantly. It&rsquo;s boosted both <span style={{ color:"#FFCE73", fontWeight:800, textShadow:"0 0 24px rgba(245,166,35,.45)" }}>efficiency and trust</span> in our process.&rdquo;
+              </p>
+
+              {/* stats strip */}
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"center", flexWrap:"wrap", gap: isMobile ? 10 : 0, width:"100%", maxWidth:540, marginTop: isMobile ? 4 : 8, paddingTop: isMobile ? 6 : 12, borderTop:"1px solid rgba(255,255,255,.12)" }}>
+                {[
+                  { num:"100%", label:"Manual checks eliminated" },
+                  { num:"60%", label:"Faster onboarding" },
+                  { num:"Real-time", label:"Vendor validation" },
+                ].map((s, i) => (
+                  <div key={s.label} style={{ flex: isMobile ? "1 1 40%" : 1, padding: isMobile ? "0 6px" : "0 14px", borderLeft: (!isMobile && i > 0) ? "1px solid rgba(255,255,255,.14)" : "none" }}>
+                    <div style={{ fontFamily:"var(--fb)", fontSize: isMobile ? 22 : 30, fontWeight:800, letterSpacing:"-.02em", lineHeight:1.05, whiteSpace:"nowrap", background:"linear-gradient(135deg,#FFE0A0 0%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>{s.num}</div>
+                    <div style={{ fontSize:9.5, fontWeight:700, letterSpacing:".05em", textTransform:"uppercase", color:"rgba(255,255,255,.5)", marginTop:5, fontFamily:"var(--fb)", lineHeight:1.35 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* name + designation */}
+              <div style={{ marginTop: isMobile ? 4 : 8 }}>
+                <div style={{ fontSize: isMobile ? 14.5 : 16, fontWeight:800, color:"#fff", fontFamily:"var(--fb)", letterSpacing:"-.01em" }}>Pankaj Narang</div>
+                <div style={{ fontSize:12, color:"rgba(255,255,255,.55)", fontFamily:"var(--fb)", marginTop:3 }}>Internal Audit&nbsp;·&nbsp;<span style={{ color:"#F5D060", fontWeight:700 }}>Benetton</span></div>
               </div>
             </div>
           </div>
