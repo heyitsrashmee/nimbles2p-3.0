@@ -108,7 +108,7 @@ export function VDDFooter({ onNavigate }) {
           ))}
         </div>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10, borderTop:"1px solid rgba(255,255,255,.07)", padding: isMobile ? "21px 0 31px" : "26px 0 36px" }}>
-          <div style={{ fontSize:12, color:"rgba(255,255,255,.22)", fontFamily:"var(--fb)" }}>© 2025 NimbleS2P. All rights reserved.</div>
+          <div style={{ fontSize:12, color:"rgba(255,255,255,.22)", fontFamily:"var(--fb)" }}>© 2026 NimbleS2P. All rights reserved.</div>
           <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
             {["Privacy Policy","Terms of Use","Cookie Policy"].map(l=>(
               <a key={l} href="#" style={{ fontSize:12, color:"rgba(255,255,255,.28)", textDecoration:"none", fontFamily:"var(--fb)", transition:"color .15s" }}

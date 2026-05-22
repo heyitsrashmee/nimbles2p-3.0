@@ -6,6 +6,7 @@ import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
 
 import { PRODUCT_PAGE_RESOURCES } from "@/components/layout/megaMenuData";
+import GatedDownloadForm from "@/components/GatedDownloadForm";
 
 /* ═══════════════════════════════════════════════════════════
    SUPPLIER DUE DILIGENCE — PRODUCT PAGE
@@ -513,7 +514,7 @@ function VideoTestimonial({ onNavigate }) {
 /* ════════════════════════════════════
    5. FAQs
 ════════════════════════════════════ */
-function FAQs() {
+function FAQs({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const [open, setOpen] = useState(null);
   const ref = useReveal();
@@ -534,7 +535,13 @@ function FAQs() {
             <p style={{ fontSize:15, color:"#64748B", lineHeight:1.7, fontFamily:"var(--fb)", marginBottom:28 }}>
               Everything you need to know about NimbleS2P's supplier onboarding platform.
             </p>
-            <a href="#" style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s, border-color .15s" }}
+            <a
+              href="/getstarted"
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof onNavigate === "function") onNavigate("getstarted");
+              }}
+              style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s, border-color .15s", cursor:"pointer" }}
               onMouseEnter={e=>{ e.currentTarget.style.color="var(--p700)"; e.currentTarget.style.borderColor="var(--p400)"; }}
               onMouseLeave={e=>{ e.currentTarget.style.color="var(--p600)"; e.currentTarget.style.borderColor="var(--p200)"; }}
             >Talk to our team →</a>
@@ -557,8 +564,6 @@ function FAQs() {
 ════════════════════════════════════ */
 function LeadMagnetCTA() {
   const w = useWidth(); const isMobile = w < 640;
-  const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
   const ref = useReveal();
 
   return (
@@ -590,36 +595,15 @@ function LeadMagnetCTA() {
 
           {/* Right: form card */}
           <div style={{ background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.12)", borderRadius:20, padding: isMobile ? "28px 22px" : "36px 32px", backdropFilter:"blur(16px)" }}>
-            {!done ? (
-              <>
-                <div style={{ fontSize:13, fontWeight:600, color:"rgba(255,255,255,.5)", fontFamily:"var(--fb)", marginBottom:20, letterSpacing:"-.01em" }}>Enter your work email to get instant access</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-                  <input
-                    type="email" value={email} onChange={e=>setEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    style={{ width:"100%", background:"rgba(255,255,255,.08)", border:"1.5px solid rgba(255,255,255,.16)", borderRadius:10, outline:"none", padding:"13px 16px", fontSize:15, color:"#fff", fontFamily:"var(--fb)", transition:"border-color .18s" }}
-                    onFocus={e=>e.target.style.borderColor="rgba(245,166,35,.6)"}
-                    onBlur={e=>e.target.style.borderColor="rgba(255,255,255,.16)"}
-                  />
-                  <button onClick={()=>{ if(email) setDone(true); }} style={{
-                    width:"100%", background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff",
-                    border:"none", borderRadius:10, padding:"13px 24px",
-                    fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"var(--fb)",
-                    boxShadow:"0 6px 24px rgba(232,150,10,.45)", transition:"all .2s",
-                  }}
-                    onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(232,150,10,.6)"; }}
-                    onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 24px rgba(232,150,10,.45)"; }}
-                  >Download Free Guide →</button>
-                </div>
-                <p style={{ fontSize:11.5, color:"rgba(255,255,255,.22)", marginTop:14, fontFamily:"var(--fb)", textAlign:"center" }}>No spam. Unsubscribe anytime.</p>
-              </>
-            ) : (
-              <div style={{ textAlign:"center", padding:"20px 0" }}>
-                <div style={{ fontSize:40, marginBottom:14 }}>✅</div>
-                <div style={{ fontSize:16, fontWeight:700, color:"#34D399", fontFamily:"var(--fb)", marginBottom:8 }}>Guide on its way!</div>
-                <div style={{ fontSize:14, color:"rgba(255,255,255,.45)", fontFamily:"var(--fb)" }}>Check your inbox — the guide has been sent to {email}</div>
-              </div>
-            )}
+            <GatedDownloadForm
+              slug="vdd"
+              title={PRODUCT_PAGE_RESOURCES.vdd.label}
+              pageSource="Supplier Due Diligence"
+              emailPrompt="Enter your work email to get instant access"
+              buttonLabel="Download Free Guide →"
+              successTitle="Guide on its way!"
+              successMessage={(addr) => `Check your inbox — the guide has been sent to ${addr}`}
+            />
           </div>
         </div>
       </div>
@@ -654,7 +638,7 @@ export default function VendorDueDiligencePage({ onBack, onNavigate }) {
         <CompareTable />
         <AIAgents />
         <VideoTestimonial onNavigate={onNavigate} />
-        <FAQs />
+        <FAQs onNavigate={onNavigate} />
         <LeadMagnetCTA />
       </main>
       <VDDFooter onNavigate={onNavigate} />

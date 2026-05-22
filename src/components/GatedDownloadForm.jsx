@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { submitGatedDownloadForm } from "@/lib/web3forms";
+import { isValidEmail, submitGatedDownloadForm } from "@/lib/web3forms";
 import {
   hasGatedUnlock,
   setGatedUnlock,
@@ -9,14 +9,30 @@ import {
 } from "@/lib/gatedResources";
 
 /**
- * Email gate → Web3Forms lead → browser download.
- * @param {{ slug: string, title: string, downloadUrl: string, downloadFilename?: string, onUnlocked?: () => void }} props
+ * Email gate → Web3Forms lead → optional browser download.
+ * @param {{
+ *   slug: string;
+ *   title: string;
+ *   downloadUrl?: string;
+ *   downloadFilename?: string;
+ *   pageSource?: string;
+ *   buttonLabel?: string;
+ *   emailPrompt?: string;
+ *   successTitle?: string;
+ *   successMessage?: (email: string) => string;
+ *   onUnlocked?: () => void;
+ * }} props
  */
 export default function GatedDownloadForm({
   slug,
   title,
-  downloadUrl,
+  downloadUrl = "",
   downloadFilename,
+  pageSource,
+  buttonLabel = "Download Free Guide →",
+  emailPrompt = "Enter your work email for instant access",
+  successTitle,
+  successMessage,
   onUnlocked,
 }) {
   const [email, setEmail] = useState("");
@@ -28,15 +44,18 @@ export default function GatedDownloadForm({
     if (hasGatedUnlock(slug)) setDone(true);
   }, [slug]);
 
+  const hasDownload = Boolean(downloadUrl?.trim());
+
   const startDownload = () => {
+    if (!hasDownload) return;
     triggerResourceDownload({ url: downloadUrl, filename: downloadFilename });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const trimmed = email.trim();
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError("Please enter a valid work email.");
+    if (!isValidEmail(trimmed)) {
+      setError("Please enter a valid email address.");
       return;
     }
     setError("");
@@ -46,10 +65,11 @@ export default function GatedDownloadForm({
         email: trimmed,
         resourceTitle: title,
         resourceSlug: slug,
-        downloadUrl,
+        downloadUrl: hasDownload ? downloadUrl : undefined,
+        pageSource,
       });
       setGatedUnlock(slug);
-      startDownload();
+      if (hasDownload) startDownload();
       setDone(true);
       onUnlocked?.();
     } catch (err) {
@@ -58,6 +78,14 @@ export default function GatedDownloadForm({
       setLoading(false);
     }
   };
+
+  const resolvedSuccessTitle =
+    successTitle ?? (hasDownload ? "Your download has started" : "You're all set!");
+  const resolvedSuccessMessage =
+    successMessage?.(email.trim()) ??
+    (hasDownload
+      ? "If it didn't open automatically, use the button below."
+      : `We'll send the resource to ${email.trim()}.`);
 
   if (done) {
     return (
@@ -72,36 +100,38 @@ export default function GatedDownloadForm({
             marginBottom: 8,
           }}
         >
-          Your download has started
+          {resolvedSuccessTitle}
         </div>
         <p
           style={{
             fontSize: 14,
             color: "rgba(255,255,255,.45)",
             fontFamily: "var(--fb)",
-            marginBottom: 20,
+            marginBottom: hasDownload ? 20 : 0,
           }}
         >
-          If it didn&apos;t open automatically, use the button below.
+          {resolvedSuccessMessage}
         </p>
-        <button
-          type="button"
-          onClick={startDownload}
-          style={{
-            width: "100%",
-            background: "rgba(255,255,255,.1)",
-            border: "1.5px solid rgba(255,255,255,.2)",
-            borderRadius: 10,
-            padding: "12px 20px",
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#fff",
-            cursor: "pointer",
-            fontFamily: "var(--fb)",
-          }}
-        >
-          Download again →
-        </button>
+        {hasDownload ? (
+          <button
+            type="button"
+            onClick={startDownload}
+            style={{
+              width: "100%",
+              background: "rgba(255,255,255,.1)",
+              border: "1.5px solid rgba(255,255,255,.2)",
+              borderRadius: 10,
+              padding: "12px 20px",
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#fff",
+              cursor: "pointer",
+              fontFamily: "var(--fb)",
+            }}
+          >
+            Download again →
+          </button>
+        ) : null}
       </div>
     );
   }
@@ -118,7 +148,7 @@ export default function GatedDownloadForm({
           letterSpacing: "-.01em",
         }}
       >
-        Enter your work email for instant access
+        {emailPrompt}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <input
@@ -164,7 +194,7 @@ export default function GatedDownloadForm({
             boxShadow: "0 6px 24px rgba(232,150,10,.45)",
           }}
         >
-          {loading ? "Sending…" : "Download Free Guide →"}
+          {loading ? "Sending…" : buttonLabel}
         </button>
       </div>
       <p

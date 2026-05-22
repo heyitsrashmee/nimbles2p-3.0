@@ -39,6 +39,7 @@ export const MEGA_PRODUCTS = {
       desc:"Agentic 2-way and 3-way matching automation for every invoice type — material, service, and non-PO — with enterprise-scale exception management.",
       color:"#1a1a2e",
       resource: PRODUCT_PAGE_RESOURCES.invoice,
+      cover: { src: "mega-menu/invoice-processing-cover.png", objectPosition: "center center" },
     },
     {
       id:"rfq",
@@ -47,6 +48,7 @@ export const MEGA_PRODUCTS = {
       desc:"Create, distribute, and evaluate RFQs with supplier comparison and selection.",
       color:"#717C89",
       resource: PRODUCT_PAGE_RESOURCES.rfq,
+      cover: { src: "mega-menu/rfx-management-cover.png", objectPosition: "center center" },
     },
     {
       id:"finance",

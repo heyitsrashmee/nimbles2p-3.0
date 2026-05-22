@@ -6,6 +6,8 @@ import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
 
 import { PRODUCT_PAGE_RESOURCES } from "@/components/layout/megaMenuData";
+import GatedDownloadForm from "@/components/GatedDownloadForm";
+import { assetUrl } from "@/lib/assetUrl";
 
 /* ═══════════════════════════════════════════════════════════
    SUPPLIER PORTAL — PRODUCT PAGE
@@ -181,28 +183,25 @@ function SPVideo() {
               Watch the Supplier Portal live
             </h2>
           </div>
-          <div style={{ borderRadius:20, overflow:"hidden", boxShadow:"0 8px 48px rgba(0,0,0,.12)", border:"1px solid #E2E8F0", background:"#0d0b26", position:"relative", cursor:"pointer" }}>
-            <div style={{ position:"relative", paddingTop:"52%", overflow:"hidden" }}>
-              <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg,#1a1645 0%,#2a2070 50%,#1e1850 100%)" }} />
-              <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 60% 70% at 50% 40%, rgba(99,32,224,.2) 0%, transparent 65%)" }} />
-              <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.03) 1px,transparent 1px)", backgroundSize:"20px 20px" }} />
-              <div style={{ position:"absolute", bottom:"-5%", left:"50%", transform:"translateX(-50%)", width:"40%", height:"80%", background:"linear-gradient(180deg,rgba(100,160,240,.15) 0%,rgba(20,60,120,.35) 100%)", borderRadius:"48% 48% 0 0", filter:"blur(3px)" }} />
-              <div style={{ position:"absolute", top:16, left:16, zIndex:3, display:"inline-flex", alignItems:"center", gap:6, background:"rgba(0,0,0,.55)", backdropFilter:"blur(10px)", border:"1px solid rgba(255,255,255,.15)", borderRadius:100, padding:"5px 12px" }}>
+          <div style={{ borderRadius:20, overflow:"hidden", boxShadow:"0 8px 48px rgba(0,0,0,.12)", border:"1px solid #E2E8F0", background:"#0d0b26", position:"relative" }}>
+            <div style={{ position:"relative", paddingTop:"52%", overflow:"hidden", background:"#0d0b26" }}>
+              <video
+                src={assetUrl("videos/supplier-portal-cfo-event.mp4")}
+                autoPlay
+                muted
+                playsInline
+                loop
+                controls
+                aria-label="Supplier Portal demo"
+                style={{
+                  position:"absolute", inset:0,
+                  width:"100%", height:"100%",
+                  objectFit:"cover", display:"block",
+                }}
+              />
+              <div style={{ position:"absolute", top:16, left:16, zIndex:3, display:"inline-flex", alignItems:"center", gap:6, background:"rgba(0,0,0,.55)", backdropFilter:"blur(10px)", border:"1px solid rgba(255,255,255,.15)", borderRadius:100, padding:"5px 12px", pointerEvents:"none" }}>
                 <span style={{ width:6, height:6, borderRadius:"50%", background:"#34D399", display:"inline-block", boxShadow:"0 0 6px #34D399", animation:"pulse-dot 2s ease-in-out infinite" }} />
                 <span style={{ fontSize:11, fontWeight:700, letterSpacing:".08em", textTransform:"uppercase", color:"rgba(255,255,255,.75)", fontFamily:"var(--fb)" }}>Supplier Portal</span>
-              </div>
-              <div style={{ position:"absolute", top:16, right:16, zIndex:3, background:"rgba(0,0,0,.55)", backdropFilter:"blur(10px)", border:"1px solid rgba(255,255,255,.12)", borderRadius:6, padding:"3px 10px", fontSize:11, fontWeight:600, color:"rgba(255,255,255,.75)", fontFamily:"var(--fm)" }}>4:12</div>
-              <div style={{ position:"absolute", top:"44%", left:"50%", transform:"translate(-50%,-50%)", width:68, height:68, borderRadius:"50%", background:"rgba(255,255,255,.16)", backdropFilter:"blur(14px)", border:"2px solid rgba(255,255,255,.35)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 0 14px rgba(255,255,255,.06)", zIndex:3, transition:"all .2s" }}
-                onMouseEnter={e=>{ e.currentTarget.style.background="rgba(52,211,153,.35)"; e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"; }}
-                onMouseLeave={e=>{ e.currentTarget.style.background="rgba(255,255,255,.16)"; e.currentTarget.style.transform="translate(-50%,-50%)"; }}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5l13 7-13 7V5z"/></svg>
-              </div>
-              <div style={{ position:"absolute", bottom:0, left:0, right:0, zIndex:3, padding:"0 16px 14px", background:"linear-gradient(0deg,rgba(0,0,0,.65) 0%,transparent 100%)" }}>
-                <div style={{ height:3, background:"rgba(255,255,255,.22)", borderRadius:3, marginBottom:10, position:"relative" }}>
-                  <div style={{ position:"absolute", left:0, top:0, bottom:0, width:"28%", background:"rgba(255,255,255,.85)", borderRadius:3 }} />
-                  <div style={{ position:"absolute", left:"28%", top:"50%", transform:"translate(-50%,-50%)", width:11, height:11, borderRadius:"50%", background:"#fff" }} />
-                </div>
               </div>
             </div>
             <div style={{ padding:"20px 28px", background:"#fff", display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:14, borderTop:"1px solid #F1F5F9" }}>
@@ -508,7 +507,7 @@ function SPBenefits() {
 /* ════════════════════════════════════
    SP FAQs
 ════════════════════════════════════ */
-function SPFAQs() {
+function SPFAQs({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const [open, setOpen] = useState(null);
   const ref = useReveal();
@@ -522,7 +521,13 @@ function SPFAQs() {
             <Eyebrow>FAQs</Eyebrow>
             <h2 style={{ fontFamily:"var(--fb)", fontSize: isMobile ? "clamp(24px,6vw,32px)" : "clamp(26px,3vw,38px)", fontWeight:700, letterSpacing:"-.04em", lineHeight:1.08, color:"#0F172A", marginBottom:16 }}>Questions<br />we get asked</h2>
             <p style={{ fontSize:15, color:"#64748B", lineHeight:1.7, fontFamily:"var(--fb)", marginBottom:28 }}>Everything about the NimbleS2P Supplier Portal, answered.</p>
-            <a href="#" style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s, border-color .15s" }}
+            <a
+              href="/getstarted"
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof onNavigate === "function") onNavigate("getstarted");
+              }}
+              style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s, border-color .15s", cursor:"pointer" }}
               onMouseEnter={e=>{ e.currentTarget.style.color="var(--p700)"; e.currentTarget.style.borderColor="var(--p400)"; }}
               onMouseLeave={e=>{ e.currentTarget.style.color="var(--p600)"; e.currentTarget.style.borderColor="var(--p200)"; }}
             >Talk to our team →</a>
@@ -543,7 +548,6 @@ function SPFAQs() {
 ════════════════════════════════════ */
 function SPCTA() {
   const w = useWidth(); const isMobile = w < 640;
-  const [email, setEmail] = useState(""); const [done, setDone] = useState(false);
   const ref = useReveal();
   return (
     <section style={{ background:"linear-gradient(160deg,#0f0c29 0%,#1a1260 40%,#261d6b 70%,#1e1050 100%)", position:"relative", overflow:"hidden", padding: isMobile ? "64px 20px 80px" : "clamp(72px,9vh,110px) 5vw" }}>
@@ -563,29 +567,15 @@ function SPCTA() {
             <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>Full case study inside — how India's leading enterprises transformed supplier relationships with NimbleS2P.</p>
           </div>
           <div style={{ background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.12)", borderRadius:20, padding: isMobile ? "28px 22px" : "36px 32px", backdropFilter:"blur(16px)" }}>
-            {!done ? (
-              <>
-                <div style={{ fontSize:13, fontWeight:600, color:"rgba(255,255,255,.5)", fontFamily:"var(--fb)", marginBottom:20 }}>Enter your work email to get instant access</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-                  <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@company.com"
-                    style={{ width:"100%", background:"rgba(255,255,255,.08)", border:"1.5px solid rgba(255,255,255,.16)", borderRadius:10, outline:"none", padding:"13px 16px", fontSize:15, color:"#fff", fontFamily:"var(--fb)", transition:"border-color .18s" }}
-                    onFocus={e=>e.target.style.borderColor="rgba(52,211,153,.6)"}
-                    onBlur={e=>e.target.style.borderColor="rgba(255,255,255,.16)"}
-                  />
-                  <button onClick={()=>{ if(email) setDone(true); }} style={{ width:"100%", background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", border:"none", borderRadius:10, padding:"13px 24px", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"var(--fb)", boxShadow:"0 6px 24px rgba(232,150,10,.45)", transition:"all .2s" }}
-                    onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(232,150,10,.6)"; }}
-                    onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 24px rgba(232,150,10,.45)"; }}
-                  >Download Full Case Study →</button>
-                </div>
-                <p style={{ fontSize:11.5, color:"rgba(255,255,255,.22)", marginTop:14, fontFamily:"var(--fb)", textAlign:"center" }}>No spam. Unsubscribe anytime.</p>
-              </>
-            ) : (
-              <div style={{ textAlign:"center", padding:"20px 0" }}>
-                <div style={{ fontSize:40, marginBottom:14 }}>✅</div>
-                <div style={{ fontSize:16, fontWeight:700, color:"#34D399", fontFamily:"var(--fb)", marginBottom:8 }}>Case study on its way!</div>
-                <div style={{ fontSize:14, color:"rgba(255,255,255,.45)", fontFamily:"var(--fb)" }}>Check your inbox at {email}</div>
-              </div>
-            )}
+            <GatedDownloadForm
+              slug="supplier"
+              title={PRODUCT_PAGE_RESOURCES.supplier.label}
+              pageSource="Supplier Portal"
+              emailPrompt="Enter your work email to get instant access"
+              buttonLabel="Download Full Case Study →"
+              successTitle="Case study on its way!"
+              successMessage={(addr) => `Check your inbox at ${addr}`}
+            />
           </div>
         </div>
       </div>
@@ -618,7 +608,7 @@ export default function SupplierPortalPage({ onBack, onNavigate }) {
         <SPUrgency />
         <SPFeatures />
         <SPBenefits />
-        <SPFAQs />
+        <SPFAQs onNavigate={onNavigate} />
         <SPCTA />
       </main>
       <VDDFooter onNavigate={onNavigate} />

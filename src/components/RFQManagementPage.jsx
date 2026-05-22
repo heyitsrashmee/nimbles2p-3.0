@@ -330,7 +330,7 @@ function RFQBenefits() {
 /* ════════════════════════════════════
    5. FAQs
 ════════════════════════════════════ */
-function RFQFAQs() {
+function RFQFAQs({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const [open, setOpen] = useState(null);
   const ref = useReveal();
@@ -342,7 +342,13 @@ function RFQFAQs() {
             <Eyebrow>FAQs</Eyebrow>
             <h2 style={{ fontFamily:"var(--fb)", fontSize: isMobile ? "clamp(24px,6vw,32px)" : "clamp(26px,3vw,38px)", fontWeight:700, letterSpacing:"-.04em", lineHeight:1.08, color:"#0F172A", marginBottom:16 }}>Questions<br />we get asked</h2>
             <p style={{ fontSize:15, color:"#64748B", lineHeight:1.7, fontFamily:"var(--fb)", marginBottom:28 }}>Everything about RFx Management by NimbleS2P, answered.</p>
-            <a href="#" style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s,border-color .15s" }}
+            <a
+              href="/getstarted"
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof onNavigate === "function") onNavigate("getstarted");
+              }}
+              style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s,border-color .15s", cursor:"pointer" }}
               onMouseEnter={e=>{e.currentTarget.style.color="var(--p700)";e.currentTarget.style.borderColor="var(--p400)";}}
               onMouseLeave={e=>{e.currentTarget.style.color="var(--p600)";e.currentTarget.style.borderColor="var(--p200)";}}
             >Talk to our team →</a>
@@ -563,7 +569,7 @@ export default function RFQManagementPage({ onBack, onNavigate }) {
         <RFQAIAgents />
         <RFQFeatures />
         <RFQBenefits />
-        <RFQFAQs />
+        <RFQFAQs onNavigate={onNavigate} />
         <RFQCTA />
       </main>
       <VDDFooter onNavigate={onNavigate} />

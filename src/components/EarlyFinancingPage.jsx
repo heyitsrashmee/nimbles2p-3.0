@@ -893,7 +893,7 @@ function EFEnterprise() {
 /* ════════════════════════════════════
    EF 10 — FAQs
 ════════════════════════════════════ */
-function EFFAQs() {
+function EFFAQs({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const [open, setOpen] = useState(null);
   const ref = useReveal();
@@ -912,7 +912,13 @@ function EFFAQs() {
             <p style={{ fontSize:15, color:"#64748B", lineHeight:1.7, fontFamily:"var(--fb)", marginBottom:28 }}>
               Everything you need to know about NimbleS2P's Supply Chain Financing platform.
             </p>
-            <a href="#" style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s, border-color .15s" }}
+            <a
+              href="/getstarted"
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof onNavigate === "function") onNavigate("getstarted");
+              }}
+              style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"var(--p600)", fontFamily:"var(--fb)", textDecoration:"none", borderBottom:"1.5px solid var(--p200)", paddingBottom:2, transition:"color .15s, border-color .15s", cursor:"pointer" }}
               onMouseEnter={e=>{ e.currentTarget.style.color="var(--p700)"; e.currentTarget.style.borderColor="var(--p400)"; }}
               onMouseLeave={e=>{ e.currentTarget.style.color="var(--p600)"; e.currentTarget.style.borderColor="var(--p200)"; }}
             >Talk to our team →</a>
@@ -1001,7 +1007,7 @@ export default function EarlyFinancingPage({ onBack, onNavigate }) {
         <EFBenefits />
         <EFComparison />
         <EFEnterprise />
-        <EFFAQs />
+        <EFFAQs onNavigate={onNavigate} />
         <EFCTA onNavigate={onNavigate} />
       </main>
       <VDDFooter onNavigate={onNavigate} />

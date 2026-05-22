@@ -66,18 +66,28 @@ export async function submitBookDemoForm(form) {
 }
 
 /**
- * Gated guide / PDF download — captures email then client triggers file download.
- * @param {{ email: string, resourceTitle: string, resourceSlug: string, downloadUrl: string }} payload
+ * Gated guide / PDF download — captures email then client may trigger file download.
+ * @param {{ email: string, resourceTitle: string, resourceSlug: string, downloadUrl?: string, pageSource?: string }} payload
  */
 export async function submitGatedDownloadForm(payload) {
   const formData = new FormData();
   formData.append("access_key", GATED_DOWNLOAD_KEY);
-  formData.append("subject", `Gated download — ${payload.resourceTitle}`);
+  formData.append("subject", `Gated resource — ${payload.resourceTitle}`);
   formData.append("from_name", payload.email);
   formData.append("email", payload.email);
   formData.append("resource_title", payload.resourceTitle);
   formData.append("resource_slug", payload.resourceSlug);
-  formData.append("download_url", payload.downloadUrl);
-  formData.append("message", `Download requested: ${payload.resourceTitle} (${payload.resourceSlug})`);
+  if (payload.pageSource) formData.append("page_source", payload.pageSource);
+  if (payload.downloadUrl) formData.append("download_url", payload.downloadUrl);
+  formData.append(
+    "message",
+    `Resource requested: ${payload.resourceTitle} (${payload.resourceSlug})${payload.pageSource ? ` — ${payload.pageSource}` : ""}`,
+  );
   return submitToWeb3Forms(GATED_DOWNLOAD_KEY, formData);
+}
+
+/** Basic email format check for gated forms. */
+export function isValidEmail(value) {
+  const trimmed = String(value ?? "").trim();
+  return trimmed.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
 }

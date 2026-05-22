@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { assetUrl } from "@/lib/assetUrl";
+import { pageToPath } from "@/lib/routes";
 import { MEGA_PRODUCTS } from "./megaMenuData";
 
 export function MegaMenu({ onClose, onNavigate }) {
-  const router = useRouter();
   const items = MEGA_PRODUCTS.integrated;
   const [hovered, setHovered] = useState(items[0].id);
   const [wpFeatured, setWpFeatured] = useState(null);
@@ -227,11 +226,11 @@ export function MegaMenu({ onClose, onNavigate }) {
 
                 {/* Compact CTA pill */}
                 <a
-                  href={res.slug || "#"}
+                  href={pageToPath("getstarted")}
                   onClick={(e) => {
                     e.preventDefault();
                     onClose();
-                    if (res.slug) router.push(res.slug);
+                    if (typeof onNavigate === "function") onNavigate("getstarted");
                   }}
                   style={{
                   display:"inline-flex", alignItems:"center", gap:5, flexShrink:0,
@@ -244,7 +243,7 @@ export function MegaMenu({ onClose, onNavigate }) {
                 }}
                   onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow=`0 6px 18px ${active.color}50`; }}
                   onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=`0 3px 12px ${active.color}3a`; }}
-                >Access →</a>
+                >Get Started →</a>
               </div>
 
             </div>
@@ -262,13 +261,11 @@ export function MegaMenu({ onClose, onNavigate }) {
         }}>
           <div style={{ display:"flex", alignItems:"center", gap:6 }}>
             <span style={{ fontSize:10.5, color:"#64748B", fontFamily:"var(--fb)", marginRight:8 }}>Trusted enterprise standard:</span>
-            {[["#22C55E","SOC 2 Type II"],["#22C55E","ISO 27001"],["#6366F1","99.9% Uptime"]].map(([dot,label])=>(
+            {[["#22C55E","SOC 2 Type II"],["#22C55E","ISO 27001"]].map(([dot,label])=>(
               <span key={label} style={{
                 display:"inline-flex", alignItems:"center", gap:5, padding:"3px 10px",
-                background:dot==="#6366F1"?"#EEF2FF":"#F0FDF4",
-                borderRadius:100, fontSize:10.5, fontWeight:600,
-                color:dot==="#6366F1"?"#4338CA":"#166534",
-                fontFamily:"var(--fb)", border:`1px solid ${dot==="#6366F1"?"#C7D2FE":"#BBF7D0"}`,
+                background:"#F0FDF4", borderRadius:100, fontSize:10.5, fontWeight:600,
+                color:"#166534", fontFamily:"var(--fb)", border:"1px solid #BBF7D0",
               }}>
                 <span style={{ width:5, height:5, borderRadius:"50%", background:dot, display:"inline-block" }} />
                 {label}
