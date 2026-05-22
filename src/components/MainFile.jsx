@@ -502,6 +502,8 @@ function PlatformModules({ onNavigate }) {
       ? Math.round(Math.min(480, Math.max(360, w * 0.5)))
       : null;
 
+  if (isMobile) return null;
+
   return (
     <section className="sec-pad platform-modules" style={{ background:"var(--slp)", position:"relative", overflow:"hidden" }}>
       {/* Top accent line */}
