@@ -184,7 +184,7 @@ function SPVideo() {
             </h2>
           </div>
           <div style={{ borderRadius:20, overflow:"hidden", boxShadow:"0 8px 48px rgba(0,0,0,.12)", border:"1px solid #E2E8F0", background:"#0d0b26", position:"relative" }}>
-            <div style={{ position:"relative", paddingTop:"52%", overflow:"hidden", background:"#0d0b26" }}>
+            <div style={{ position:"relative", overflow:"hidden", background:"#0d0b26", lineHeight:0 }}>
               <video
                 src={assetUrl("videos/supplier-portal-cfo-event.mp4")}
                 autoPlay
@@ -194,9 +194,10 @@ function SPVideo() {
                 controls
                 aria-label="Supplier Portal demo"
                 style={{
-                  position:"absolute", inset:0,
-                  width:"100%", height:"100%",
-                  objectFit:"cover", display:"block",
+                  width:"100%",
+                  height:"auto",
+                  display:"block",
+                  verticalAlign:"top",
                 }}
               />
               <div style={{ position:"absolute", top:16, left:16, zIndex:3, display:"inline-flex", alignItems:"center", gap:6, background:"rgba(0,0,0,.55)", backdropFilter:"blur(10px)", border:"1px solid rgba(255,255,255,.15)", borderRadius:100, padding:"5px 12px", pointerEvents:"none" }}>

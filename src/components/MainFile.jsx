@@ -666,7 +666,7 @@ function PlatformModules({ onNavigate }) {
             {/* Sticky inner header */}
             <div style={{ padding: isMobile ? "14px 16px 10px" : isTablet ? "16px 20px 12px" : "20px 32px 14px", borderBottom:`1px solid ${colour}14`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0, gap:8 }}>
               <span style={{ fontFamily:"var(--fb)", fontSize: isMobile ? 13 : 14, fontWeight:700, color:"#0F172A", minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{mod.tab}</span>
-              {mod.id !== "vdd" && (
+              {(mod.id === "vdd" || mod.id === "supplier") && (
                 <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:`${colour}0e`, border:`1px solid ${colour}22`, borderRadius:100, padding:"4px 12px" }}>
                   <span style={{ width:5, height:5, borderRadius:"50%", background:colour, display:"inline-block" }} />
                   <span style={{ fontSize:11, fontWeight:700, color:colour, fontFamily:"var(--fb)" }}>Live Preview</span>

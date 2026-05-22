@@ -11,6 +11,7 @@ import {
 } from "@/components/shared/whyIcons";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
+import { pageToPath } from "@/lib/routes";
 
 /* ═══════════════════════════════════════════════════════════
    WHY NIMBLES2P — PAGE
@@ -43,7 +44,8 @@ function WhyHero({ onNavigate }) {
           background:"linear-gradient(160deg,#fff 0%,#fff 40%,#E2D9FE 60%,#F5C842 85%,#F5A623 100%)",
           WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
         }}>
-          Enterprise AI, Designed Right.
+          Enterprise AI,<br />
+          Designed Right.
         </h1>
 
         <p className="fade-up d2" style={{ fontSize: isMobile ? 15 : 18, color:"rgba(255,255,255,.52)", lineHeight:1.75, fontFamily:"var(--fb)", maxWidth:620, margin:"0 auto 36px" }}>
@@ -487,7 +489,7 @@ function WhyNumbers() {
 /* ════════════════════════════════════
    5. CTA
 ════════════════════════════════════ */
-function WhyCTA() {
+function WhyCTA({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const ref = useReveal();
   return (
@@ -518,10 +520,16 @@ function WhyCTA() {
 
           <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
 
-            <a href="#" style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:7, background:"rgba(255,255,255,.07)", color:"rgba(255,255,255,.8)", border:"1.5px solid rgba(255,255,255,.22)", borderRadius:10, padding:"13px 32px", fontSize:16, fontWeight:500, textDecoration:"none", fontFamily:"var(--fb)", backdropFilter:"blur(10px)", transition:"all .18s" }}
+            <a
+              href={pageToPath("demo")}
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof onNavigate === "function") onNavigate("demo");
+              }}
+              style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:7, background:"rgba(255,255,255,.07)", color:"rgba(255,255,255,.8)", border:"1.5px solid rgba(255,255,255,.22)", borderRadius:10, padding:"13px 32px", fontSize:16, fontWeight:500, textDecoration:"none", fontFamily:"var(--fb)", backdropFilter:"blur(10px)", transition:"all .18s", cursor:"pointer" }}
               onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,.14)";e.currentTarget.style.color="#fff";}}
               onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,.07)";e.currentTarget.style.color="rgba(255,255,255,.8)";}}
-            >Browse Products →</a>
+            >Book a Demo →</a>
           </div>
 
           {/* Social proof */}
@@ -565,7 +573,7 @@ export default function WhyNimblePage({ onBack, onNavigate }) {
         <WhyStory />
         <WhyBeforeAfter />
         <WhyNumbers />
-        <WhyCTA />
+        <WhyCTA onNavigate={onNavigate} />
       </main>
       <VDDFooter onNavigate={onNavigate} />
     </>
