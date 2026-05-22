@@ -47,3 +47,17 @@ Verify: `https://nimbles2p.com/wp-json/wp/v2/posts?per_page=1`
 | `analytics` | Supplier Analytics |
 
 If meta is missing, the site falls back to the static copy in `megaMenuData.js`.
+
+## Gated PDF guides
+
+See **[GATED-RESOURCES.md](./GATED-RESOURCES.md)** for uploading two guides with email-gated download.
+
+REST fields:
+
+```json
+"meta": {
+  "nimbles_gated_resource": true,
+  "nimbles_download_url": "https://nimbles2p.com/wp-content/uploads/.../guide.pdf",
+  "nimbles_download_filename": "guide.pdf"
+}
+```

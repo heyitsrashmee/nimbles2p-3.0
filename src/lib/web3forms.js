@@ -2,6 +2,9 @@ const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
 const GET_STARTED_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? "";
 const BOOK_DEMO_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_DEMO_ACCESS_KEY ?? "";
+/** Falls back to Get Started form if a dedicated gated key is not set. */
+const GATED_DOWNLOAD_KEY =
+  process.env.NEXT_PUBLIC_WEB3FORMS_GATED_ACCESS_KEY ?? GET_STARTED_KEY;
 
 async function submitToWeb3Forms(accessKey, fields) {
   if (!accessKey) {
@@ -60,4 +63,21 @@ export async function submitBookDemoForm(form) {
   formData.append("timeline", form.timeline);
   formData.append("message", form.message || "—");
   return submitToWeb3Forms(BOOK_DEMO_KEY, formData);
+}
+
+/**
+ * Gated guide / PDF download — captures email then client triggers file download.
+ * @param {{ email: string, resourceTitle: string, resourceSlug: string, downloadUrl: string }} payload
+ */
+export async function submitGatedDownloadForm(payload) {
+  const formData = new FormData();
+  formData.append("access_key", GATED_DOWNLOAD_KEY);
+  formData.append("subject", `Gated download — ${payload.resourceTitle}`);
+  formData.append("from_name", payload.email);
+  formData.append("email", payload.email);
+  formData.append("resource_title", payload.resourceTitle);
+  formData.append("resource_slug", payload.resourceSlug);
+  formData.append("download_url", payload.downloadUrl);
+  formData.append("message", `Download requested: ${payload.resourceTitle} (${payload.resourceSlug})`);
+  return submitToWeb3Forms(GATED_DOWNLOAD_KEY, formData);
 }

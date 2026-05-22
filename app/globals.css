@@ -104,11 +104,46 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 .stats-bar-cell { text-align:center; }
 @media(max-width:520px) { .stats-bar { grid-template-columns:repeat(2,1fr); } }
 
-/* ── PLATFORM MODULES ── */
+/* ── PLATFORM MODULES (homepage) ── */
 .pm-body { display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:stretch; }
 @media(max-width:900px) { .pm-body { grid-template-columns:1fr;gap:16px; } }
 .pm-tabs { display:flex;align-items:center;gap:4px;padding:5px;background:#EEE9FB;border:1px solid var(--bd-p);border-radius:14px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none; }
 .pm-tabs::-webkit-scrollbar { display:none; }
+
+.platform-modules-tabs {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.platform-modules-tabs::-webkit-scrollbar { display: none; }
+
+.platform-modules-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+.platform-modules-demo {
+  width: 100%;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iPad Air portrait / small tablet */
+@media (max-width: 1023px) {
+  .platform-modules .sec-inner,
+  .platform-modules > div {
+    max-width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 639px) {
+  .platform-modules {
+    overflow-x: clip;
+  }
+  .platform-modules-card {
+    border-radius: 18px;
+  }
+}
 
 /* ── NIMBLE DIFFERENCE ── */
 .nd-rows { border-top:1px solid rgba(255,255,255,.1); }
@@ -122,10 +157,20 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 @media(max-width:720px) { .rr-img { min-height:200px; } }
 
 /* ── SUPPLIER LOVE US ── */
-.slu-top { display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center; }
-@media(max-width:860px) { .slu-top { grid-template-columns:1fr;gap:28px; } }
-.slu-stats { display:grid;grid-template-columns:repeat(4,1fr); }
-@media(max-width:640px) { .slu-stats { grid-template-columns:repeat(2,1fr); } }
+/* Supplier Experience (homepage) */
+.supplier-experience {
+  box-sizing: border-box;
+}
+.supplier-experience-hero,
+.supplier-experience-stats,
+.supplier-experience-caps {
+  box-sizing: border-box;
+}
+@media (max-width: 639px) {
+  .supplier-experience-hero h2 {
+    font-size: clamp(28px, 8.5vw, 44px) !important;
+  }
+}
 
 /* ── HEAR FROM THEM ── */
 .hft-r1 { display:grid;grid-template-columns:1fr 1.1fr;gap:14px;margin-bottom:14px; }

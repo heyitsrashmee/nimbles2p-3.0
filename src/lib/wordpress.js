@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { buildMegaMenuFeaturedMap } from "@/lib/megaMenuFromWordPress";
+import { extractGatedResourceMeta } from "@/lib/gatedResources";
 
 /**
  * WordPress → Resources adapter.
@@ -16,7 +17,14 @@ import { buildMegaMenuFeaturedMap } from "@/lib/megaMenuFromWordPress";
  * Endpoint: https://nimbles2p.com/wp-json/wp/v2/posts?_embed
  */
 
-const WP_ENDPOINT = "https://nimbles2p.com/wp-json/wp/v2/posts";
+/** Override via NEXT_PUBLIC_WORDPRESS_API_URL (e.g. https://yoursite.com/wp-json/wp/v2) */
+const WP_API_ROOT = (
+  process.env.NEXT_PUBLIC_WORDPRESS_API_URL?.replace(/\/$/, "") ||
+  "https://nimbles2p.com/wp-json/wp/v2"
+);
+const WP_ENDPOINT = `${WP_API_ROOT}/posts`;
+
+const EMPTY_RESOURCES = { featuredPost: null, posts: [] };
 
 /** WP category slug → existing Resources taxonomy label (keeps the filter pills + #blog deep-link working). */
 const CATEGORY_MAP = {
@@ -97,6 +105,7 @@ function extractAuthor(post) {
 export function mapPost(post) {
   const { url: coverImage, alt: coverAlt } = extractImage(post);
   const title = cleanText(post.title?.rendered);
+  const gated = extractGatedResourceMeta(post);
   return {
     id: String(post.id),
     title,
@@ -108,6 +117,9 @@ export function mapPost(post) {
     coverImage,
     coverAlt: coverAlt || title,
     author: extractAuthor(post),
+    gated: gated.gated,
+    downloadUrl: gated.downloadUrl,
+    downloadFilename: gated.downloadFilename,
   };
 }
 
@@ -118,18 +130,26 @@ export function mapPost(post) {
  * @returns {Promise<{ featuredPost: object|null, posts: object[] }>}
  */
 export async function fetchResources({ perPage = 24, signal } = {}) {
-  const res = await fetch(`${WP_ENDPOINT}?_embed&per_page=${perPage}`, {
-    signal,
-    headers: { Accept: "application/json" },
-    next: { revalidate: 3600 },
-  });
-  if (!res.ok) throw new Error(`WordPress responded ${res.status}`);
+  try {
+    const res = await fetch(`${WP_ENDPOINT}?_embed&per_page=${perPage}`, {
+      signal,
+      headers: { Accept: "application/json" },
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) {
+      console.warn(`[wordpress] fetchResources: HTTP ${res.status} — ${WP_ENDPOINT}`);
+      return EMPTY_RESOURCES;
+    }
 
-  const raw = await res.json();
-  if (!Array.isArray(raw) || raw.length === 0) return { featuredPost: null, posts: [] };
+    const raw = await res.json();
+    if (!Array.isArray(raw) || raw.length === 0) return EMPTY_RESOURCES;
 
-  const [featuredPost, ...posts] = raw.map(mapPost);
-  return { featuredPost, posts };
+    const [featuredPost, ...posts] = raw.map(mapPost);
+    return { featuredPost, posts };
+  } catch (err) {
+    console.warn("[wordpress] fetchResources failed:", err);
+    return EMPTY_RESOURCES;
+  }
 }
 
 /** Dedupe within a single server render. */
@@ -154,14 +174,22 @@ export async function getResourcesForPage() {
  * @returns {Promise<Record<string, object>>}
  */
 export async function fetchMegaMenuFeaturedByModule({ perPage = 100, signal } = {}) {
-  const res = await fetch(`${WP_ENDPOINT}?_embed&per_page=${perPage}`, {
-    signal,
-    headers: { Accept: "application/json" },
-    next: { revalidate: 3600 },
-  });
-  if (!res.ok) throw new Error(`WordPress responded ${res.status}`);
-  const raw = await res.json();
-  return buildMegaMenuFeaturedMap(raw);
+  try {
+    const res = await fetch(`${WP_ENDPOINT}?_embed&per_page=${perPage}`, {
+      signal,
+      headers: { Accept: "application/json" },
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) {
+      console.warn(`[wordpress] fetchMegaMenuFeaturedByModule: HTTP ${res.status}`);
+      return {};
+    }
+    const raw = await res.json();
+    return Array.isArray(raw) ? buildMegaMenuFeaturedMap(raw) : {};
+  } catch (err) {
+    console.warn("[wordpress] fetchMegaMenuFeaturedByModule failed:", err);
+    return {};
+  }
 }
 
 export async function getMegaMenuFeaturedByModule() {
@@ -208,6 +236,7 @@ function mapRelated(post) {
 function mapArticle(post) {
   const { url: coverImage, alt: coverAlt } = extractImage(post);
   const title = cleanText(post.title?.rendered);
+  const gated = extractGatedResourceMeta(post);
   return {
     slug: post.slug,
     title,
@@ -220,8 +249,13 @@ function mapArticle(post) {
     tags: extractTags(post),
     coverImage,                                   // featured image → cover slot
     coverAlt: coverAlt || title,
-    content: [{ type: "html", html: post.content?.rendered || "" }], // full WP HTML
+    content: gated.gated
+      ? [{ type: "lead", text: buildExcerpt(post.excerpt?.rendered, post.content?.rendered) }]
+      : [{ type: "html", html: post.content?.rendered || "" }],
     relatedPosts: [],                             // filled in by fetchPostBySlug
+    gated: gated.gated,
+    downloadUrl: gated.downloadUrl,
+    downloadFilename: gated.downloadFilename,
   };
 }
 
@@ -231,12 +265,21 @@ function mapArticle(post) {
  * null if no post matches. Server-side: cached/revalidated via Next's fetch.
  */
 export async function fetchPostBySlug(slug, { signal } = {}) {
-  const res = await fetch(`${WP_ENDPOINT}?slug=${encodeURIComponent(slug)}&_embed`, {
-    signal,
-    headers: { Accept: "application/json" },
-    next: { revalidate: 3600 },
-  });
-  if (!res.ok) throw new Error(`WordPress responded ${res.status}`);
+  let res;
+  try {
+    res = await fetch(`${WP_ENDPOINT}?slug=${encodeURIComponent(slug)}&_embed`, {
+      signal,
+      headers: { Accept: "application/json" },
+      next: { revalidate: 3600 },
+    });
+  } catch (err) {
+    console.warn(`[wordpress] fetchPostBySlug(${slug}) failed:`, err);
+    return null;
+  }
+  if (!res.ok) {
+    console.warn(`[wordpress] fetchPostBySlug(${slug}): HTTP ${res.status}`);
+    return null;
+  }
 
   const raw = await res.json();
   if (!Array.isArray(raw) || raw.length === 0) return null;

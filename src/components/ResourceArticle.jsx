@@ -13,11 +13,22 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useSiteNavigation } from "@/lib/siteNavigation";
 import BlogPostPage from "@/components/BlogPostPage";
+import GatedResourcePage from "@/components/GatedResourcePage";
 
 export default function ResourceArticle({ post }) {
   const pathname = usePathname();
   const router = useRouter();
   const { navigate } = useSiteNavigation(pathname, router);
+
+  if (post.gated && post.downloadUrl) {
+    return (
+      <GatedResourcePage
+        post={post}
+        onNavigate={navigate}
+        onBack={() => navigate("home")}
+      />
+    );
+  }
 
   return (
     <BlogPostPage

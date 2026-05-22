@@ -208,6 +208,8 @@ function Hero({ onNavigate }) {
 
 
 const WORKFLOW_DEFAULT = { w: 1394, h: 732, fit: "cover" };
+/** Design canvas for fill-mode demos — scaled down on tablet/mobile via ScaledWorkflowDemo */
+const WORKFLOW_FILL_REF = { w: 960, h: 520 };
 const WORKFLOW_LAYOUTS = {
   vdd: { fit: "fill" },
   rfq: { fit: "fill" },
@@ -227,19 +229,28 @@ const WORKFLOW_DEMOS = {
 function ScaledWorkflowDemo({ modId }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(0.4);
+  const [fillScale, setFillScale] = useState(1);
   const Demo = WORKFLOW_DEMOS[modId];
   const layout = WORKFLOW_LAYOUTS[modId] || WORKFLOW_DEFAULT;
   const fit = layout.fit || WORKFLOW_DEFAULT.fit;
   const workflowW = layout.w ?? WORKFLOW_DEFAULT.w;
   const workflowH = layout.h ?? WORKFLOW_DEFAULT.h;
+  const fillRefW = WORKFLOW_FILL_REF.w;
+  const fillRefH = WORKFLOW_FILL_REF.h;
+  const zoom = layout.zoom ?? 1;
 
   useEffect(() => {
-    if (fit === "fill") return;
     const el = wrapRef.current;
     if (!el) return;
     const measure = () => {
       const { width, height } = el.getBoundingClientRect();
       if (width < 8 || height < 8) return;
+      if (fit === "fill") {
+        const sx = width / fillRefW;
+        const sy = height / fillRefH;
+        setFillScale(Math.max(0.28, Math.min(sx, sy, 1)));
+        return;
+      }
       const sx = width / workflowW;
       const sy = height / workflowH;
       const s = fit === "contain" ? Math.min(sx, sy) : Math.max(sx, sy);
@@ -249,7 +260,7 @@ function ScaledWorkflowDemo({ modId }) {
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [modId, workflowW, workflowH, fit]);
+  }, [modId, workflowW, workflowH, fit, fillRefW, fillRefH]);
 
   if (!Demo) return null;
 
@@ -262,7 +273,7 @@ function ScaledWorkflowDemo({ modId }) {
   };
 
   if (fit === "fill") {
-    const zoom = layout.zoom ?? 1;
+    const visual = fillScale * zoom;
     return (
       <div
         ref={wrapRef}
@@ -275,15 +286,23 @@ function ScaledWorkflowDemo({ modId }) {
       >
         <div
           style={{
-            width: zoom > 1 ? `${100 / zoom}%` : "100%",
-            height: zoom > 1 ? `${100 / zoom}%` : "100%",
-            minWidth: 0,
-            minHeight: 0,
-            transform: zoom !== 1 ? `scale(${zoom})` : undefined,
-            transformOrigin: "center center",
+            width: fillRefW * fillScale,
+            height: fillRefH * fillScale,
+            overflow: "hidden",
+            flexShrink: 0,
+            borderRadius: 2,
           }}
         >
-          <Demo />
+          <div
+            style={{
+              width: fillRefW,
+              height: fillRefH,
+              transform: `scale(${visual})`,
+              transformOrigin: "top left",
+            }}
+          >
+            <Demo />
+          </div>
         </div>
       </div>
     );
@@ -491,11 +510,18 @@ function PlatformModules({ onNavigate }) {
   const ref = useReveal();
   const w = useWidth();
   const isMobile = w < 640;
-  const isTablet = w < 960;
+  const isTablet = w >= 640 && w < 1024;
+  const isDesktop = w >= 1024;
+  const isStacked = !isDesktop;
   const colour = MOD_COLOURS[active] || "#391085";
+  const demoPanelHeight = isMobile
+    ? Math.round(Math.min(400, Math.max(280, w * 0.58)))
+    : isTablet
+      ? Math.round(Math.min(480, Math.max(360, w * 0.5)))
+      : null;
 
   return (
-    <section className="sec-pad" style={{ background:"var(--slp)", position:"relative", overflow:"hidden" }}>
+    <section className="sec-pad platform-modules" style={{ background:"var(--slp)", position:"relative", overflow:"hidden" }}>
       {/* Top accent line */}
       <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:"linear-gradient(90deg,var(--p500),var(--p300),#F59E0B)", pointerEvents:"none" }} />
 
@@ -515,13 +541,13 @@ function PlatformModules({ onNavigate }) {
         </div>
 
         {/* ── TAB BAR — Pricing segmented control style ── */}
-        <div style={{
+        <div className="platform-modules-tabs" style={{
           background:"#fff",
           borderRadius:16,
           border:"1px solid #E2E8F0",
-          padding:"6px",
+          padding: isMobile ? "5px" : "6px",
           display:"flex",
-          gap:4,
+          gap: isMobile ? 3 : 4,
           marginBottom: isMobile ? 16 : 20,
           boxShadow:"0 2px 12px rgba(0,0,0,.06)",
           overflowX:"auto",
@@ -531,27 +557,32 @@ function PlatformModules({ onNavigate }) {
           {MODULES.map(m=>{
             const isAct = active===m.id;
             const mc = MOD_COLOURS[m.id] || "#391085";
+            const tabLabel = isMobile
+              ? (m.id === "vdd" ? "VDD" : m.id === "rfq" ? "RFQ" : m.tab.split(" ")[0])
+              : isTablet && m.tab.length > 14
+                ? m.tab.replace("Supplier ", "").replace(" Processing", "")
+                : m.tab;
             return (
               <button key={m.id} onClick={()=>setActive(m.id)} style={{
-                flex:1,
+                flex: isMobile ? "0 0 auto" : 1,
                 display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-                gap:5,
+                gap: isMobile ? 4 : 5,
                 fontFamily:"var(--fb)",
                 fontWeight: isAct ? 700 : 400,
                 color: isAct ? "#fff" : "#64748B",
                 background: isAct ? mc : "transparent",
                 border:"none",
                 borderRadius:11,
-                padding: isMobile ? "8px 10px" : "10px 12px",
+                padding: isMobile ? "8px 12px" : isTablet ? "9px 10px" : "10px 12px",
                 cursor:"pointer",
                 transition:"all .22s cubic-bezier(.22,1,.36,1)",
                 boxShadow: isAct ? `0 3px 14px ${mc}44` : "none",
                 whiteSpace:"nowrap",
-                minWidth: isMobile ? 72 : 100,
+                minWidth: isMobile ? 68 : isTablet ? 88 : 100,
               }}>
-                <span style={{ fontSize: isMobile ? 16 : 20 }}>{m.tabIcon}</span>
-                <span style={{ fontSize: isMobile ? 9 : 11, lineHeight:1.2, textAlign:"center" }}>
-                  {isMobile ? m.tab.split(" ")[0] : m.tab}
+                <span style={{ fontSize: isMobile ? 15 : isTablet ? 18 : 20 }}>{m.tabIcon}</span>
+                <span style={{ fontSize: isMobile ? 9 : isTablet ? 10 : 11, lineHeight:1.2, textAlign:"center" }}>
+                  {tabLabel}
                 </span>
               </button>
             );
@@ -559,25 +590,26 @@ function PlatformModules({ onNavigate }) {
         </div>
 
         {/* ── MAIN CARD — Pricing card layout ── */}
-        <div ref={ref} className="reveal" style={{
+        <div ref={ref} className="reveal platform-modules-card" style={{
           background:"#fff",
-          borderRadius:24,
+          borderRadius: isMobile ? 18 : 24,
           border:`1.5px solid ${colour}22`,
           boxShadow:`0 8px 48px ${colour}10, 0 2px 8px rgba(0,0,0,.05)`,
           overflow:"hidden",
           display:"grid",
-          gridTemplateColumns: isTablet ? "1fr" : "280px 1fr",
-          height: isMobile ? "auto" : 560,
+          gridTemplateColumns: isStacked ? "1fr" : "minmax(240px, 280px) 1fr",
+          height: isDesktop ? 560 : "auto",
           transition:"border-color .25s, box-shadow .25s",
         }}>
 
           {/* LEFT SIDEBAR — Pricing sidebar style, existing content kept */}
           <div style={{
             background:`linear-gradient(160deg,${colour} 0%,${colour}dd 100%)`,
-            padding: isMobile ? "28px 24px" : "40px 32px",
+            padding: isMobile ? "24px 20px" : isTablet ? "28px 24px" : "40px 32px",
             display:"flex", flexDirection:"column", justifyContent:"space-between",
             position:"relative", overflow:"hidden",
             transition:"background .3s",
+            minHeight: isStacked ? undefined : 560,
           }}>
             <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px)", backgroundSize:"18px 18px", pointerEvents:"none" }} />
             <div style={{ position:"absolute", bottom:"-20%", right:"-20%", width:"70%", height:"70%", borderRadius:"50%", background:"rgba(255,255,255,.1)", pointerEvents:"none" }} />
@@ -597,7 +629,7 @@ function PlatformModules({ onNavigate }) {
             </div>
 
             {/* CTAs pinned to bottom */}
-            <div style={{ position:"relative", zIndex:1, marginTop:28, display:"flex", flexDirection:"column", gap:10 }}>
+            <div style={{ position:"relative", zIndex:1, marginTop: isStacked ? 20 : 28, display:"flex", flexDirection: isMobile ? "row" : "column", gap:10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
               <a href="#" style={{
                 display:"flex", alignItems:"center", justifyContent:"center",
                 background:"#fff", color:colour,
@@ -606,6 +638,7 @@ function PlatformModules({ onNavigate }) {
                 fontFamily:"var(--fb)", letterSpacing:"-.01em",
                 boxShadow:"0 4px 16px rgba(0,0,0,.15)",
                 transition:"all .2s",
+                flex: isMobile ? "1 1 140px" : undefined,
               }}
                 onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,.2)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,.15)"; }}
@@ -617,6 +650,7 @@ function PlatformModules({ onNavigate }) {
                 padding:"10px 20px", fontSize:13.5, fontWeight:500,
                 textDecoration:"none", fontFamily:"var(--fb)",
                 transition:"background .18s",
+                flex: isMobile ? "1 1 140px" : undefined,
               }}
                 onMouseEnter={e=>{ e.currentTarget.style.background="rgba(255,255,255,.25)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.background="rgba(255,255,255,.15)"; }}
@@ -624,11 +658,18 @@ function PlatformModules({ onNavigate }) {
             </div>
           </div>
 
-          {/* RIGHT — GIF panel, scrollable */}
-          <div style={{ display:"flex", flexDirection:"column", overflow:"hidden", height: isMobile ? 420 : "100%" }}>
+          {/* RIGHT — demo panel */}
+          <div
+            className="platform-modules-demo"
+            style={{
+              display:"flex", flexDirection:"column", overflow:"hidden",
+              height: isDesktop ? "100%" : demoPanelHeight,
+              minHeight: isDesktop ? 0 : demoPanelHeight,
+            }}
+          >
             {/* Sticky inner header */}
-            <div style={{ padding: isMobile ? "16px 20px 12px" : "20px 32px 14px", borderBottom:`1px solid ${colour}14`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-              <span style={{ fontFamily:"var(--fb)", fontSize:14, fontWeight:700, color:"#0F172A" }}>{mod.tab}</span>
+            <div style={{ padding: isMobile ? "14px 16px 10px" : isTablet ? "16px 20px 12px" : "20px 32px 14px", borderBottom:`1px solid ${colour}14`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0, gap:8 }}>
+              <span style={{ fontFamily:"var(--fb)", fontSize: isMobile ? 13 : 14, fontWeight:700, color:"#0F172A", minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{mod.tab}</span>
               {mod.id !== "vdd" && (
                 <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:`${colour}0e`, border:`1px solid ${colour}22`, borderRadius:100, padding:"4px 12px" }}>
                   <span style={{ width:5, height:5, borderRadius:"50%", background:colour, display:"inline-block" }} />
@@ -1168,13 +1209,17 @@ const SUPPLIER_STATS = [
 
 function SupplierLoveUs() {
   const w = useWidth();
-  const isMobile = w < 768;
+  const isMobile = w < 640;
+  const isTablet = w >= 640 && w < 1024;
   const ref = useReveal();
+  const padX = "clamp(20px, 5vw, 80px)";
 
   return (
-    <section className="fold" style={{
+    <section className="fold supplier-experience" style={{
       background:"#1e1760",
       overflow:"hidden", position:"relative",
+      paddingLeft: padX,
+      paddingRight: padX,
     }}>
 
       {/* Subtle background radial glow */}
@@ -1183,11 +1228,16 @@ function SupplierLoveUs() {
       }} />
 
       {/* ── TOP: two-column hero copy ── */}
-      <div style={{
-        maxWidth:1080, margin:"0 auto",
-        padding: isMobile ? "52px 0 36px" : "clamp(62px,9vh,94px) 0 clamp(42px,5vh,62px)",
-        display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-        gap: isMobile ? 24 : 40, alignItems:"center",
+      <div className="supplier-experience-hero" style={{
+        maxWidth:1080, margin:"0 auto", width:"100%",
+        padding: isMobile
+          ? "48px 0 32px"
+          : isTablet
+            ? "56px 0 40px"
+            : "clamp(62px,9vh,94px) 0 clamp(42px,5vh,62px)",
+        display:"grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1fr 1fr",
+        gap: isMobile ? 20 : isTablet ? 28 : 40,
+        alignItems:"center",
         position:"relative", zIndex:1,
       }}>
 
@@ -1235,10 +1285,9 @@ function SupplierLoveUs() {
         borderBottom:"1px solid rgba(255,255,255,.1)",
         background:"rgba(0,0,0,.15)",
       }}>
-        <div style={{
-          maxWidth:1080, margin:"0 auto",
-          display:"grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(4,1fr)", /* slu-stats */
-          padding: isMobile ? "0 0" : "0 0",
+        <div className="supplier-experience-stats" style={{
+          maxWidth:1080, margin:"0 auto", width:"100%",
+          display:"grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(4,1fr)",
         }}>
           {SUPPLIER_STATS.map((s,i) => (
             <div key={s.label} style={{
@@ -1263,9 +1312,9 @@ function SupplierLoveUs() {
       </div>
 
       {/* ── WHAT SUPPLIERS CAN DO ── */}
-      <div ref={ref} className="reveal" style={{
-        maxWidth:1080, margin:"0 auto",
-        padding: isMobile ? "26px 0 47px" : "36px 0 52px",
+      <div ref={ref} className="reveal supplier-experience-caps" style={{
+        maxWidth:1080, margin:"0 auto", width:"100%",
+        padding: isMobile ? "28px 0 44px" : isTablet ? "32px 0 48px" : "36px 0 52px",
         position:"relative", zIndex:1,
       }}>
         <div style={{

@@ -366,7 +366,7 @@ function AIAgents() {
 /* ════════════════════════════════════
    4. CUSTOMER STORY
 ════════════════════════════════════ */
-function VideoTestimonial() {
+function VideoTestimonial({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640; const isTablet = w < 900;
   const ref = useReveal();
 
@@ -475,19 +475,26 @@ function VideoTestimonial() {
                 ))}
               </div>
 
-              {/* Read story CTA */}
+              {/* Consultation CTA */}
               <div style={{ marginTop:32, paddingTop:24, borderTop:"1px solid #F1F5F9" }}>
-                <a href="#" style={{
+                <a
+                  href="/getstarted"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (typeof onNavigate === "function") onNavigate("getstarted");
+                  }}
+                  style={{
                   display:"inline-flex", alignItems:"center", justifyContent:"space-between",
                   width:"100%", background:"#391085",
                   borderRadius:12, padding:"14px 20px", textDecoration:"none",
                   boxShadow:"0 6px 24px rgba(57,16,133,.35)",
                   transition:"background .18s, box-shadow .18s",
+                  cursor:"pointer",
                 }}
                   onMouseEnter={e=>{ e.currentTarget.style.background="#6320E0"; e.currentTarget.style.boxShadow="0 8px 32px rgba(99,32,224,.45)"; }}
                   onMouseLeave={e=>{ e.currentTarget.style.background="#391085"; e.currentTarget.style.boxShadow="0 6px 24px rgba(57,16,133,.35)"; }}
                 >
-                  <span style={{ fontSize:14, fontWeight:700, color:"#fff", fontFamily:"var(--fb)" }}>Read the full story</span>
+                  <span style={{ fontSize:14, fontWeight:700, color:"#fff", fontFamily:"var(--fb)" }}>Book a Free Consultation</span>
                   <div style={{ width:28, height:28, borderRadius:"50%", background:"rgba(255,255,255,.2)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M7 3l3 3-3 3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </div>
@@ -646,7 +653,7 @@ export default function VendorDueDiligencePage({ onBack, onNavigate }) {
         <VDDHero onNavigate={onNavigate} />
         <CompareTable />
         <AIAgents />
-        <VideoTestimonial />
+        <VideoTestimonial onNavigate={onNavigate} />
         <FAQs />
         <LeadMagnetCTA />
       </main>

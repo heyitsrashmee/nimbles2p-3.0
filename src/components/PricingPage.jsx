@@ -156,7 +156,7 @@ function PricingHero() {
 /* ════════════════════════════════════
    PRICING TABS
 ════════════════════════════════════ */
-function PricingTabs() {
+function PricingTabs({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640; const isTablet = w < 960;
   const [active, setActive] = useState("vdd");
   const mod = PRICING_MODULES.find(m=>m.id===active) || PRICING_MODULES[0];
@@ -268,6 +268,7 @@ function PricingTabs() {
                 boxShadow:"0 4px 16px rgba(0,0,0,.15)",
                 transition:"all .2s",
               }}
+                onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }}
                 onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 8px 28px rgba(0,0,0,.2)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,.15)"; }}
               >Get Pricing →</a>
@@ -351,7 +352,7 @@ function PricingTabs() {
 /* ════════════════════════════════════
    PRICING ENTERPRISE NOTE
 ════════════════════════════════════ */
-function PricingEnterpriseNote() {
+function PricingEnterpriseNote({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640; const isTablet = w < 900;
   const ref = useReveal();
 
@@ -381,6 +382,7 @@ function PricingEnterpriseNote() {
                 A pricing model that respects the complexity of enterprise procurement.
               </p>
               <a href="#" style={{ display:"inline-flex", alignItems:"center", gap:7, background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", borderRadius:10, padding:"13px 32px", fontSize:15.5, fontWeight:700, textDecoration:"none", fontFamily:"var(--fb)", boxShadow:"0 6px 28px rgba(232,150,10,.5)", transition:"transform .2s,box-shadow .2s" }}
+                onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }}
                 onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 12px 40px rgba(232,150,10,.65)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 28px rgba(232,150,10,.5)"; }}
               >Talk to Sales →</a>
@@ -426,8 +428,8 @@ export default function PricingPage({ onBack, onNavigate }) {
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="Pricing" />
       <main>
         <PricingHero />
-        <PricingTabs />
-        <PricingEnterpriseNote />
+        <PricingTabs onNavigate={onNavigate} />
+        <PricingEnterpriseNote onNavigate={onNavigate} />
       </main>
       <VDDFooter onNavigate={onNavigate} />
     </>
