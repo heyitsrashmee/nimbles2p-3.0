@@ -266,10 +266,10 @@ export default function SupplierAnalytics() {
               {/* SLA gauges */}
               <div style={styles.chartBox}>
                 <div style={styles.chartTitle}>SLA Compliance vs Target</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 20, flex: 1, justifyContent: "center" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, justifyContent: "space-between", minHeight: 0 }}>
                   {SLA_GAUGES.map((g) => (
                     <div key={g.label}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2, lineHeight: 1.1 }}>
                         <span style={styles.slaLabel}>{g.label}</span>
                         <span style={{ ...styles.slaVal, color: g.color }}>{g.val}%</span>
                       </div>
@@ -293,25 +293,25 @@ export default function SupplierAnalytics() {
 
               {/* Delivery trend line */}
               <div style={styles.chartBox}>
-                <div style={styles.chartTitle}>Delivery Performance Trend</div>
-                <div style={{ flex: 1, minHeight: 100 }}>
-                  <svg viewBox="0 0 280 90" style={{ width: "100%", height: "100%" }}>
-                    <path d="M0,68 L56,58 L112,52 L168,38 L224,28 L280,18" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 3" />
-                    <path d="M0,74 L56,70 L112,64 L168,56 L224,46 L280,36" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" />
-                    <text x="6" y="15" fontSize="9" fill="#10B981" fontFamily="var(--fb)" fontWeight="700">On-Time %</text>
-                    <text x="6" y="26" fontSize="9" fill="#3B82F6" fontFamily="var(--fb)">Fill Rate %</text>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                  <div style={styles.chartTitle}>Delivery Performance Trend</div>
+                  <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#10B981" }}>● On-Time</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6" }}>● Fill Rate</span>
+                  </div>
+                </div>
+                <div style={{ flex: 1, minHeight: 0, overflow: "hidden", display: "flex" }}>
+                  <svg viewBox="0 0 300 100" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}>
+                    {[25, 50, 75].map((y) => (
+                      <line key={y} x1="0" y1={y} x2="300" y2={y} stroke="#E6E3F5" strokeWidth="0.75" />
+                    ))}
+                    <path d="M0,68 L60,62 L120,56 L180,46 L240,36 L300,26" fill="none" stroke="#3B82F6" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M0,54 L60,46 L120,40 L180,30 L240,22 L300,14" fill="none" stroke="#10B981" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="6 4" />
                   </svg>
                 </div>
-                <div style={styles.chartTitle}>SLA Breach by Category</div>
-                <div style={styles.breachBar}>
-                  <div style={{ flex: 1.8, background: "#EF4444", borderRadius: "4px 0 0 4px" }} title="Delivery 35%" />
-                  <div style={{ flex: 1.2, background: "#F59E0B" }} title="Invoice 24%" />
-                  <div style={{ flex: 0.8, background: "#8482C8" }} title="Query 16%" />
-                  <div style={{ flex: 1.2, background: "#E2E8F0", borderRadius: "0 4px 4px 0" }} title="None 25%" />
-                </div>
-                <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                  {[["#EF4444","Delivery 35%"],["#F59E0B","Invoice 24%"],["#8482C8","Query 16%"],["#94A3B8","None 25%"]].map(([c,l]) => (
-                    <span key={l} style={{ fontSize: 11, color: c, fontWeight: 600 }}>● {l}</span>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  {["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"].map((m) => (
+                    <span key={m} style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600 }}>{m}</span>
                   ))}
                 </div>
               </div>
@@ -376,12 +376,12 @@ export default function SupplierAnalytics() {
               {/* Risk rings */}
               <div style={styles.chartBox}>
                 <div style={styles.chartTitle}>Compliance Risk Heatmap</div>
-                <div style={{ display: "flex", gap: 20, flex: 1, alignItems: "center", justifyContent: "center" }}>
+                <div style={{ display: "flex", gap: 12, flex: 1, alignItems: "center", justifyContent: "center" }}>
                   {COMP_RINGS.map((r) => (
                     <div key={r.label} style={styles.ringCard}>
                       <div style={styles.ringLabel}>{r.label}</div>
                       <div style={styles.ringSvgWrap}>
-                        <svg viewBox="0 0 36 36" style={{ width: 90, height: 90, transform: "rotate(-90deg)" }}>
+                        <svg viewBox="0 0 36 36" style={{ width: 70, height: 70, transform: "rotate(-90deg)" }}>
                           <circle cx="18" cy="18" r="14" fill="none" stroke="#E0DDF5" strokeWidth="5" />
                           <circle
                             className="sa-ring-fill"
@@ -408,7 +408,7 @@ export default function SupplierAnalytics() {
 
         {/* ─── VIEW 4: Vendor Ratings ─── */}
         {activeView === 3 && (
-          <div style={styles.view}>
+          <div style={styles.viewRatings}>
             <div style={styles.ratingsHeader}>
               <span style={styles.ratingsTitle}>Top Vendor Scorecards — Q3 2025</span>
               <span style={styles.ratingsSub}>Ranked by composite performance score</span>
@@ -442,7 +442,7 @@ export default function SupplierAnalytics() {
                         }}
                       />
                     </div>
-                    <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 4 }}>Score / 10</div>
+                    <div style={{ fontSize: 10, color: "#94A3B8", marginTop: 2 }}>Score / 10</div>
                   </div>
                 </div>
               ))}
@@ -471,9 +471,11 @@ const styles = {
   },
   header: {
     display: "flex", alignItems: "center", justifyContent: "space-between",
-    padding: "18px 52px",
+    padding: "14px 28px",
     background: "#EFF6FF",
     borderBottom: "1.5px solid #BFDBFE", flexShrink: 0,
+    gap: 12,
+    minWidth: 0,
   },
   headerLeft: { display: "flex", alignItems: "center", gap: 12 },
   headerDot: { width: 10, height: 10, borderRadius: "50%", background: "#3B82F6" },
@@ -491,10 +493,12 @@ const styles = {
   tabBar: {
     display: "flex", background: "#EFF6FF",
     borderBottom: "1.5px solid #BFDBFE",
-    padding: "0 40px", flexShrink: 0,
+    padding: "0 16px", flexShrink: 0,
+    overflowX: "auto",
+    scrollbarWidth: "none",
   },
   tab: {
-    padding: "13px 28px", fontSize: 13, fontWeight: 600,
+    padding: "10px 14px", fontSize: 12, fontWeight: 600,
     color: "#64748B", borderBottom: "2.5px solid transparent",
     cursor: "pointer", transition: "all 0.25s",
     whiteSpace: "nowrap",
@@ -504,27 +508,27 @@ const styles = {
   },
   viewArea: {
     flex: 1, overflow: "hidden", background: "#fff",
-    padding: "28px 44px",
+    padding: "18px 24px", minHeight: 0,
   },
-  view: { height: "100%", display: "flex", flexDirection: "column", gap: 20 },
+  view: { height: "100%", display: "flex", flexDirection: "column", gap: 16, minHeight: 0 },
   kpiRow: {
-    display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 14, flexShrink: 0,
+    display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: 10, flexShrink: 0,
   },
   kpiCard: {
     background: "#F5F4FF", border: "1.5px solid #E0DDF5",
-    borderRadius: 14, padding: "18px 16px",
+    borderRadius: 14, padding: "14px 10px", minWidth: 0,
   },
   kpiVal: {
     fontFamily: "var(--fb)",
-    fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em",
+    fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em",
   },
   kpiLbl: { fontSize: 11, color: "#64748B", marginTop: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" },
   kpiTrend: { fontSize: 12, fontWeight: 700, marginTop: 4 },
   chartRow: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, flex: 1, minHeight: 0 },
   chartBox: {
     background: "#F8F7FF", border: "1.5px solid #E0DDF5",
-    borderRadius: 14, padding: "20px 22px",
-    display: "flex", flexDirection: "column", gap: 12, overflow: "hidden",
+    borderRadius: 14, padding: "16px 20px",
+    display: "flex", flexDirection: "column", gap: 9, overflow: "hidden", minHeight: 0,
   },
   chartTitle: {
     fontSize: 11, fontWeight: 700, color: "#64748B",
@@ -551,24 +555,23 @@ const styles = {
   legendLbl: { fontSize: 12, color: "#334155" },
   slaLabel: { fontSize: 12, fontWeight: 600, color: "#334155" },
   slaVal: { fontSize: 14, fontWeight: 800 },
-  gaugeTrack: { height: 8, background: "#E0DDF5", borderRadius: 100, overflow: "hidden", marginBottom: 4 },
+  gaugeTrack: { height: 7, background: "#E0DDF5", borderRadius: 100, overflow: "hidden", marginBottom: 2 },
   gaugeFill: { height: "100%", borderRadius: 100 },
-  gaugeFooter: { display: "flex", justifyContent: "space-between" },
-  gaugeMeta: { fontSize: 11, color: "#94A3B8", fontWeight: 500 },
-  breachBar: { display: "flex", gap: 2, height: 16, borderRadius: 6, overflow: "hidden" },
+  gaugeFooter: { display: "flex", justifyContent: "space-between", lineHeight: 1 },
+  gaugeMeta: { fontSize: 9.5, color: "#94A3B8", fontWeight: 500 },
   perfTable: {
     background: "#F8F7FF", border: "1.5px solid #E0DDF5",
     borderRadius: 14, overflow: "hidden", flexShrink: 0,
   },
   perfHdr: {
     display: "grid", gridTemplateColumns: "1fr 100px 100px 100px 130px",
-    background: "#EEEEF8", padding: "11px 20px",
+    background: "#EEEEF8", padding: "7px 20px",
     borderBottom: "1.5px solid #E0DDF5",
   },
   perfHdrCell: { fontSize: 10, fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.06em" },
   perfRow: {
     display: "grid", gridTemplateColumns: "1fr 100px 100px 100px 130px",
-    padding: "13px 20px", borderBottom: "1px solid #E0DDF5",
+    padding: "7px 20px", borderBottom: "1px solid #E0DDF5",
     alignItems: "center",
   },
   perfName: { fontSize: 13, fontWeight: 700, color: "#0F0D2E" },
@@ -579,42 +582,51 @@ const styles = {
   },
   ringCard: {
     background: "#fff", border: "1.5px solid #E0DDF5", borderRadius: 14,
-    padding: "20px 24px", display: "flex", flexDirection: "column",
-    alignItems: "center", gap: 12, flex: 1,
+    padding: "16px 8px", display: "flex", flexDirection: "column",
+    alignItems: "center", gap: 10, flex: 1, minWidth: 0,
   },
-  ringLabel: { fontSize: 11, fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.08em" },
+  ringLabel: { fontSize: 10, fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap" },
   ringSvgWrap: { position: "relative" },
   ringCenter: {
     position: "absolute", inset: 0,
     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
   },
+  viewRatings: {
+    height: "100%", display: "flex", flexDirection: "column", gap: 9,
+    minHeight: 0, overflow: "hidden",
+  },
   ratingsHeader: {
-    display: "flex", alignItems: "baseline", gap: 16, flexShrink: 0,
+    display: "flex", flexDirection: "column", gap: 2,
+    flexShrink: 0, paddingBottom: 2,
   },
   ratingsTitle: {
     fontFamily: "var(--fb)",
-    fontSize: 22, fontWeight: 800, color: "#0F0D2E",
+    fontSize: 18, fontWeight: 800, color: "#0F0D2E", lineHeight: 1.2,
   },
-  ratingsSub: { fontSize: 13, color: "#94A3B8" },
-  vendorGrid: { display: "flex", flexDirection: "column", gap: 14, flex: 1, justifyContent: "center" },
+  ratingsSub: { fontSize: 12, color: "#94A3B8", lineHeight: 1.35 },
+  vendorGrid: {
+    display: "flex", flexDirection: "column", gap: 8, flex: 1,
+    justifyContent: "flex-start", minHeight: 0, overflow: "hidden",
+    paddingTop: 2,
+  },
   vendorCard: {
-    display: "grid", gridTemplateColumns: "52px 1fr auto",
-    gap: 18, alignItems: "center",
+    display: "grid", gridTemplateColumns: "46px 1fr auto",
+    gap: 16, alignItems: "center", flexShrink: 0,
     background: "#F8F7FF", border: "1.5px solid #E0DDF5",
-    borderRadius: 16, padding: "20px 24px",
+    borderRadius: 14, padding: "8px 20px",
   },
-  vcRank: { fontSize: 26, textAlign: "center" },
+  vcRank: { fontSize: 22, textAlign: "center" },
   vcInfo: { minWidth: 0 },
-  vcName: { fontSize: 16, fontWeight: 800, color: "#0F0D2E", marginBottom: 6 },
+  vcName: { fontSize: 15, fontWeight: 800, color: "#0F0D2E", marginBottom: 4 },
   vcTags: { display: "flex", gap: 6 },
   vcTag: {
     fontSize: 11, fontWeight: 600, padding: "2px 10px",
     borderRadius: 100, background: "#EEEEF8", color: "#1E1B4B",
   },
-  vcScore: { display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, minWidth: 120 },
+  vcScore: { display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3, minWidth: 120 },
   vcScoreVal: {
     fontFamily: "var(--fb)",
-    fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em",
+    fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1,
   },
   vcScoreBarTrack: { width: 100, height: 5, background: "#E0DDF5", borderRadius: 100, overflow: "hidden" },
 };
