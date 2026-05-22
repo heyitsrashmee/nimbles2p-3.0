@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
-import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
+import { useWidth } from "@/components/shared/pageUi";
+import { submitGetStartedForm } from "@/lib/web3forms";
 
 /* ═══════════════════════════════════════════════════════════
    GET STARTED — LEAD CAPTURE PAGE
@@ -15,6 +16,69 @@ function isPersonalEmail(email) {
   return FREE_EMAIL_DOMAINS.includes(domain);
 }
 
+/* Defined at module scope so React does not remount inputs on every parent re-render. */
+function FormField({
+  id,
+  label,
+  type = "text",
+  placeholder,
+  required,
+  half,
+  isMobile,
+  value,
+  error,
+  isTouched,
+  onChange,
+  onBlur,
+}) {
+  const hasErr = isTouched && error;
+  const isOk = isTouched && !error && value.trim();
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:6, gridColumn: half && !isMobile ? "span 1" : "span 1" }}>
+      <label htmlFor={id} style={{ fontFamily:"var(--fb)", fontSize:13, fontWeight:700, color:"#334155", letterSpacing:"-.01em" }}>
+        {label} {required && <span style={{ color:"#6320E0" }}>*</span>}
+      </label>
+      <div style={{ position:"relative" }}>
+        <input
+          id={id}
+          name={id}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          style={{
+            width:"100%", fontFamily:"var(--fb)", fontSize:15, color:"#0F172A",
+            background: hasErr ? "#FFF5F5" : "#fff",
+            border:`1.5px solid ${hasErr ? "#EF4444" : isOk ? "#059669" : "#CBD5E1"}`,
+            borderRadius:12, padding:"13px 44px 13px 16px", outline:"none",
+            transition:"border-color .18s, background .18s, box-shadow .18s",
+            boxShadow: hasErr ? "0 0 0 3px rgba(239,68,68,.1)" : isOk ? "0 0 0 3px rgba(5,150,105,.08)" : "none",
+            boxSizing:"border-box",
+          }}
+          onFocus={(e) => { if (!hasErr) { e.target.style.borderColor = "#6320E0"; e.target.style.boxShadow = "0 0 0 3px rgba(99,32,224,.1)"; } }}
+          onBlurCapture={(e) => { if (!hasErr && !isOk) { e.target.style.borderColor = "#CBD5E1"; e.target.style.boxShadow = "none"; } }}
+        />
+        {isOk && (
+          <div style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#059669"/><path d="M5 8l2.5 2.5L11 5.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+        )}
+        {hasErr && (
+          <div style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#EF4444"/><path d="M8 5v3.5M8 10.5v.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          </div>
+        )}
+      </div>
+      {hasErr && (
+        <div style={{ fontFamily:"var(--fb)", fontSize:12, color:"#EF4444", display:"flex", alignItems:"center", gap:5 }}>
+          <span>⚠</span> {error}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function GetStartedPage({ onBack, onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
 
@@ -23,6 +87,7 @@ export default function GetStartedPage({ onBack, onNavigate }) {
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const validate = (fields) => {
     const e = {};
@@ -56,65 +121,24 @@ export default function GetStartedPage({ onBack, onNavigate }) {
     setErrors(validate(form));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     const allTouched = { name:true, email:true, phone:true, designation:true, company:true };
     setTouched(allTouched);
     const errs = validate(form);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    setSubmitting(true);
-    setTimeout(() => { setSubmitting(false); setSubmitted(true); }, 1200);
-  };
 
-  /* ── Field component ── */
-  const Field = ({ id, label, type="text", placeholder, required, half }) => {
-    const err = errors[id];
-    const isTouched = touched[id];
-    const hasErr = isTouched && err;
-    const isOk   = isTouched && !err && form[id].trim();
-    return (
-      <div style={{ display:"flex", flexDirection:"column", gap:6, gridColumn: half && !isMobile ? "span 1" : "span 1" }}>
-        <label style={{ fontFamily:"var(--fb)", fontSize:13, fontWeight:700, color:"#334155", letterSpacing:"-.01em" }}>
-          {label} {required && <span style={{ color:"#6320E0" }}>*</span>}
-        </label>
-        <div style={{ position:"relative" }}>
-          <input
-            type={type}
-            value={form[id]}
-            onChange={e => handleChange(id, e.target.value)}
-            onBlur={() => handleBlur(id)}
-            placeholder={placeholder}
-            style={{
-              width:"100%", fontFamily:"var(--fb)", fontSize:15, color:"#0F172A",
-              background: hasErr ? "#FFF5F5" : "#fff",
-              border:`1.5px solid ${hasErr ? "#EF4444" : isOk ? "#059669" : "#CBD5E1"}`,
-              borderRadius:12, padding:"13px 44px 13px 16px", outline:"none",
-              transition:"border-color .18s, background .18s, box-shadow .18s",
-              boxShadow: hasErr ? "0 0 0 3px rgba(239,68,68,.1)" : isOk ? "0 0 0 3px rgba(5,150,105,.08)" : "none",
-              boxSizing:"border-box",
-            }}
-            onFocus={e => { if (!hasErr) e.target.style.borderColor = "#6320E0"; e.target.style.boxShadow = "0 0 0 3px rgba(99,32,224,.1)"; }}
-            onBlurCapture={e => { if (!hasErr && !isOk) { e.target.style.borderColor = "#CBD5E1"; e.target.style.boxShadow = "none"; } }}
-          />
-          {/* Status icon */}
-          {isOk && (
-            <div style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)" }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#059669"/><path d="M5 8l2.5 2.5L11 5.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </div>
-          )}
-          {hasErr && (
-            <div style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)" }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#EF4444"/><path d="M8 5v3.5M8 10.5v.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
-            </div>
-          )}
-        </div>
-        {hasErr && (
-          <div style={{ fontFamily:"var(--fb)", fontSize:12, color:"#EF4444", display:"flex", alignItems:"center", gap:5 }}>
-            <span>⚠</span> {err}
-          </div>
-        )}
-      </div>
-    );
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await submitGetStartedForm(form);
+      setSubmitted(true);
+    } catch {
+      setSubmitError("Something went wrong. Please try again or email us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -197,16 +221,21 @@ export default function GetStartedPage({ onBack, onNavigate }) {
                     <div style={{ fontFamily:"var(--fb)", fontSize:13, color:"#94A3B8" }}>Fields marked <span style={{ color:"#6320E0" }}>*</span> are required</div>
                   </div>
 
-                  {/* Form fields */}
-                  <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-                    <Field id="name"        label="Full Name"     placeholder="e.g. Rahul Sharma"    required />
-                    <Field id="email"       label="Work Email"    type="email" placeholder="you@company.com" required />
-                    <Field id="phone"       label="Phone Number"  type="tel"   placeholder="+91 98765 43210" required />
-                    <Field id="designation" label="Designation"   placeholder="e.g. VP Procurement" />
-                    <Field id="company"     label="Company Name"  placeholder="e.g. Tata Motors" />
+                  <form onSubmit={handleSubmit} noValidate style={{ display:"flex", flexDirection:"column", gap:16 }}>
+                    <FormField id="name" label="Full Name" placeholder="e.g. Rahul Sharma" required isMobile={isMobile} value={form.name} error={errors.name} isTouched={touched.name} onChange={(v) => handleChange("name", v)} onBlur={() => handleBlur("name")} />
+                    <FormField id="email" label="Work Email" type="email" placeholder="you@company.com" required isMobile={isMobile} value={form.email} error={errors.email} isTouched={touched.email} onChange={(v) => handleChange("email", v)} onBlur={() => handleBlur("email")} />
+                    <FormField id="phone" label="Phone Number" type="tel" placeholder="+91 98765 43210" required isMobile={isMobile} value={form.phone} error={errors.phone} isTouched={touched.phone} onChange={(v) => handleChange("phone", v)} onBlur={() => handleBlur("phone")} />
+                    <FormField id="designation" label="Designation" placeholder="e.g. VP Procurement" isMobile={isMobile} value={form.designation} error={errors.designation} isTouched={touched.designation} onChange={(v) => handleChange("designation", v)} onBlur={() => handleBlur("designation")} />
+                    <FormField id="company" label="Company Name" placeholder="e.g. Tata Motors" isMobile={isMobile} value={form.company} error={errors.company} isTouched={touched.company} onChange={(v) => handleChange("company", v)} onBlur={() => handleBlur("company")} />
+
+                    {submitError && (
+                      <p style={{ fontFamily:"var(--fb)", fontSize:13, color:"#EF4444", margin:0, textAlign:"center" }}>
+                        {submitError}
+                      </p>
+                    )}
 
                     {/* Submit */}
-                    <button onClick={handleSubmit} disabled={submitting}
+                    <button type="submit" disabled={submitting}
                       style={{
                         marginTop:4, width:"100%",
                         background: submitting ? "rgba(99,32,224,.5)" : "linear-gradient(135deg,#6320E0,#8B5CF6)",
@@ -235,7 +264,7 @@ export default function GetStartedPage({ onBack, onNavigate }) {
                     <p style={{ fontFamily:"var(--fb)", fontSize:11.5, color:"#94A3B8", textAlign:"center", margin:0 }}>
                       By submitting, you agree to our <span style={{ color:"#6320E0", cursor:"pointer" }}>Privacy Policy</span>. No spam, ever.
                     </p>
-                  </div>
+                  </form>
                 </>
               ) : (
                 /* ── SUCCESS STATE ── */

@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
+import { buildMegaMenuFeaturedMap } from "@/lib/megaMenuFromWordPress";
 
 /**
  * WordPress → Resources adapter.
@@ -143,6 +144,31 @@ export async function getResourcesForPage() {
     () => fetchResources({ perPage: 24 }),
     ["nimbles2p-resources-index"],
     { revalidate: 3600, tags: ["wp-resources"] }
+  )();
+}
+
+/**
+ * Fetch posts and return featured mega-menu resources keyed by product module id.
+ * Requires WP meta: nimbles_mega_menu_featured + nimbles_mega_menu_module (see wordpress-plugin/).
+ *
+ * @returns {Promise<Record<string, object>>}
+ */
+export async function fetchMegaMenuFeaturedByModule({ perPage = 100, signal } = {}) {
+  const res = await fetch(`${WP_ENDPOINT}?_embed&per_page=${perPage}`, {
+    signal,
+    headers: { Accept: "application/json" },
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) throw new Error(`WordPress responded ${res.status}`);
+  const raw = await res.json();
+  return buildMegaMenuFeaturedMap(raw);
+}
+
+export async function getMegaMenuFeaturedByModule() {
+  return unstable_cache(
+    () => fetchMegaMenuFeaturedByModule({ perPage: 100 }),
+    ["nimbles2p-mega-menu-featured"],
+    { revalidate: 3600, tags: ["wp-mega-menu"] }
   )();
 }
 

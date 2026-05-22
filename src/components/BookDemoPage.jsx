@@ -1,9 +1,52 @@
 "use client";
 
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
-import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
+import { useWidth } from "@/components/shared/pageUi";
+import { submitBookDemoForm } from "@/lib/web3forms";
+
+const INDUSTRIES = ["Manufacturing","Energy & Utilities","Chemical","FMCG","Infra & Construction","Textile","Hospitality","Media","Financial Services","Healthcare","Other"];
+const SIZES = ["1–50","51–200","201–500","501–1000","1001–5000","5000+"];
+const TIMELINES = ["Immediately","Within 1 month","1–3 months","3–6 months","Just exploring"];
+const MODULES_LIST = ["VDD & Onboarding","Supplier Portal","Invoice Processing","RFx Management","Early Financing","Supplier Analytics"];
+const REQUIRED = ["firstName","lastName","email","company","title","employees","industry","timeline"];
+
+function inputStyle(hasErr, isOk) {
+  return {
+    fontFamily:"var(--fb)", fontSize:14, color:"#0F172A",
+    background: hasErr ? "#FFF5F5" : "#fff",
+    border:`1.5px solid ${hasErr ? "#EF4444" : isOk ? "#059669" : "#CBD5E1"}`,
+    borderRadius:10, padding:"11px 14px", outline:"none",
+    transition:"border-color .18s, box-shadow .18s",
+    boxShadow: hasErr ? "0 0 0 3px rgba(239,68,68,.1)" : isOk ? "0 0 0 3px rgba(5,150,105,.08)" : "none",
+    width:"100%", boxSizing:"border-box",
+  };
+}
+
+function DemoSectionHead({ children }) {
+  return (
+    <div style={{ fontSize:10.5, fontWeight:800, letterSpacing:".12em", textTransform:"uppercase", color:"#6320E0", fontFamily:"var(--fb)", marginBottom:16, paddingBottom:10, borderBottom:"1.5px solid rgba(99,32,224,.12)" }}>
+      {children}
+    </div>
+  );
+}
+
+function DemoFormField({ id, label, required: req, error, isTouched, children }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+      <label htmlFor={id} style={{ fontFamily:"var(--fb)", fontSize:12.5, fontWeight:700, color:"#334155", letterSpacing:"-.01em" }}>
+        {label}{req && <span style={{ color:"#6320E0", marginLeft:3 }}>*</span>}
+      </label>
+      {children}
+      {isTouched && error && (
+        <div style={{ fontFamily:"var(--fb)", fontSize:11.5, color:"#EF4444", display:"flex", alignItems:"center", gap:4 }}>
+          <span>⚠</span> {error}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ═══════════════════════════════════════════════════════════
    BOOK A DEMO PAGE
@@ -17,15 +60,9 @@ export default function BookDemoPage({ onBack, onNavigate }) {
     company:"", title:"", employees:"", industry:"",
     modules:[], challenge:"", timeline:"", message:"",
   });
-  const [errors,  setErrors]  = useState({});
+  const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
-
-
-  const INDUSTRIES  = ["Manufacturing","Energy & Utilities","Chemical","FMCG","Infra & Construction","Textile","Hospitality","Media","Financial Services","Healthcare","Other"];
-  const SIZES       = ["1–50","51–200","201–500","501–1000","1001–5000","5000+"];
-  const TIMELINES   = ["Immediately","Within 1 month","1–3 months","3–6 months","Just exploring"];
-  const MODULES_LIST= ["VDD & Onboarding","Supplier Portal","Invoice Processing","RFx Management","Early Financing","Supplier Analytics"];
-  const REQUIRED    = ["firstName","lastName","email","company","title","employees","industry","timeline"];
+  const [submitError, setSubmitError] = useState("");
 
   const set = (k,v) => {
     const next = {...form,[k]:v};
@@ -44,71 +81,28 @@ export default function BookDemoPage({ onBack, onNavigate }) {
 
   const handleBlur = (k) => { setTouched(t=>({...t,[k]:true})); validateForm(); };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     const allT = {}; REQUIRED.forEach(k=>allT[k]=true);
     setTouched(allT);
     if (!validateForm()) return;
     setSending(true);
+    setSubmitError("");
     try {
-      const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_nimbles2p";
-      const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_demo_req";
-      const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-      if (!PUBLIC_KEY) throw new Error("EmailJS not configured");
-      if (!window.emailjs) {
-        await new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
-        window.emailjs.init({publicKey:PUBLIC_KEY});
-      }
-      await window.emailjs.send(SERVICE_ID,TEMPLATE_ID,{
-        to_email:"rashmee@techpanion.com", cc_email:"info@techpanion.com",
-        from_name:`${form.firstName} ${form.lastName}`, from_email:form.email, reply_to:form.email,
-        phone:form.phone||"—", company:form.company, job_title:form.title,
-        employees:form.employees, industry:form.industry,
-        modules:form.modules.length?form.modules.join(", "):"—",
-        challenge:form.challenge||"—", timeline:form.timeline, notes:form.message||"—",
-        subject:`Demo Request — ${form.company} (${form.industry})`,
-      });
+      await submitBookDemoForm(form);
       setSubmitted(true);
     } catch {
-      const body = [`Name: ${form.firstName} ${form.lastName}`,`Email: ${form.email}`,`Phone: ${form.phone||"—"}`,`Company: ${form.company}`,`Title: ${form.title}`,`Size: ${form.employees}`,`Industry: ${form.industry}`,`Modules: ${form.modules.join(", ")||"—"}`,`Challenge: ${form.challenge||"—"}`,`Timeline: ${form.timeline}`,`Notes: ${form.message||"—"}`].join("\n");
-      window.open(`mailto:rashmee@techpanion.com,info@techpanion.com?subject=${encodeURIComponent(`Demo Request — ${form.company}`)}&body=${encodeURIComponent(body)}`,"_blank");
-      setSubmitted(true);
-    } finally { setSending(false); }
+      setSubmitError("Something went wrong. Please try again or email us at info@techpanion.com.");
+    } finally {
+      setSending(false);
+    }
   };
 
-  /* ── Shared input style ── */
-  const inp = (id) => {
+  const fieldState = (id) => {
     const hasErr = touched[id] && errors[id];
-    const isOk   = touched[id] && !errors[id] && (Array.isArray(form[id]) ? form[id].length : form[id]);
-    return {
-      fontFamily:"var(--fb)", fontSize:14, color:"#0F172A",
-      background: hasErr ? "#FFF5F5" : "#fff",
-      border:`1.5px solid ${hasErr ? "#EF4444" : isOk ? "#059669" : "#CBD5E1"}`,
-      borderRadius:10, padding:"11px 14px", outline:"none",
-      transition:"border-color .18s, box-shadow .18s",
-      boxShadow: hasErr ? "0 0 0 3px rgba(239,68,68,.1)" : isOk ? "0 0 0 3px rgba(5,150,105,.08)" : "none",
-      width:"100%", boxSizing:"border-box",
-    };
+    const isOk = touched[id] && !errors[id] && (Array.isArray(form[id]) ? form[id].length : form[id]);
+    return { hasErr, isOk, style: inputStyle(hasErr, isOk) };
   };
-
-  /* ── Field wrapper ── */
-  const Field = ({ id, label, required:req, children }) => (
-    <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
-      <label style={{ fontFamily:"var(--fb)", fontSize:12.5, fontWeight:700, color:"#334155", letterSpacing:"-.01em" }}>
-        {label}{req && <span style={{ color:"#6320E0", marginLeft:3 }}>*</span>}
-      </label>
-      {children}
-      {touched[id] && errors[id] && (
-        <div style={{ fontFamily:"var(--fb)", fontSize:11.5, color:"#EF4444", display:"flex", alignItems:"center", gap:4 }}>
-          <span>⚠</span> {errors[id]}
-        </div>
-      )}
-    </div>
-  );
-
-  /* ── Section header ── */
-  const SectionHead = ({children}) => (
-    <div style={{ fontSize:10.5, fontWeight:800, letterSpacing:".12em", textTransform:"uppercase", color:"#6320E0", fontFamily:"var(--fb)", marginBottom:16, paddingBottom:10, borderBottom:"1.5px solid rgba(99,32,224,.12)" }}>{children}</div>
-  );
 
   return (
     <>
@@ -187,56 +181,55 @@ export default function BookDemoPage({ onBack, onNavigate }) {
                   </div>
                 </div>
 
-                {/* Form body */}
-                <div style={{ padding: isMobile ? "24px 24px 32px" : "32px 40px 40px", display:"flex", flexDirection:"column", gap:28 }}>
+                <form onSubmit={handleSubmit} noValidate style={{ padding: isMobile ? "24px 24px 32px" : "32px 40px 40px", display:"flex", flexDirection:"column", gap:28 }}>
 
                   {/* Contact */}
                   <div>
-                    <SectionHead>Contact Information</SectionHead>
+                    <DemoSectionHead>Contact Information</DemoSectionHead>
                     <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap:14 }}>
-                      <Field id="firstName" label="First Name" required>
-                        <input style={inp("firstName")} value={form.firstName} onChange={e=>set("firstName",e.target.value)} onBlur={()=>handleBlur("firstName")} placeholder="Rajesh" onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                      </Field>
-                      <Field id="lastName" label="Last Name" required>
-                        <input style={inp("lastName")} value={form.lastName} onChange={e=>set("lastName",e.target.value)} onBlur={()=>handleBlur("lastName")} placeholder="Sharma" onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                      </Field>
-                      <Field id="email" label="Work Email" required>
-                        <input type="email" style={inp("email")} value={form.email} onChange={e=>set("email",e.target.value)} onBlur={()=>handleBlur("email")} placeholder="rajesh@company.com" onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                      </Field>
-                      <Field id="phone" label="Phone Number">
-                        <input type="tel" style={inp("phone")} value={form.phone} onChange={e=>set("phone",e.target.value)} onBlur={()=>handleBlur("phone")} placeholder="+91 98765 43210" onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                      </Field>
+                      <DemoFormField id="firstName" label="First Name" required error={errors.firstName} isTouched={touched.firstName}>
+                        <input id="firstName" name="firstName" style={fieldState("firstName").style} value={form.firstName} onChange={e=>set("firstName",e.target.value)} onBlur={()=>handleBlur("firstName")} placeholder="Rajesh" onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                      </DemoFormField>
+                      <DemoFormField id="lastName" label="Last Name" required error={errors.lastName} isTouched={touched.lastName}>
+                        <input id="lastName" name="lastName" style={fieldState("lastName").style} value={form.lastName} onChange={e=>set("lastName",e.target.value)} onBlur={()=>handleBlur("lastName")} placeholder="Sharma" onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                      </DemoFormField>
+                      <DemoFormField id="email" label="Work Email" required error={errors.email} isTouched={touched.email}>
+                        <input id="email" name="email" type="email" style={fieldState("email").style} value={form.email} onChange={e=>set("email",e.target.value)} onBlur={()=>handleBlur("email")} placeholder="rajesh@company.com" onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                      </DemoFormField>
+                      <DemoFormField id="phone" label="Phone Number" error={errors.phone} isTouched={touched.phone}>
+                        <input id="phone" name="phone" type="tel" style={fieldState("phone").style} value={form.phone} onChange={e=>set("phone",e.target.value)} onBlur={()=>handleBlur("phone")} placeholder="+91 98765 43210" onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                      </DemoFormField>
                     </div>
                   </div>
 
                   {/* Company */}
                   <div>
-                    <SectionHead>Company Details</SectionHead>
+                    <DemoSectionHead>Company Details</DemoSectionHead>
                     <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap:14 }}>
-                      <Field id="company" label="Company Name" required>
-                        <input style={inp("company")} value={form.company} onChange={e=>set("company",e.target.value)} onBlur={()=>handleBlur("company")} placeholder="Acme Industries Ltd." onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                      </Field>
-                      <Field id="title" label="Your Designation" required>
-                        <input style={inp("title")} value={form.title} onChange={e=>set("title",e.target.value)} onBlur={()=>handleBlur("title")} placeholder="CFO / VP Procurement / CPO" onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                      </Field>
-                      <Field id="employees" label="Company Size" required>
-                        <select style={{...inp("employees"), appearance:"none", cursor:"pointer"}} value={form.employees} onChange={e=>set("employees",e.target.value)} onBlur={()=>handleBlur("employees")} onFocus={e=>e.target.style.borderColor="#6320E0"}>
+                      <DemoFormField id="company" label="Company Name" required error={errors.company} isTouched={touched.company}>
+                        <input id="company" name="company" style={fieldState("company").style} value={form.company} onChange={e=>set("company",e.target.value)} onBlur={()=>handleBlur("company")} placeholder="Acme Industries Ltd." onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                      </DemoFormField>
+                      <DemoFormField id="title" label="Your Designation" required error={errors.title} isTouched={touched.title}>
+                        <input id="title" name="title" style={fieldState("title").style} value={form.title} onChange={e=>set("title",e.target.value)} onBlur={()=>handleBlur("title")} placeholder="CFO / VP Procurement / CPO" onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                      </DemoFormField>
+                      <DemoFormField id="employees" label="Company Size" required error={errors.employees} isTouched={touched.employees}>
+                        <select id="employees" name="employees" style={{...fieldState("employees").style, appearance:"none", cursor:"pointer"}} value={form.employees} onChange={e=>set("employees",e.target.value)} onBlur={()=>handleBlur("employees")} onFocus={e=>e.target.style.borderColor="#6320E0"}>
                           <option value="">Select headcount range</option>
                           {SIZES.map(s=><option key={s} value={s}>{s} employees</option>)}
                         </select>
-                      </Field>
-                      <Field id="industry" label="Industry" required>
-                        <select style={{...inp("industry"), appearance:"none", cursor:"pointer"}} value={form.industry} onChange={e=>set("industry",e.target.value)} onBlur={()=>handleBlur("industry")} onFocus={e=>e.target.style.borderColor="#6320E0"}>
+                      </DemoFormField>
+                      <DemoFormField id="industry" label="Industry" required error={errors.industry} isTouched={touched.industry}>
+                        <select id="industry" name="industry" style={{...fieldState("industry").style, appearance:"none", cursor:"pointer"}} value={form.industry} onChange={e=>set("industry",e.target.value)} onBlur={()=>handleBlur("industry")} onFocus={e=>e.target.style.borderColor="#6320E0"}>
                           <option value="">Select your industry</option>
                           {INDUSTRIES.map(i=><option key={i} value={i}>{i}</option>)}
                         </select>
-                      </Field>
+                      </DemoFormField>
                     </div>
                   </div>
 
                   {/* Demo Preferences */}
                   <div>
-                    <SectionHead>Demo Preferences</SectionHead>
+                    <DemoSectionHead>Demo Preferences</DemoSectionHead>
 
                     {/* Module chips */}
                     <div style={{ marginBottom:18 }}>
@@ -245,7 +238,7 @@ export default function BookDemoPage({ onBack, onNavigate }) {
                         {MODULES_LIST.map(m=>{
                           const sel = form.modules.includes(m);
                           return (
-                            <button key={m} onClick={()=>toggleModule(m)} style={{ display:"inline-flex", alignItems:"center", gap:6, fontFamily:"var(--fb)", fontSize:13, fontWeight: sel?700:500, color: sel?"#fff":"#475569", background: sel?"#6320E0":"#F5F3FF", border:`1.5px solid ${sel?"#6320E0":"rgba(99,32,224,.2)"}`, borderRadius:100, padding:"7px 16px", cursor:"pointer", transition:"all .18s", boxShadow: sel?"0 4px 14px rgba(99,32,224,.3)":"none" }}>
+                            <button type="button" key={m} onClick={()=>toggleModule(m)} style={{ display:"inline-flex", alignItems:"center", gap:6, fontFamily:"var(--fb)", fontSize:13, fontWeight: sel?700:500, color: sel?"#fff":"#475569", background: sel?"#6320E0":"#F5F3FF", border:`1.5px solid ${sel?"#6320E0":"rgba(99,32,224,.2)"}`, borderRadius:100, padding:"7px 16px", cursor:"pointer", transition:"all .18s", boxShadow: sel?"0 4px 14px rgba(99,32,224,.3)":"none" }}>
                               {sel && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                               {m}
                             </button>
@@ -255,28 +248,32 @@ export default function BookDemoPage({ onBack, onNavigate }) {
                     </div>
 
                     <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap:14, marginBottom:14 }}>
-                      <Field id="challenge" label="Primary Challenge">
-                        <input style={inp("challenge")} value={form.challenge} onChange={e=>set("challenge",e.target.value)} placeholder="e.g. Manual invoice processing" onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                      </Field>
-                      <Field id="timeline" label="Preferred Go-Live Timeline" required>
-                        <select style={{...inp("timeline"), appearance:"none", cursor:"pointer"}} value={form.timeline} onChange={e=>set("timeline",e.target.value)} onBlur={()=>handleBlur("timeline")} onFocus={e=>e.target.style.borderColor="#6320E0"}>
+                      <DemoFormField id="challenge" label="Primary Challenge" error={errors.challenge} isTouched={touched.challenge}>
+                        <input id="challenge" name="challenge" style={fieldState("challenge").style} value={form.challenge} onChange={e=>set("challenge",e.target.value)} placeholder="e.g. Manual invoice processing" onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                      </DemoFormField>
+                      <DemoFormField id="timeline" label="Preferred Go-Live Timeline" required error={errors.timeline} isTouched={touched.timeline}>
+                        <select id="timeline" name="timeline" style={{...fieldState("timeline").style, appearance:"none", cursor:"pointer"}} value={form.timeline} onChange={e=>set("timeline",e.target.value)} onBlur={()=>handleBlur("timeline")} onFocus={e=>e.target.style.borderColor="#6320E0"}>
                           <option value="">When do you want to go live?</option>
                           {TIMELINES.map(t=><option key={t} value={t}>{t}</option>)}
                         </select>
-                      </Field>
+                      </DemoFormField>
                     </div>
 
-                    <Field id="message" label="Anything else we should know?">
-                      <textarea style={{...inp("message"), resize:"vertical", minHeight:90, lineHeight:1.6}} value={form.message} onChange={e=>set("message",e.target.value)} placeholder="Current ERP, number of suppliers, specific use case…" onFocus={e=>e.target.style.borderColor="#6320E0"} />
-                    </Field>
+                    <DemoFormField id="message" label="Anything else we should know?" error={errors.message} isTouched={touched.message}>
+                      <textarea id="message" name="message" style={{...fieldState("message").style, resize:"vertical", minHeight:90, lineHeight:1.6}} value={form.message} onChange={e=>set("message",e.target.value)} placeholder="Current ERP, number of suppliers, specific use case…" onFocus={e=>e.target.style.borderColor="#6320E0"} />
+                    </DemoFormField>
                   </div>
+
+                  {submitError && (
+                    <p style={{ fontFamily:"var(--fb)", fontSize:13, color:"#EF4444", margin:0, textAlign:"center" }}>{submitError}</p>
+                  )}
 
                   {/* Submit row */}
                   <div style={{ paddingTop:8, borderTop:"1px solid #F1F5F9", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:16 }}>
                     <p style={{ fontSize:11.5, color:"#94A3B8", fontFamily:"var(--fb)", maxWidth:340, margin:0, lineHeight:1.6 }}>
                       By submitting, you agree to our <span style={{ color:"#6320E0", cursor:"pointer" }}>Privacy Policy</span>. We'll only use your info to schedule and prepare your demo.
                     </p>
-                    <button onClick={handleSubmit} disabled={sending} style={{ display:"inline-flex", alignItems:"center", gap:8, background: sending?"rgba(99,32,224,.5)":"linear-gradient(135deg,#6320E0,#8B5CF6)", color:"#fff", borderRadius:12, padding:"14px 32px", fontSize:15, fontWeight:700, fontFamily:"var(--fb)", border:"none", cursor: sending?"not-allowed":"pointer", boxShadow: sending?"none":"0 6px 24px rgba(99,32,224,.4)", transition:"all .2s", letterSpacing:"-.01em", flexShrink:0 }}
+                    <button type="submit" disabled={sending} style={{ display:"inline-flex", alignItems:"center", gap:8, background: sending?"rgba(99,32,224,.5)":"linear-gradient(135deg,#6320E0,#8B5CF6)", color:"#fff", borderRadius:12, padding:"14px 32px", fontSize:15, fontWeight:700, fontFamily:"var(--fb)", border:"none", cursor: sending?"not-allowed":"pointer", boxShadow: sending?"none":"0 6px 24px rgba(99,32,224,.4)", transition:"all .2s", letterSpacing:"-.01em", flexShrink:0 }}
                       onMouseEnter={e=>{ if(!sending){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(99,32,224,.55)"; }}}
                       onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=sending?"none":"0 6px 24px rgba(99,32,224,.4)"; }}
                     >
@@ -289,7 +286,7 @@ export default function BookDemoPage({ onBack, onNavigate }) {
                     </button>
                   </div>
 
-                </div>
+                </form>
               </div>
 
             ) : (

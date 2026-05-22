@@ -1,14 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { assetUrl } from "@/lib/assetUrl";
 import { MEGA_PRODUCTS } from "./megaMenuData";
 
 export function MegaMenu({ onClose, onNavigate }) {
+  const router = useRouter();
   const items = MEGA_PRODUCTS.integrated;
   const [hovered, setHovered] = useState(items[0].id);
-  const active = items.find(i=>i.id===hovered) || items[0];
-  const res = active.resource;
+  const [wpFeatured, setWpFeatured] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/mega-menu-resources")
+      .then((r) => (r.ok ? r.json() : {}))
+      .then((data) => setWpFeatured(data && typeof data === "object" ? data : null))
+      .catch(() => setWpFeatured(null));
+  }, []);
+
+  const active = items.find((i) => i.id === hovered) || items[0];
+  const res = wpFeatured?.[active.id] ?? active.resource;
 
   const TAG = {
     "New":      { bg:"#EEF2FF", color:"#4338CA", border:"#C7D2FE", dot:"#818CF8" },
@@ -151,7 +162,21 @@ export function MegaMenu({ onClose, onNavigate }) {
                 minHeight:200,
                 background:`linear-gradient(145deg,${active.color}18 0%,${active.color}08 100%)`,
               }}>
-                {active.cover ? (
+                {res.coverImage ? (
+                  <img
+                    key={`${active.id}-wp-${res.slug}`}
+                    src={res.coverImage}
+                    alt={res.coverAlt || ""}
+                    draggable={false}
+                    style={{
+                      position:"absolute", inset:0,
+                      width:"100%", height:"100%",
+                      objectFit:"cover",
+                      objectPosition: "center center",
+                      display:"block",
+                    }}
+                  />
+                ) : active.cover ? (
                   <img
                     key={active.id}
                     src={assetUrl(active.cover.src)}
@@ -201,7 +226,14 @@ export function MegaMenu({ onClose, onNavigate }) {
                 </div>
 
                 {/* Compact CTA pill */}
-                <a href="#" onClick={onClose} style={{
+                <a
+                  href={res.slug || "#"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onClose();
+                    if (res.slug) router.push(res.slug);
+                  }}
+                  style={{
                   display:"inline-flex", alignItems:"center", gap:5, flexShrink:0,
                   background:`linear-gradient(135deg,${active.color},${active.color}cc)`,
                   color:"#fff", borderRadius:100,
