@@ -8,6 +8,7 @@
     "dev:clean": "npm run clean && npm run dev",
     "prebuild": "node scripts/prepare-public.mjs",
     "build": "next build",
+    "prestart": "node scripts/prepare-public.mjs",
     "start": "next start",
     "verify": "node scripts/prepare-public.mjs && node scripts/verify-assets.mjs",
     "typecheck": "tsc --noEmit",
