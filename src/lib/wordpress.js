@@ -101,6 +101,24 @@ function extractAuthor(post) {
   return author?.name ? cleanText(author.name) : "NimbleS2P Team";
 }
 
+async function readJsonSafely(res, label) {
+  const contentType = res.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    const preview = (await res.text()).replace(/\s+/g, " ").trim().slice(0, 120);
+    console.warn(
+      `[wordpress] ${label}: expected JSON but received ${contentType || "unknown content type"}${preview ? ` — ${preview}` : ""}`,
+    );
+    return null;
+  }
+
+  try {
+    return await res.json();
+  } catch (err) {
+    console.warn(`[wordpress] ${label}: invalid JSON response`, err);
+    return null;
+  }
+}
+
 /** Map one raw WP post into the ResourcePost card model. */
 export function mapPost(post) {
   const { url: coverImage, alt: coverAlt } = extractImage(post);
@@ -141,7 +159,7 @@ export async function fetchResources({ perPage = 24, signal } = {}) {
       return EMPTY_RESOURCES;
     }
 
-    const raw = await res.json();
+    const raw = await readJsonSafely(res, "fetchResources");
     if (!Array.isArray(raw) || raw.length === 0) return EMPTY_RESOURCES;
 
     const [featuredPost, ...posts] = raw.map(mapPost);
@@ -184,7 +202,7 @@ export async function fetchMegaMenuFeaturedByModule({ perPage = 100, signal } = 
       console.warn(`[wordpress] fetchMegaMenuFeaturedByModule: HTTP ${res.status}`);
       return {};
     }
-    const raw = await res.json();
+    const raw = await readJsonSafely(res, "fetchMegaMenuFeaturedByModule");
     return Array.isArray(raw) ? buildMegaMenuFeaturedMap(raw) : {};
   } catch (err) {
     console.warn("[wordpress] fetchMegaMenuFeaturedByModule failed:", err);
@@ -281,7 +299,7 @@ export async function fetchPostBySlug(slug, { signal } = {}) {
     return null;
   }
 
-  const raw = await res.json();
+  const raw = await readJsonSafely(res, `fetchPostBySlug(${slug})`);
   if (!Array.isArray(raw) || raw.length === 0) return null;
 
   const article = mapArticle(raw[0]);
@@ -293,7 +311,7 @@ export async function fetchPostBySlug(slug, { signal } = {}) {
       next: { revalidate: 3600 },
     });
     if (relRes.ok) {
-      const relRaw = await relRes.json();
+      const relRaw = await readJsonSafely(relRes, `fetchPostBySlug(${slug}) related`);
       if (Array.isArray(relRaw)) article.relatedPosts = relRaw.map(mapRelated);
     }
   } catch {
@@ -305,11 +323,16 @@ export async function fetchPostBySlug(slug, { signal } = {}) {
 
 /** All published slugs — for generateStaticParams (SSG prerender). */
 export async function fetchAllSlugs() {
-  const res = await fetch(`${WP_ENDPOINT}?per_page=100&_fields=slug`, {
-    headers: { Accept: "application/json" },
-    next: { revalidate: 3600 },
-  });
-  if (!res.ok) return [];
-  const raw = await res.json();
-  return Array.isArray(raw) ? raw.map((p) => p.slug).filter(Boolean) : [];
+  try {
+    const res = await fetch(`${WP_ENDPOINT}?per_page=100&_fields=slug`, {
+      headers: { Accept: "application/json" },
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const raw = await readJsonSafely(res, "fetchAllSlugs");
+    return Array.isArray(raw) ? raw.map((p) => p.slug).filter(Boolean) : [];
+  } catch (err) {
+    console.warn("[wordpress] fetchAllSlugs failed:", err);
+    return [];
+  }
 }

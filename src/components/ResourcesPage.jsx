@@ -280,10 +280,10 @@ function ResourcesHero({ isMobile }) {
           background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)",
           WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
         }}>
-          Insights That Drive<br />Smarter Procurement
+          Powering The Future Of Supplier Transformation
         </h1>
         <p style={{ fontFamily:TOKEN.fb, fontSize: isMobile ? 15 : 17, color:"rgba(255,255,255,.52)", lineHeight:1.75, maxWidth:520, margin:"0 auto 36px" }}>
-          Blogs, playbooks, guides, case studies, and automation stories — everything your team needs to lead procurement transformation.
+          Explore insights, practical playbooks, customer success stories, and industry trends that help enterprises transform supplier and procurement operations.
         </p>
 
         {/* Hero search */}
@@ -430,47 +430,6 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
   );
 }
 
-/* ── Content type showcase strip ── */
-function ContentTypeStrip({ isMobile }) {
-  const types = [
-    { icon:"✍️", label:"Blogs",             desc:"Thought leadership & trends",     sectionId:"blog" },
-    { icon:"📋", label:"Playbooks",          desc:"Step-by-step implementation",     sectionId:null },
-    { icon:"📖", label:"Guides",             desc:"Deep-dive technical guides",      sectionId:"guides-whitepapers" },
-    { icon:"📈", label:"Case Studies",       desc:"Real enterprise outcomes",        sectionId:"case-studies" },
-    { icon:"😊", label:"Automation Smiles",  desc:"Visual transformation stories", sectionId:"automation-smiles" },
-    { icon:"📄", label:"Whitepapers",        desc:"Research & benchmark data",       sectionId:null },
-  ];
-  return (
-    <section style={{ background:"#fff", padding: isMobile ? "48px 20px" : "clamp(48px,6vh,72px) 5vw", borderTop:`1px solid ${TOKEN.bd}` }}>
-      <div style={{ maxWidth:1080, margin:"0 auto" }}>
-        <div style={{ textAlign:"center", marginBottom: isMobile ? 32 : 44 }}>
-          <Eyebrow>Content Library</Eyebrow>
-          <h2 style={{ fontFamily:TOKEN.fb, fontSize: isMobile ? "clamp(22px,6vw,30px)" : "clamp(24px,2.8vw,38px)", fontWeight:900, letterSpacing:"-.04em", lineHeight:1.06, color:TOKEN.t1, marginBottom:10 }}>
-            Every format your team needs.
-          </h2>
-          <p style={{ fontFamily:TOKEN.fb, fontSize:15, color:TOKEN.t3, lineHeight:1.7, maxWidth:480, margin:"0 auto" }}>From quick reads to deep dives — curated for procurement leaders, finance teams, and tech buyers.</p>
-        </div>
-        <div style={{ display:"grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(6,1fr)", gap:12 }}>
-          {types.map(t => (
-            <div key={t.label} id={t.sectionId ? `resources-${t.sectionId}` : undefined} style={{
-              background:TOKEN.p25, border:`1px solid ${TOKEN.bdP}`, borderRadius:14, padding:"20px 14px",
-              textAlign:"center", cursor:"pointer", transition:"all .2s cubic-bezier(.22,1,.36,1)",
-              scrollMarginTop: 88,
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background = TOKEN.p50; e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow=`0 6px 20px rgba(57,16,133,.1)`; }}
-              onMouseLeave={e => { e.currentTarget.style.background = TOKEN.p25; e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="none"; }}
-            >
-              <div style={{ fontSize:28, marginBottom:8 }}>{t.icon}</div>
-              <div style={{ fontFamily:TOKEN.fb, fontSize:13, fontWeight:700, color:TOKEN.t1, marginBottom:4 }}>{t.label}</div>
-              <div style={{ fontFamily:TOKEN.fb, fontSize:11, color:TOKEN.t3, lineHeight:1.4 }}>{t.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ── Newsletter CTA ── */
 function NewsletterCTA({ isMobile, data }) {  // ← CMS: data prop for heading/sub copy
   const [email, setEmail] = useState("");
@@ -592,7 +551,6 @@ export default function ResourcesPage({
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="Resources" />
       <main style={{ paddingTop:72 /* NAV_H */ }}>
         <ResourcesHero isMobile={isMobile} />
-        <ContentTypeStrip isMobile={isMobile} />
         {loadState === "loading" ? (
           <ResourcesGridSkeleton isMobile={isMobile} />
         ) : loadState === "error" && !featuredPost && posts.length === 0 ? (
