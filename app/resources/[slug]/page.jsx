@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
-import { fetchPostBySlug, fetchAllSlugs } from "@/lib/wordpress";
+import {
+  getAllResourceSlugs,
+  getResourceArticleBySlug,
+} from "@/lib/resources/wpcom/service";
 import ResourceArticle from "@/components/ResourceArticle";
+import ResourceArticleError from "@/components/ResourceArticleError";
 
 /* ── ISR: pages are statically generated and revalidated hourly ── */
-export const revalidate = 3600;
+export const revalidate = 60;
 export const dynamicParams = true; // slugs not prebuilt still render on-demand
 
 const SITE = "https://nimbles2p.com";
@@ -11,7 +15,7 @@ const SITE = "https://nimbles2p.com";
 /** Prerender every WordPress post at build time. */
 export async function generateStaticParams() {
   try {
-    const slugs = await fetchAllSlugs();
+    const slugs = await getAllResourceSlugs();
     return slugs.map((slug) => ({ slug }));
   } catch {
     return []; // network hiccup at build → fall back to on-demand ISR
@@ -22,13 +26,17 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
 
-  let article = null;
+  let articleResult = null;
   try {
-    article = await fetchPostBySlug(slug);
+    articleResult = await getResourceArticleBySlug(slug);
   } catch {
     /* handled below */
   }
-  if (!article) return { title: "Resource | NimbleS2P" };
+  if (!articleResult || articleResult.status !== "success") {
+    return { title: "Resource | NimbleS2P" };
+  }
+
+  const { article } = articleResult;
 
   const url = `${SITE}/resources/${slug}`;
   const images = article.coverImage ? [{ url: article.coverImage, alt: article.coverAlt }] : [];
@@ -36,7 +44,10 @@ export async function generateMetadata({ params }) {
   return {
     title: `${article.title} | NimbleS2P`,
     description: article.excerpt,
+    authors: [{ name: article.author.name }],
+    keywords: article.tags,
     alternates: { canonical: url },
+    robots: { index: true, follow: true },
     openGraph: {
       title: article.title,
       description: article.excerpt,
@@ -56,8 +67,44 @@ export async function generateMetadata({ params }) {
 
 export default async function ResourceArticlePage({ params }) {
   const { slug } = await params;
-  const article = await fetchPostBySlug(slug);
-  if (!article) notFound();
+  const result = await getResourceArticleBySlug(slug);
+  if (result.status === "not_found") notFound();
+  if (result.status === "error") {
+    return <ResourceArticleError message={result.errorMessage} />;
+  }
 
-  return <ResourceArticle post={article} />;
+  const article = result.article;
+  const url = `${SITE}/resources/${slug}`;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.publishedAt,
+    dateModified: article.publishedAt,
+    mainEntityOfPage: url,
+    url,
+    author: {
+      "@type": "Person",
+      name: article.author.name,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "NimbleS2P",
+      url: SITE,
+    },
+    articleSection: article.category,
+    ...(article.tags.length ? { keywords: article.tags.join(", ") } : {}),
+    ...(article.coverImage ? { image: [article.coverImage] } : {}),
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <ResourceArticle post={article} />
+    </>
+  );
 }

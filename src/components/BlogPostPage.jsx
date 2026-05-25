@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import Image from "next/image";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
@@ -18,50 +18,6 @@ const T = {
   bd:"#E2E8F0",   bdP:"rgba(57,16,133,.18)",
 };
 
-/* ════════════════════════════════════════════
-   HOOKS
-════════════════════════════════════════════ */
-function useSEOHead(post) {
-  useEffect(()=>{
-    const base="https://nimbles2p.com";
-    document.title=`${post.title} | NimbleS2P Blog`;
-    const sm=(n,c,p=false)=>{const s=p?`meta[property="${n}"]`:`meta[name="${n}"]`;let e=document.querySelector(s);if(!e){e=document.createElement("meta");p?e.setAttribute("property",n):e.setAttribute("name",n);document.head.appendChild(e);}e.setAttribute("content",c);};
-    sm("description",post.excerpt);sm("og:title",post.title,true);sm("og:description",post.excerpt,true);sm("og:type","article",true);sm("og:url",`${base}/resources/${post.slug}`,true);sm("twitter:card","summary_large_image");sm("twitter:title",post.title);sm("twitter:description",post.excerpt);
-    const ld={"@context":"https://schema.org","@type":"BlogPosting",headline:post.title,description:post.excerpt,datePublished:post.publishedAt,author:{"@type":"Person",name:post.author.name},publisher:{"@type":"Organization",name:"NimbleS2P"},mainEntityOfPage:{"@type":"WebPage","@id":`${base}/resources/${post.slug}`}};
-    let el=document.getElementById("jsonld-blog");if(!el){el=document.createElement("script");el.id="jsonld-blog";el.type="application/ld+json";document.head.appendChild(el);}el.textContent=JSON.stringify(ld);
-  },[post]);
-}
-
-/* ── Sample post — replace with CMS fetch in getStaticProps ── */
-const SAMPLE_POST = {
-  slug:"supplier-onboarding-revenue",
-  title:"5 Signs Your Supplier Onboarding Is Leaking Revenue",
-  excerpt:"Most enterprises don't realise supplier friction starts before the first invoice arrives. Here's how to spot — and fix — the hidden cost.",
-  category:"Procurement Strategy", product:"Supplier Due Diligence",
-  readTime:"5 min read", publishedAt:"2025-05-14", publishedAtDisplay:"May 14, 2025",
-  author:{name:"Arjun Mehta",title:"Head of Product, NimbleS2P",initials:"AM"},
-  tags:["Supplier Onboarding","KYC","Procurement","Working Capital"],
-  relatedPosts:[
-    {slug:"vdd-compliance",  title:"NimbleS2P VDD: Compliance Automation Deep Dive",      readTime:"9 min", category:"Compliance"},
-    {slug:"supplier-analytics-cfo",title:"Why Supplier Analytics Is the CFO's New Dashboard",readTime:"4 min",category:"Analytics"},
-  ],
-  content:[
-    {type:"lead", text:"Supplier onboarding is the silent killer of working capital efficiency. While most CFOs obsess over DPO and invoice cycle times, the real leak happens days — sometimes weeks — before the first invoice ever arrives."},
-    {type:"h2",  text:"1. Your onboarding SLA is measured in weeks, not hours"},
-    {type:"p",   text:"When a new supplier relationship begins, every day of onboarding delay is a day without competitive pricing leverage. Enterprises with manual onboarding workflows average 14–21 days per supplier. Best-in-class automated onboarding completes in under 48 hours — a 10× speed advantage that compounds across hundreds of suppliers."},
-    {type:"callout",icon:"💡",text:"A single day of onboarding delay across 500 suppliers, each supplying ₹50L of goods monthly, represents ₹83L of working capital locked unnecessarily."},
-    {type:"h2",  text:"2. Compliance checks happen after the relationship starts"},
-    {type:"p",   text:"Post-hoc compliance validation — running KYC, GST, and MSME checks after onboarding is 'complete' — creates legal exposure that most procurement teams don't price in. Automated due diligence should gate the relationship, not chase it."},
-    {type:"h2",  text:"3. Your supplier master is full of duplicates and stale data"},
-    {type:"p",   text:"Duplicate vendor records are a symptom of manual onboarding without deduplication gates. The operational cost: split payment runs, reconciliation nightmares, and audit findings. The strategic cost: no clear view of true supplier concentration risk."},
-    {type:"callout",icon:"📊",text:"Enterprises using automated deduplication during onboarding reduce supplier master error rates by 60–80% within 90 days of deployment."},
-    {type:"h2",  text:"4. New suppliers can't self-serve their document updates"},
-    {type:"p",   text:"Bank account changes, GSTIN updates, and certification renewals should flow through a governed supplier portal — not email. When suppliers email updated documents, you lose version control, audit trail, and the ability to trigger downstream workflows automatically."},
-    {type:"h2",  text:"5. You're not measuring supplier onboarding as a revenue metric"},
-    {type:"p",   text:"Every day a supplier isn't fully onboarded is a day you can't run competitive RFQs, can't leverage their capacity, and can't offer early payment programs that reduce your cost of goods."},
-  ],
-};
-
 /* ── Content renderer ── */
 function ContentBlock({block}){
   const prose={fontFamily:T.fb,fontSize:17,color:T.t2,lineHeight:1.85,margin:"0 0 24px"};
@@ -76,9 +32,8 @@ function ContentBlock({block}){
 /* ════════════════════════════════════════════
    PAGE ROOT
 ════════════════════════════════════════════ */
-export default function BlogPostPage({ onBack, onNavigate, post = SAMPLE_POST }){
+export default function BlogPostPage({ onBack, onNavigate, post }){
   const w=useWidth(); const isMobile=w<640; const isTablet=w<1024;
-  useSEOHead(post);
 
   return (
     <div style={{fontFamily:T.fb,background:"#fff",minHeight:"100vh"}}>
@@ -177,7 +132,14 @@ export default function BlogPostPage({ onBack, onNavigate, post = SAMPLE_POST })
           {/* Cover image placeholder */}
           <div style={{height:isMobile?180:300,background:"linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)",borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:40,position:"relative",overflow:"hidden",border:`1px solid ${T.bdP}`}}>
             {post.coverImage ? (
-              <img src={post.coverImage} alt={post.coverAlt||post.title} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
+              <Image
+                src={post.coverImage}
+                alt={post.coverAlt||post.title}
+                fill
+                unoptimized
+                sizes={isMobile ? "100vw" : "(max-width: 1200px) 70vw, 840px"}
+                style={{objectFit:"cover"}}
+              />
             ) : (
               <>
                 <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(rgba(99,32,224,.05) 1px,transparent 1px)",backgroundSize:"20px 20px"}}/>

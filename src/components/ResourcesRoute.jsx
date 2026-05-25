@@ -8,7 +8,8 @@ import ResourcesPage from "@/components/ResourcesPage";
 export default function ResourcesRoute({
   featuredPost = null,
   posts = [],
-  dataFromServer = false,
+  fetchState = "success",
+  errorMessage = "",
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -18,7 +19,8 @@ export default function ResourcesRoute({
     <ResourcesPage
       featuredPost={featuredPost}
       posts={posts}
-      dataFromServer={dataFromServer}
+      fetchState={fetchState}
+      errorMessage={errorMessage}
       onBack={() => navigate("home")}
       onNavigate={navigate}
       resourceSection={resourceSection}

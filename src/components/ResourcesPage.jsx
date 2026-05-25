@@ -30,9 +30,9 @@
  */
 
 "use client";
+import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { resourceHashToFilter } from "@/lib/routes";
-import { fetchResources } from "@/lib/wordpress";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
@@ -82,30 +82,20 @@ const CAT_COLOR = {
 };
 function catStyle(cat) { return CAT_COLOR[cat] || { bg:"#F1F5F9", color:"#334155", border:"#CBD5E1" }; }
 
-/* ══════════════════════════════════════════════════════════
-   PLACEHOLDER / CMS DATA
-   Replace these arrays with your CMS fetch in getStaticProps
-══════════════════════════════════════════════════════════ */
-const PLACEHOLDER_FEATURED = {  // ← CMS: featuredPost prop
-  id:"f1", title:"The Enterprise Guide to AI-Powered Invoice Processing",
-  excerpt:"How leading CFOs are cutting AP cycle time by 70% while eliminating manual exceptions — a comprehensive playbook for finance transformation.",
-  category:"Playbook", readTime:"12 min read", date:"May 2025", slug:"/resources/ai-invoice-playbook",
-  tag:"Featured", author:"NimbleS2P Research Team",
-};
-
-const PLACEHOLDER_POSTS = [  // ← CMS: posts prop
-  { id:"p1", title:"5 Signs Your Supplier Onboarding Is Leaking Revenue",           category:"Blog",             readTime:"5 min",    date:"May 14, 2025",  slug:"/resources/supplier-onboarding-revenue", excerpt:"Most enterprises don't realise supplier friction starts before the first invoice." },
-  { id:"p2", title:"3-Way Matching: The Complete Procurement Handbook",               category:"Guide",            readTime:"10 min",   date:"May 10, 2025",  slug:"/resources/3-way-matching-guide",        excerpt:"Everything you need to automate PO, GRN, and invoice reconciliation at scale." },
-  { id:"p3", title:"How a ₹500Cr FMCG Reduced Supplier Disputes by 80%",             category:"Case Study",       readTime:"6 min",    date:"May 6, 2025",   slug:"/resources/fmcg-supplier-disputes",       excerpt:"A real-world walkthrough of the Supplier Portal implementation." },
-  { id:"p4", title:"Automation Smile: Tata's Invoice-to-Pay Journey",                category:"Automation Smile", readTime:"3 min",    date:"Apr 29, 2025",  slug:"/resources/tata-automation-smile",        excerpt:"A visual story of 0→100% touchless processing in 8 weeks." },
-  { id:"p5", title:"RFQ Best Practices for Indian Enterprise Procurement",           category:"Playbook",         readTime:"8 min",    date:"Apr 22, 2025",  slug:"/resources/rfq-best-practices",           excerpt:"Maximise supplier participation and negotiation outcomes on every event." },
-  { id:"p6", title:"Supply Chain Finance Report 2025",                               category:"Whitepaper",       readTime:"20 min",   date:"Apr 15, 2025",  slug:"/resources/scf-report-2025",              excerpt:"Benchmark data on early payment adoption across 500+ Indian enterprises." },
-  { id:"p7", title:"Why Supplier Analytics Is the CFO's New Dashboard",             category:"Blog",             readTime:"4 min",    date:"Apr 8, 2025",   slug:"/resources/supplier-analytics-cfo",       excerpt:"Real-time risk and compliance visibility — from a single analytics layer." },
-  { id:"p8", title:"NimbleS2P VDD: Compliance Automation Deep Dive",                category:"Guide",            readTime:"9 min",    date:"Mar 31, 2025",  slug:"/resources/vdd-compliance-guide",         excerpt:"Step-by-step breakdown of automated KYC, GST, and risk scoring." },
-  { id:"p9", title:"Webinar Recap: From Manual to Agentic Procurement",             category:"Webinar",          readTime:"Replay",   date:"Mar 24, 2025",  slug:"/resources/agentic-procurement-webinar",  excerpt:"Key takeaways from our live session with 400+ procurement leaders." },
+const FILTER_PILLS = [
+  { label:"All", value:"All" },
+  { label:"Blogs", value:"Blog" },
+  { label:"Playbooks", value:"Playbook" },
+  { label:"Guides", value:"Guide" },
+  { label:"Case Studies", value:"Case Study" },
+  { label:"Automation Smiles", value:"Automation Smile" },
+  { label:"Whitepapers", value:"Whitepaper" },
+  { label:"Webinars", value:"Webinar" },
 ];
 
-const ALL_CATEGORIES = ["All", "Blog", "Playbook", "Guide", "Case Study", "Automation Smile", "Whitepaper", "Webinar"];
+function filterLabel(value) {
+  return FILTER_PILLS.find((pill) => pill.value === value)?.label || value;
+}
 
 /* ══════════════════════════════════════════════════════════
    SUB-COMPONENTS
@@ -128,16 +118,18 @@ function FilterBar({ search, onSearch, active, onFilter, isMobile }) {
 
       {/* Category pills */}
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", flex:1 }}>
-        {ALL_CATEGORIES.map(cat => {
-          const isAct = active === cat;
+        {FILTER_PILLS.map((pill) => {
+          const isAct =
+            active === pill.value ||
+            (active === "Guides & Whitepapers" && (pill.value === "Guide" || pill.value === "Whitepaper"));
           return (
-            <button key={cat} onClick={() => onFilter(cat)} style={{
+            <button key={pill.value} onClick={() => onFilter(pill.value)} style={{
               padding:"7px 14px", borderRadius:100, border:`1.5px solid ${isAct ? TOKEN.p500 : TOKEN.bd}`,
               background: isAct ? TOKEN.p500 : "#fff", color: isAct ? "#fff" : TOKEN.t3,
               fontFamily:TOKEN.fb, fontSize:12.5, fontWeight: isAct ? 700 : 500, cursor:"pointer",
               transition:"all .18s cubic-bezier(.22,1,.36,1)",
               boxShadow: isAct ? `0 4px 16px ${TOKEN.p500}30` : "none",
-            }}>{cat}</button>
+            }}>{pill.label}</button>
           );
         })}
       </div>
@@ -167,8 +159,14 @@ function FeaturedCard({ post, isMobile }) {
         }}>
           {/* Featured image (WordPress) — fills the existing cover slot; placeholder shows when absent */}
           {post.coverImage && (
-            <img src={post.coverImage} alt={post.coverAlt || post.title} loading="lazy"
-              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />
+            <Image
+              src={post.coverImage}
+              alt={post.coverAlt || post.title}
+              fill
+              unoptimized
+              sizes={isMobile ? "100vw" : "50vw"}
+              style={{ objectFit:"cover" }}
+            />
           )}
           {/* Dot grid */}
           <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px)", backgroundSize:"24px 24px", pointerEvents:"none" }} />
@@ -228,8 +226,14 @@ function ResourceCard({ post, isMobile }) {
         {/* Image — WordPress featured image, falling back to the icon placeholder */}
         <div style={{ height:160, background:`linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)`, position:"relative", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
           {post.coverImage && (
-            <img src={post.coverImage} alt={post.coverAlt || post.title} loading="lazy"
-              style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />
+            <Image
+              src={post.coverImage}
+              alt={post.coverAlt || post.title}
+              fill
+              unoptimized
+              sizes={isMobile ? "100vw" : "(max-width: 1080px) 33vw, 360px"}
+              style={{ objectFit:"cover" }}
+            />
           )}
           <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(99,32,224,.05) 1px,transparent 1px)", backgroundSize:"16px 16px" }} />
           {!post.coverImage && (
@@ -348,12 +352,12 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
 
   const applySectionHash = useCallback((hash) => {
     const filter = resourceHashToFilter(hash);
-    if (filter) setActiveCategory(filter);
+    setActiveCategory(filter || "All");
   }, []);
 
   useEffect(() => {
+    applySectionHash(sectionHash || "");
     if (!sectionHash) return;
-    applySectionHash(sectionHash);
     const t = setTimeout(() => {
       const anchor = document.getElementById(`resources-${sectionHash}`) ?? gridRef.current;
       anchor?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -381,11 +385,17 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
         )}
 
         {/* Filter bar */}
-        <FilterBar search={search} onSearch={setSearch} active={activeCategory} onFilter={setActiveCategory} isMobile={isMobile} />
+        <FilterBar
+          search={search}
+          onSearch={setSearch}
+          active={activeCategory}
+          onFilter={setActiveCategory}
+          isMobile={isMobile}
+        />
 
         {/* Results count */}
         <div style={{ fontFamily:TOKEN.fb, fontSize:13, color:TOKEN.t4, marginBottom:20 }}>
-          {filtered.length} {filtered.length === 1 ? "result" : "results"}{activeCategory !== "All" ? ` in ${activeCategory}` : ""}
+          {filtered.length} {filtered.length === 1 ? "result" : "results"}{activeCategory !== "All" ? ` in ${filterLabel(activeCategory)}` : ""}
         </div>
 
         {/* Grid */}
@@ -489,43 +499,15 @@ export default function ResourcesPage({
   onNavigate,
   featuredPost: featuredProp = null,
   posts: postsProp = [],
-  dataFromServer = false,
+  fetchState = "success",
+  errorMessage = "",
   newsletterCta = null,
   resourceSection = "",
 }) {
   const w = useWidth();
   const isMobile = w < 640;
-
-  /* /resources: data is fetched on the server (getResourcesForPage). Client fetch only
-     when the server could not reach WordPress — never show placeholder cards while waiting. */
-  const [live, setLive] = useState(null);
-  const [loadState, setLoadState] = useState(
-    dataFromServer ? "ready" : "loading"
-  );
-
-  useEffect(() => {
-    if (dataFromServer) return;
-    const ctrl = new AbortController();
-    setLoadState("loading");
-    fetchResources({ signal: ctrl.signal })
-      .then((res) => {
-        if (res) setLive(res);
-        setLoadState("ready");
-      })
-      .catch(() => setLoadState("error"));
-    return () => ctrl.abort();
-  }, [dataFromServer]);
-
-  const featuredPost = dataFromServer
-    ? featuredProp
-    : live?.featuredPost ?? (loadState === "error" ? PLACEHOLDER_FEATURED : null);
-  const posts = dataFromServer
-    ? postsProp
-    : live?.posts?.length
-      ? live.posts
-      : loadState === "error"
-        ? PLACEHOLDER_POSTS
-        : [];
+  const featuredPost = featuredProp;
+  const posts = postsProp;
   const [sectionHash, setSectionHash] = useState(resourceSection ?? "");
 
   useEffect(() => {
@@ -551,12 +533,24 @@ export default function ResourcesPage({
       <Nav onNavigate={onNavigate} onBack={onBack} pageName="Resources" />
       <main style={{ paddingTop:72 /* NAV_H */ }}>
         <ResourcesHero isMobile={isMobile} />
-        {loadState === "loading" ? (
-          <ResourcesGridSkeleton isMobile={isMobile} />
-        ) : loadState === "error" && !featuredPost && posts.length === 0 ? (
+        {fetchState === "error" ? (
           <div style={{ maxWidth: 1080, margin: "0 auto", padding: "48px 0", textAlign: "center", fontFamily: TOKEN.fb, color: TOKEN.t3 }}>
-            Unable to load resources right now. Please refresh or try again shortly.
+            {errorMessage || "Unable to load resources right now. Please refresh or try again shortly."}
           </div>
+        ) : !featuredPost && posts.length === 0 ? (
+          <section style={{ background: TOKEN.slp, padding: isMobile ? "48px 20px 72px" : "clamp(48px,7vh,88px) 5vw" }}>
+            <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+              <div style={{ background:"#fff", border:`1px solid ${TOKEN.bd}`, borderRadius:20, padding: isMobile ? "40px 24px" : "56px 32px", textAlign:"center", boxShadow:"0 8px 40px rgba(57,16,133,.06)" }}>
+                <div style={{ fontSize:40, marginBottom:12 }}>🗂️</div>
+                <div style={{ fontFamily:TOKEN.fb, fontSize: isMobile ? 20 : 24, fontWeight:800, color:TOKEN.t1, letterSpacing:"-.03em", marginBottom:10 }}>
+                  No resources published yet
+                </div>
+                <div style={{ fontFamily:TOKEN.fb, fontSize:14.5, color:TOKEN.t3, lineHeight:1.7, maxWidth:520, margin:"0 auto" }}>
+                  New insights, playbooks, and customer stories from WordPress will appear here automatically as soon as they are published.
+                </div>
+              </div>
+            </div>
+          </section>
         ) : (
           <ResourcesGrid featuredPost={featuredPost} posts={posts} isMobile={isMobile} sectionHash={sectionHash} />
         )}
