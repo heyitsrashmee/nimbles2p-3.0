@@ -1,14 +1,14 @@
 [
   { "label": "Mafatlal", "file": "mafatlal-logo.webp" },
-  { "label": "India Today", "file": "india-today-logo.png" },
-  { "label": "Hero Future Energies", "file": "hero-future-energies-logo.png" },
-  { "label": "Pernod Ricard", "file": "Pernod_Ricard_logo.png" },
-  { "label": "The Oberoi", "file": "oberoi-logo.jpeg" },
+  { "label": "India Today", "file": "india-today-logo.webp" },
+  { "label": "Hero Future Energies", "file": "hero-future-energies-logo.webp" },
+  { "label": "Pernod Ricard", "file": "Pernod_Ricard_logo.webp" },
+  { "label": "The Oberoi", "file": "oberoi-logo.webp" },
   { "label": "Sud Chemie India", "file": "sud-chemie-india-logo.svg" },
-  { "label": "Cycle", "file": "cycle-logo.jpg" },
-  { "label": "SJCPL", "file": "SJCPL-logo.jpg" },
-  { "label": "United Colors of Benetton", "file": "ucb.png" },
-  { "label": "Triveni", "file": "triveni-logo.png" },
+  { "label": "Cycle", "file": "cycle-logo.webp" },
+  { "label": "SJCPL", "file": "SJCPL-logo.webp" },
+  { "label": "United Colors of Benetton", "file": "ucb.webp" },
+  { "label": "Triveni", "file": "triveni-logo.webp" },
   { "label": "Runwal", "file": "runwal-logo.webp" },
-  { "label": "Jindal Panther", "file": "jindal-panther-logo.png" }
+  { "label": "Jindal Panther", "file": "jindal-panther-logo.webp" }
 ]
