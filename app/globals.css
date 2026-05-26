@@ -205,7 +205,7 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 .kalam-accent { color: #3B2EC4; font-weight: 700; }
 
 /* ── LOGO MARQUEE ── */
-.lm-wrap { overflow:hidden;position:relative;padding:44px 0;background:#fff;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06); }
+.lm-wrap { overflow:hidden;position:relative;padding:clamp(28px,5vw,44px) 0;background:#fff;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06); }
 .lm-track {
   display:flex;
   align-items:center;
@@ -225,16 +225,16 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
   flex-shrink:0;
 }
 .lm-logo {
-  height:40px;
-  min-width:88px;
-  max-width:140px;
+  height:clamp(28px,4.6vw,40px);
+  min-width:clamp(64px,12vw,88px);
+  max-width:clamp(100px,22vw,140px);
   display:flex;
   align-items:center;
   justify-content:center;
   flex-shrink:0;
 }
 .lm-logo img {
-  max-height:36px;
+  max-height:90%;
   max-width:100%;
   width:auto;
   height:auto;
@@ -245,9 +245,9 @@ body { font-family: var(--fb); background: var(--slp); color: var(--t1); overflo
 .lm-divider {
   width:1px;
   min-width:1px;
-  height:28px;
+  height:clamp(20px,3.4vw,28px);
   background:#CBD5E1;
-  margin:0 28px;
+  margin:0 clamp(14px,4vw,28px);
   flex-shrink:0;
 }
 @media (prefers-reduced-motion: reduce) {

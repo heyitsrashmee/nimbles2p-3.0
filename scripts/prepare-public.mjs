@@ -10,7 +10,14 @@ const publicDir = path.join(root, "public");
 const MAX_WIDTH = 1920;
 const JPEG_QUALITY = 82;
 
-const STATIC_DIRS = ["customer-logos"];
+/* Customer logos render in the marquee at ~36px tall / ~140px wide.
+   Downscale the served copies to a retina-safe box and re-encode webp —
+   the high-res source files in customer-logos/ stay untouched. */
+const LOGO_MAX_W = 360;
+const LOGO_MAX_H = 110;
+const LOGO_WEBP_QUALITY = 82;
+
+const STATIC_DIRS = [];
 
 async function optimizeImage(srcPath, destPath) {
   const ext = path.extname(srcPath).toLowerCase();
@@ -67,6 +74,44 @@ async function syncImages() {
   }
 }
 
+async function syncCustomerLogos() {
+  const srcDir = path.join(root, "customer-logos");
+  const destDir = path.join(publicDir, "customer-logos");
+  if (!fs.existsSync(srcDir)) {
+    console.warn("[prepare-public] skip missing: customer-logos/");
+    return;
+  }
+
+  fs.rmSync(destDir, { recursive: true, force: true });
+  fs.mkdirSync(destDir, { recursive: true });
+
+  const files = fs.readdirSync(srcDir).filter((f) => !f.startsWith("."));
+
+  for (const file of files) {
+    const srcPath = path.join(srcDir, file);
+    if (!fs.statSync(srcPath).isFile()) continue;
+
+    const ext = path.extname(file).toLowerCase();
+    const destPath = path.join(destDir, file);
+
+    if (ext === ".webp" || ext === ".png" || ext === ".jpg" || ext === ".jpeg") {
+      // Raster logo → downscale into the retina box and re-encode webp.
+      const before = fs.statSync(srcPath).size;
+      await sharp(srcPath)
+        .resize({ width: LOGO_MAX_W, height: LOGO_MAX_H, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: LOGO_WEBP_QUALITY, effort: 5 })
+        .toFile(destPath);
+      const after = fs.statSync(destPath).size;
+      console.log(
+        `[prepare-public]   customer-logos/${file} ${(before / 1024).toFixed(0)}KB → ${(after / 1024).toFixed(0)}KB`
+      );
+    } else {
+      // svg (vector, already responsive), manifest, etc. → copy verbatim.
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 function validateCustomerLogos() {
   const manifestPath = path.join(root, "customer-logos", "logos.manifest.json");
   if (!fs.existsSync(manifestPath)) {
@@ -88,6 +133,7 @@ async function main() {
   fs.mkdirSync(publicDir, { recursive: true });
 
   validateCustomerLogos();
+  await syncCustomerLogos();
 
   for (const name of STATIC_DIRS) {
     const src = path.join(root, name);
