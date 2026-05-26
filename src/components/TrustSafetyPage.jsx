@@ -193,6 +193,37 @@ function AccessTerminal() {
   );
 }
 
+/* ── FAQ accordion item ──
+   Reveal is driven by React state (not the page-level imperative observer)
+   because this element's className also toggles `open`. If reveal were added
+   imperatively, React's re-render on toggle would clobber the `.visible`
+   class and the item would snap back to opacity:0. */
+function FaqItem({ f, isOpen, onToggle }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.12 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className={`faq-item sr${visible ? " visible" : ""}${isOpen ? " open" : ""}`}>
+      <div className="faq-q" onClick={onToggle}>
+        <span className="faq-qtxt">{f.q}</span>
+        <div className="faq-toggle"><span className="faq-plus">+</span></div>
+      </div>
+      <div className="faq-a">
+        <div className="faq-a-inner">{f.a}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function TrustSafetyPage({ onBack, onNavigate }) {
   const rootRef = useRef(null);
   const [openFaq, setOpenFaq] = useState(null);
@@ -212,7 +243,9 @@ export default function TrustSafetyPage({ onBack, onNavigate }) {
       },
       { threshold: 0.12 }
     );
-    root.querySelectorAll(".sr").forEach((el) => obs.observe(el));
+    // FAQ items manage their own reveal (see FaqItem) — excluded here so the
+    // imperative .visible isn't clobbered by React re-renders on toggle.
+    root.querySelectorAll(".sr:not(.faq-item)").forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, []);
 
@@ -347,20 +380,14 @@ export default function TrustSafetyPage({ onBack, onNavigate }) {
           </div>
 
           <div className="faq-list">
-            {FAQS.map((f, i) => {
-              const isOpen = openFaq === i;
-              return (
-                <div className={`faq-item sr${isOpen ? " open" : ""}`} key={f.q}>
-                  <div className="faq-q" onClick={() => setOpenFaq(isOpen ? null : i)}>
-                    <span className="faq-qtxt">{f.q}</span>
-                    <div className="faq-toggle"><span className="faq-plus">+</span></div>
-                  </div>
-                  <div className="faq-a">
-                    <div className="faq-a-inner">{f.a}</div>
-                  </div>
-                </div>
-              );
-            })}
+            {FAQS.map((f, i) => (
+              <FaqItem
+                key={f.q}
+                f={f}
+                isOpen={openFaq === i}
+                onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+              />
+            ))}
           </div>
         </div>
       </section>
