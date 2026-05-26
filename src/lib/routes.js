@@ -13,6 +13,7 @@ export const PAGE_SLUGS = [
   "terms",
   "resources",
   "blog",
+  "trust",
 ];
 
 const SLUG_SET = new Set(PAGE_SLUGS);
@@ -36,6 +37,7 @@ export const FOOTER_LINKS = {
   "Case Studies": "resources",
   "Automation Smiles": "resources",
   "Guides & Whitepapers": "resources",
+  "Trust Center": "trust",
 };
 
 /** Footer labels with no page yet — render as non-navigable placeholders */
@@ -43,7 +45,6 @@ export const FOOTER_PLACEHOLDER_LABELS = new Set([
   "Careers",
   "Press & Media",
   "Partners",
-  "Trust Center",
   "Blackbox API",
 ]);
 

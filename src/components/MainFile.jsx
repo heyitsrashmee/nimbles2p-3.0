@@ -23,6 +23,7 @@ import SupplierAnalyticsPage from "./SupplierAnalyticsPage";
 import EarlyFinancingPage from "./EarlyFinancingPage";
 import GetStartedPage from "./GetStartedPage";
 import BlogPostPage from "./BlogPostPage";
+import TrustSafetyPage from "./TrustSafetyPage";
 
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
@@ -1747,6 +1748,9 @@ export default function NimbleS2PHomepage() {
   }
   if (page === "blog") {
     return <BlogPostPage onBack={goHome} onNavigate={navigate} />;
+  }
+  if (page === "trust") {
+    return <TrustSafetyPage onBack={goHome} onNavigate={navigate} />;
   }
 
   return (
