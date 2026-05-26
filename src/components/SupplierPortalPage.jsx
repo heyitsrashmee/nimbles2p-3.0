@@ -9,6 +9,8 @@ import { PRODUCT_PAGE_RESOURCES } from "@/components/layout/megaMenuData";
 import GatedDownloadForm from "@/components/GatedDownloadForm";
 import { assetUrl } from "@/lib/assetUrl";
 
+const SUPPLIER_PORTAL_RESOURCE_WEB3FORMS_KEY = "ad1286ac-ebf6-4dc5-ace3-812009c9d00a";
+
 /* ═══════════════════════════════════════════════════════════
    SUPPLIER PORTAL — PRODUCT PAGE
    Shares design system with VDD page
@@ -572,6 +574,7 @@ function SPCTA() {
               slug="supplier"
               title={PRODUCT_PAGE_RESOURCES.supplier.label}
               pageSource="Supplier Portal"
+              accessKey={SUPPLIER_PORTAL_RESOURCE_WEB3FORMS_KEY}
               emailPrompt="Enter your work email to get instant access"
               buttonLabel="Download Full Case Study →"
               successTitle="Case study on its way!"

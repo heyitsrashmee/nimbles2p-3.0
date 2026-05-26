@@ -6,6 +6,7 @@ import {
   extractOgImageUrl,
   mapWpcomPostToArticle,
   mapWpcomPostToResourceCard,
+  resolveWpcomPostsEndpoint,
 } from "./service";
 
 function makePost(overrides: Record<string, unknown> = {}) {
@@ -159,4 +160,20 @@ test("extractOgImageUrl reads the public page og:image", () => {
   `;
 
   assert.equal(extractOgImageUrl(html), "https://cdn.example.com/cover.jpg");
+});
+
+test("resolveWpcomPostsEndpoint accepts the exact posts endpoint", () => {
+  assert.equal(
+    resolveWpcomPostsEndpoint(
+      "https://public-api.wordpress.com/wp/v2/sites/resourcesnimbles2p.wordpress.com/posts",
+    ),
+    "https://public-api.wordpress.com/wp/v2/sites/resourcesnimbles2p.wordpress.com/posts",
+  );
+});
+
+test("resolveWpcomPostsEndpoint still supports the older site-base format", () => {
+  assert.equal(
+    resolveWpcomPostsEndpoint("https://public-api.wordpress.com/wp/v2/sites/resourcesnimbles2p.wordpress.com"),
+    "https://public-api.wordpress.com/wp/v2/sites/resourcesnimbles2p.wordpress.com/posts",
+  );
 });

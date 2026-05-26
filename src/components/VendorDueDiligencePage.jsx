@@ -8,6 +8,8 @@ import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
 import { PRODUCT_PAGE_RESOURCES } from "@/components/layout/megaMenuData";
 import GatedDownloadForm from "@/components/GatedDownloadForm";
 
+const VDD_RESOURCE_WEB3FORMS_KEY = "dba04989-a460-4c23-95b6-21596b18ba23";
+
 /* ═══════════════════════════════════════════════════════════
    SUPPLIER DUE DILIGENCE — PRODUCT PAGE
    Nav: same homepage Nav component with onBack breadcrumb
@@ -599,6 +601,7 @@ function LeadMagnetCTA() {
               slug="vdd"
               title={PRODUCT_PAGE_RESOURCES.vdd.label}
               pageSource="Supplier Due Diligence"
+              accessKey={VDD_RESOURCE_WEB3FORMS_KEY}
               emailPrompt="Enter your work email to get instant access"
               buttonLabel="Download Free Guide →"
               successTitle="Guide on its way!"

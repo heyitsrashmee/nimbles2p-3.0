@@ -67,11 +67,12 @@ export async function submitBookDemoForm(form) {
 
 /**
  * Gated guide / PDF download — captures email then client may trigger file download.
- * @param {{ email: string, resourceTitle: string, resourceSlug: string, downloadUrl?: string, pageSource?: string }} payload
+ * @param {{ email: string, resourceTitle: string, resourceSlug: string, downloadUrl?: string, pageSource?: string, accessKey?: string }} payload
  */
 export async function submitGatedDownloadForm(payload) {
+  const accessKey = payload.accessKey ?? GATED_DOWNLOAD_KEY;
   const formData = new FormData();
-  formData.append("access_key", GATED_DOWNLOAD_KEY);
+  formData.append("access_key", accessKey);
   formData.append("subject", `Gated resource — ${payload.resourceTitle}`);
   formData.append("from_name", payload.email);
   formData.append("email", payload.email);
@@ -83,7 +84,7 @@ export async function submitGatedDownloadForm(payload) {
     "message",
     `Resource requested: ${payload.resourceTitle} (${payload.resourceSlug})${payload.pageSource ? ` — ${payload.pageSource}` : ""}`,
   );
-  return submitToWeb3Forms(GATED_DOWNLOAD_KEY, formData);
+  return submitToWeb3Forms(accessKey, formData);
 }
 
 /** Basic email format check for gated forms. */

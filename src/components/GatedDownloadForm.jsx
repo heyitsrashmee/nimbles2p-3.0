@@ -16,6 +16,7 @@ import {
  *   downloadUrl?: string;
  *   downloadFilename?: string;
  *   pageSource?: string;
+ *   accessKey?: string;
  *   buttonLabel?: string;
  *   emailPrompt?: string;
  *   successTitle?: string;
@@ -29,6 +30,7 @@ export default function GatedDownloadForm({
   downloadUrl = "",
   downloadFilename,
   pageSource,
+  accessKey,
   buttonLabel = "Download Free Guide →",
   emailPrompt = "Enter your work email for instant access",
   successTitle,
@@ -67,6 +69,7 @@ export default function GatedDownloadForm({
         resourceSlug: slug,
         downloadUrl: hasDownload ? downloadUrl : undefined,
         pageSource,
+        accessKey,
       });
       setGatedUnlock(slug);
       if (hasDownload) startDownload();

@@ -11,11 +11,16 @@ import type {
   WpcomPost,
 } from "./types";
 
-const API_BASE =
-  process.env.WORDPRESS_RESOURCES_API_BASE?.replace(/\/$/, "") ||
-  "https://public-api.wordpress.com/wp/v2/sites/resourcesnimbles2p.wordpress.com";
+const DEFAULT_POSTS_ENDPOINT =
+  "https://public-api.wordpress.com/wp/v2/sites/resourcesnimbles2p.wordpress.com/posts";
 
-const POSTS_ENDPOINT = `${API_BASE}/posts`;
+export function resolveWpcomPostsEndpoint(configuredUrl?: string): string {
+  const normalized = configuredUrl?.replace(/\/$/, "") || "";
+  if (!normalized) return DEFAULT_POSTS_ENDPOINT;
+  return normalized.endsWith("/posts") ? normalized : `${normalized}/posts`;
+}
+
+const POSTS_ENDPOINT = resolveWpcomPostsEndpoint(process.env.WORDPRESS_RESOURCES_API_BASE);
 const REVALIDATE_SECONDS = 60;
 const FEATURED_TAG_SLUG = "featured";
 const DEFAULT_AUTHOR = "NimbleS2P Team";
