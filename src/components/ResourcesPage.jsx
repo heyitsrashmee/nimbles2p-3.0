@@ -32,7 +32,7 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { resourceHashToFilter } from "@/lib/routes";
+import { resourceHashToFilter, resourceFilterToHash } from "@/lib/routes";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
@@ -355,6 +355,15 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
     setActiveCategory(filter || "All");
   }, []);
 
+  const handleFilter = useCallback((value) => {
+    setActiveCategory(value);
+    const hash = resourceFilterToHash(value);
+    const base = window.location.pathname;
+    const url = hash ? `${base}#${hash}` : base;
+    window.history.replaceState(null, "", url);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  }, []);
+
   useEffect(() => {
     applySectionHash(sectionHash || "");
     if (!sectionHash) return;
@@ -389,7 +398,7 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
           search={search}
           onSearch={setSearch}
           active={activeCategory}
-          onFilter={setActiveCategory}
+          onFilter={handleFilter}
           isMobile={isMobile}
         />
 
@@ -516,8 +525,7 @@ export default function ResourcesPage({
 
   useEffect(() => {
     const syncHash = () => {
-      const fromUrl = window.location.hash.replace(/^#/, "");
-      if (fromUrl) setSectionHash(fromUrl);
+      setSectionHash(window.location.hash.replace(/^#/, ""));
     };
     syncHash();
     window.addEventListener("hashchange", syncHash);

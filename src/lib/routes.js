@@ -68,20 +68,29 @@ export const FOOTER_COLUMNS = [
   ],
 ];
 
-/** Footer resources label → URL hash segment on /resources */
-export const FOOTER_RESOURCE_HASHES = {
-  "Blog": "blog",
-  "Case Studies": "case-studies",
-  "Automation Smiles": "automation-smiles",
+/** Resources grid filter value → URL hash on /resources (e.g. #blog) */
+export const RESOURCE_FILTER_HASHES = {
+  Blog: "blog",
+  Playbook: "playbooks",
+  Guide: "guides",
+  "Case Study": "case-studies",
+  "Automation Smile": "automation-smiles",
+  Whitepaper: "whitepapers",
+  Webinar: "webinars",
   "Guides & Whitepapers": "guides-whitepapers",
 };
 
-/** Hash segment → Resources grid filter label */
-export const RESOURCE_HASH_FILTERS = {
-  blog: "Blog",
-  "case-studies": "Case Study",
-  "automation-smiles": "Automation Smile",
-  "guides-whitepapers": "Guides & Whitepapers",
+/** Hash segment → Resources grid filter value */
+export const RESOURCE_HASH_FILTERS = Object.fromEntries(
+  Object.entries(RESOURCE_FILTER_HASHES).map(([filter, hash]) => [hash, filter])
+);
+
+/** Footer resources label → URL hash segment on /resources */
+export const FOOTER_RESOURCE_HASHES = {
+  Blog: RESOURCE_FILTER_HASHES.Blog,
+  "Case Studies": RESOURCE_FILTER_HASHES["Case Study"],
+  "Automation Smiles": RESOURCE_FILTER_HASHES["Automation Smile"],
+  "Guides & Whitepapers": RESOURCE_FILTER_HASHES["Guides & Whitepapers"],
 };
 
 /** @param {string} label */
@@ -111,6 +120,12 @@ export function footerLabelToResourceHash(label) {
 /** @param {string} hash */
 export function resourceHashToFilter(hash) {
   return RESOURCE_HASH_FILTERS[hash] ?? null;
+}
+
+/** @param {string} filter — Resources grid category (e.g. "Blog"); "All" yields empty string */
+export function resourceFilterToHash(filter) {
+  if (!filter || filter === "All") return "";
+  return RESOURCE_FILTER_HASHES[filter] ?? "";
 }
 
 /** @param {string | null | undefined} pathname */

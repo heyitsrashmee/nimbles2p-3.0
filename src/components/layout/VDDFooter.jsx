@@ -11,7 +11,6 @@ export function VDDFooter({ onNavigate }) {
   const cols = FOOTER_COLUMNS;
   const socials = [
     { label:"in", title:"LinkedIn", href:"https://www.linkedin.com/company/techpanion/", external:true },
-    { label:"✉", title:"Email", href:"mailto:info@techpanion.com", external:false },
   ];
 
   /* Constellation dots — 5 fixed positions, pale violet */
