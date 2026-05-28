@@ -112,6 +112,42 @@ async function syncCustomerLogos() {
   }
 }
 
+async function syncPressLogos() {
+  const srcDir = path.join(root, "press-logos");
+  const destDir = path.join(publicDir, "press-logos");
+  if (!fs.existsSync(srcDir)) {
+    console.warn("[prepare-public] skip missing: press-logos/");
+    return;
+  }
+
+  fs.rmSync(destDir, { recursive: true, force: true });
+  fs.mkdirSync(destDir, { recursive: true });
+
+  const files = fs.readdirSync(srcDir).filter((f) => !f.startsWith("."));
+
+  for (const file of files) {
+    const srcPath = path.join(srcDir, file);
+    if (!fs.statSync(srcPath).isFile()) continue;
+
+    const ext = path.extname(file).toLowerCase();
+    const destPath = path.join(destDir, file);
+
+    if (ext === ".webp" || ext === ".png" || ext === ".jpg" || ext === ".jpeg") {
+      const before = fs.statSync(srcPath).size;
+      await sharp(srcPath)
+        .resize({ width: LOGO_MAX_W, height: LOGO_MAX_H, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: LOGO_WEBP_QUALITY, effort: 5 })
+        .toFile(destPath);
+      const after = fs.statSync(destPath).size;
+      console.log(
+        `[prepare-public]   press-logos/${file} ${(before / 1024).toFixed(0)}KB → ${(after / 1024).toFixed(0)}KB`
+      );
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 function validateCustomerLogos() {
   const manifestPath = path.join(root, "customer-logos", "logos.manifest.json");
   if (!fs.existsSync(manifestPath)) {
@@ -129,11 +165,31 @@ function validateCustomerLogos() {
   console.log(`[prepare-public] validated ${entries.length} customer logos`);
 }
 
+function validatePressLogos() {
+  const manifestPath = path.join(root, "press-logos", "logos.manifest.json");
+  if (!fs.existsSync(manifestPath)) {
+    console.warn("[prepare-public] skip: press-logos/logos.manifest.json missing");
+    return;
+  }
+  const entries = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const logosDir = path.join(root, "press-logos");
+  for (const { label, file } of entries) {
+    const filePath = path.join(logosDir, file);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`[prepare-public] missing press logo for "${label}": ${file}`);
+    }
+  }
+  console.log(`[prepare-public] validated ${entries.length} press logos`);
+}
+
 async function main() {
   fs.mkdirSync(publicDir, { recursive: true });
 
   validateCustomerLogos();
   await syncCustomerLogos();
+
+  validatePressLogos();
+  await syncPressLogos();
 
   for (const name of STATIC_DIRS) {
     const src = path.join(root, name);

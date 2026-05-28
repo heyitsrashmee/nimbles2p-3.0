@@ -25,6 +25,7 @@ import GetStartedPage from "./GetStartedPage";
 import BlogPostPage from "./BlogPostPage";
 import TrustSafetyPage from "./TrustSafetyPage";
 import PartnersPage from "./PartnersPage";
+import PressMediaPage from "./PressMediaPage";
 
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
@@ -1755,6 +1756,9 @@ export default function NimbleS2PHomepage() {
   }
   if (page === "partners") {
     return <PartnersPage onBack={goHome} onNavigate={navigate} />;
+  }
+  if (page === "press") {
+    return <PressMediaPage onBack={goHome} onNavigate={navigate} />;
   }
 
   return (
