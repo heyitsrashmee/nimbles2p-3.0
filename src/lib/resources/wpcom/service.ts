@@ -27,6 +27,16 @@ const DEFAULT_AUTHOR = "NimbleS2P Team";
 const fallbackCache = ((fn: Function) => fn) as typeof cache;
 const cacheFn = typeof cache === "function" ? cache : fallbackCache;
 
+type MegaMenuResource = {
+  type: string;
+  label: string;
+  meta: string;
+  icon: string;
+  slug: string;
+  coverImage: string;
+  coverAlt: string;
+};
+
 const CATEGORY_LABELS: Record<string, string> = {
   blogs: "Blog",
   blog: "Blog",
@@ -44,6 +54,53 @@ const CATEGORY_LABELS: Record<string, string> = {
   webinars: "Webinar",
   webinar: "Webinar",
 };
+
+const MEGA_MENU_MODULE_BY_CATEGORY: Record<string, string> = {
+  "supplier due diligence": "vdd",
+  "supplier portal": "supplier",
+  "invoice processing": "invoice",
+  "rfx management": "rfq",
+  "early financing": "finance",
+  "supplier analytics": "analytics",
+};
+
+function normalizeCategoryKey(value: string): string {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function extractMegaMenuModuleId(post: WpcomPost): string | null {
+  const categories = extractTerms(post, "category");
+  for (const term of categories) {
+    const rawSlug = normalizeCategoryKey(String(term.slug ?? ""));
+    const rawName = normalizeCategoryKey(String(term.name ?? ""));
+    const fromSlug = MEGA_MENU_MODULE_BY_CATEGORY[rawSlug];
+    if (fromSlug) return fromSlug;
+    const fromName = MEGA_MENU_MODULE_BY_CATEGORY[rawName];
+    if (fromName) return fromName;
+  }
+  return null;
+}
+
+function megaMenuResourceTypeFromCategory(category = ""): string {
+  const c = category.toLowerCase();
+  if (c.includes("case")) return "case study";
+  if (c.includes("blog")) return "blog";
+  if (c.includes("webinar")) return "webinar";
+  if (c.includes("whitepaper") || c.includes("guide") || c.includes("playbook")) return "guide";
+  return "resource";
+}
+
+function megaMenuIconForType(type: string): string {
+  if (type === "case study") return "📈";
+  if (type === "blog") return "✍️";
+  if (type === "webinar") return "🎥";
+  return "📋";
+}
 
 const NAMED_ENTITIES: Record<string, string> = {
   "&amp;": "&",
@@ -333,6 +390,20 @@ export function mapWpcomPostToResourceCard(post: WpcomPost): ResourceCardData {
   };
 }
 
+function mapWpcomPostToMegaMenuResource(post: WpcomPost): MegaMenuResource {
+  const card = mapWpcomPostToResourceCard(post);
+  const type = megaMenuResourceTypeFromCategory(card.category);
+  return {
+    type,
+    label: card.title,
+    meta: card.readTime,
+    icon: megaMenuIconForType(type),
+    slug: card.slug,
+    coverImage: card.coverImage,
+    coverAlt: card.coverAlt,
+  };
+}
+
 function mapRelatedPost(post: WpcomPost): ResourceRelatedPost {
   return {
     slug: post.slug,
@@ -468,6 +539,51 @@ export const getResourceArticleBySlug = cacheFn(
         status: "error",
         errorMessage: "Unable to load this resource right now. Please try again shortly.",
       };
+    }
+  },
+);
+
+/**
+ * Mega menu resources by product module.
+ *
+ * WP.com-safe approach: assign the post a module category
+ * (e.g. "Supplier Due Diligence", "Supplier Analytics", etc).
+ * Newest post per module wins.
+ */
+export const getMegaMenuFeaturedByModuleWpcom = cacheFn(
+  async (): Promise<Record<string, MegaMenuResource>> => {
+    try {
+      const result = await fetchPosts(
+        {
+          _embed: true,
+          per_page: 100,
+          orderby: "date",
+          order: "desc",
+        },
+        "getMegaMenuFeaturedByModuleWpcom",
+      );
+
+      if (!result || result.posts.length === 0) {
+        return {};
+      }
+
+      const hydrated = await hydratePostsWithCoverFallback(result.posts);
+
+      const byModule: Record<string, MegaMenuResource> = {};
+      for (const post of hydrated) {
+        const moduleId = extractMegaMenuModuleId(post);
+        if (!moduleId || byModule[moduleId]) continue;
+
+        const coverUrl = extractCoverImage(post).url;
+        if (!coverUrl) continue; // don't override static covers with an empty WP cover
+
+        byModule[moduleId] = mapWpcomPostToMegaMenuResource(post);
+      }
+
+      return byModule;
+    } catch (error) {
+      console.warn("[wpcom] getMegaMenuFeaturedByModuleWpcom failed:", error);
+      return {};
     }
   },
 );

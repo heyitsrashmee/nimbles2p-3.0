@@ -23,6 +23,8 @@ export interface WpTerm {
   taxonomy?: string;
   slug?: string;
   name?: string;
+  id?: number;
+  parent?: number;
 }
 
 export interface WpEmbeddedData {

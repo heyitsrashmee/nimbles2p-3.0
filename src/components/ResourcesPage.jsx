@@ -516,7 +516,7 @@ export default function ResourcesPage({
   const w = useWidth();
   const isMobile = w < 640;
   const featuredPost = featuredProp;
-  const posts = postsProp;
+  const posts = (Array.isArray(postsProp) ? postsProp : []).filter(Boolean);
   const [sectionHash, setSectionHash] = useState(resourceSection ?? "");
 
   useEffect(() => {

@@ -14,6 +14,7 @@ export const PAGE_SLUGS = [
   "resources",
   "blog",
   "trust",
+  "partners",
 ];
 
 const SLUG_SET = new Set(PAGE_SLUGS);
@@ -32,11 +33,13 @@ export const FOOTER_LINKS = {
   "Pricing": "pricing",
   "Contact": "demo",
   "Get Started": "getstarted",
+  "Partners": "partners",
   /* Resources */
   "Blog": "resources",
   "Case Studies": "resources",
   "Automation Smiles": "resources",
-  "Guides & Whitepapers": "resources",
+  "Guides": "resources",
+  "Whitepapers": "resources",
   "Trust Center": "trust",
 };
 
@@ -44,7 +47,6 @@ export const FOOTER_LINKS = {
 export const FOOTER_PLACEHOLDER_LABELS = new Set([
   "Careers",
   "Press & Media",
-  "Partners",
   "Blackbox API",
 ]);
 
@@ -64,7 +66,7 @@ export const FOOTER_COLUMNS = [
   ["COMPANY", ["About Us", "Careers", "Press & Media", "Partners", "Contact"]],
   [
     "RESOURCES",
-    ["Blog", "Case Studies", "Automation Smiles", "Guides & Whitepapers", "Trust Center"],
+    ["Blog", "Case Studies", "Automation Smiles", "Guides", "Whitepapers", "Trust Center"],
   ],
 ];
 
@@ -90,7 +92,8 @@ export const FOOTER_RESOURCE_HASHES = {
   Blog: RESOURCE_FILTER_HASHES.Blog,
   "Case Studies": RESOURCE_FILTER_HASHES["Case Study"],
   "Automation Smiles": RESOURCE_FILTER_HASHES["Automation Smile"],
-  "Guides & Whitepapers": RESOURCE_FILTER_HASHES["Guides & Whitepapers"],
+  Guides: RESOURCE_FILTER_HASHES.Guide,
+  Whitepapers: RESOURCE_FILTER_HASHES.Whitepaper,
 };
 
 /** @param {string} label */
