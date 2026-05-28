@@ -22,8 +22,11 @@ export function LogoMarquee({ heading = "", logos = [] }) {
     };
 
     measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(set);
+    let ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(measure);
+      ro.observe(set);
+    }
     window.addEventListener("resize", measure);
 
     const imgs = set.querySelectorAll("img");
@@ -34,7 +37,7 @@ export function LogoMarquee({ heading = "", logos = [] }) {
     });
 
     return () => {
-      ro.disconnect();
+      ro?.disconnect?.();
       window.removeEventListener("resize", measure);
       imgs.forEach((img) => {
         img.removeEventListener("load", onImg);
@@ -105,13 +108,17 @@ export function LogoMarquee({ heading = "", logos = [] }) {
         {heading}
       </div>
 
-      {/* Two identical sets; pixel-accurate --marquee-shift = seamless loop */}
+      {/* Multiple identical sets; --marquee-shift = seamless loop.
+          Extra copies prevent visible gaps when there are few logos. */}
       <div className="lm-track" ref={trackRef}>
         <div className="lm-set" ref={setRef}>
           {renderSet("a")}
         </div>
         <div className="lm-set" aria-hidden="true">
           {renderSet("b")}
+        </div>
+        <div className="lm-set" aria-hidden="true">
+          {renderSet("c")}
         </div>
       </div>
     </div>
