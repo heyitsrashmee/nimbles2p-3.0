@@ -159,7 +159,8 @@ function PricingHero() {
 function PricingTabs({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640; const isTablet = w < 960;
   const [active, setActive] = useState("vdd");
-  const mod = PRICING_MODULES.find(m=>m.id===active) || PRICING_MODULES[0];
+  const activeIndex = PRICING_MODULES.findIndex((m) => m.id === active);
+  const mod = PRICING_MODULES[activeIndex >= 0 ? activeIndex : 0] || PRICING_MODULES[0];
   const colour = MODULE_COLOURS[active] || MODULE_COLOURS[PRICING_MODULES[0].id];
   const ref = useReveal();
   const tx = "#fff";
@@ -171,57 +172,139 @@ function PricingTabs({ onNavigate }) {
   const placeholderBdr = "rgba(255,255,255,.25)";
   const placeholderTx = "rgba(255,255,255,.85)";
 
+  const goToModule = (delta) => {
+    const idx = activeIndex >= 0 ? activeIndex : 0;
+    const next = (idx + delta + PRICING_MODULES.length) % PRICING_MODULES.length;
+    setActive(PRICING_MODULES[next].id);
+  };
+
+  const arrowBtnStyle = {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    border: "1px solid #E2E8F0",
+    background: "#fff",
+    color: "#391085",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    flexShrink: 0,
+    boxShadow: "0 2px 8px rgba(0,0,0,.06)",
+    transition: "all .18s",
+  };
+
   return (
     <section style={{ background:"var(--slp)", padding: isMobile ? "48px 20px 72px" : "clamp(52px,7vh,80px) 5vw clamp(64px,9vh,100px)" }}>
       <div style={{ maxWidth:1080, margin:"0 auto" }}>
 
-        {/* ── MODULE TAB BAR — single line segmented control ── */}
-        <div style={{
-          background:"#fff",
-          borderRadius:16,
-          border:"1px solid #E2E8F0",
-          padding:"6px",
-          display:"grid",
-          gridTemplateColumns:`repeat(${PRICING_MODULES.length},1fr)`,
-          gap:4,
-          marginBottom: isMobile ? 28 : 40,
-          boxShadow:"0 2px 12px rgba(0,0,0,.06)",
-          overflowX:"auto",
-          WebkitOverflowScrolling:"touch",
-          scrollbarWidth:"none",
-          minWidth:0,
-        }}>
-          {PRICING_MODULES.map(m=>{
-            const isAct = active===m.id;
-            const c = MODULE_COLOURS[m.id];
-            return (
-              <button key={m.id} onClick={()=>setActive(m.id)} style={{
-                display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-                gap:5,
-                fontFamily:"var(--fb)",
-                fontWeight: isAct ? 700 : 400,
-                color: isAct ? "#fff" : "#64748B",
-                background: isAct ? c : "transparent",
-                border:"none",
-                borderRadius:11,
-                padding: isMobile ? "8px 6px" : "10px 8px",
-                cursor:"pointer",
-                transition:"all .22s cubic-bezier(.22,1,.36,1)",
-                boxShadow: isAct ? `0 3px 14px ${c}44` : "none",
-                whiteSpace:"nowrap",
-                minWidth:0,
-              }}>
-                <span style={{ fontSize: isMobile ? 18 : 20 }}>{m.icon}</span>
-                <span style={{ fontSize: isMobile ? 10 : 11.5, lineHeight:1.2, textAlign:"center" }}>
-                  {m.label}
-                  {m.placeholder && (
-                    <span style={{ display:"block", fontSize:8, fontWeight:700, opacity:.7, letterSpacing:".04em" }}>BETA</span>
-                  )}
+        {isMobile ? (
+          /* ── MOBILE — arrow navigation between modules ── */
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            marginBottom: 28,
+          }}>
+            <button
+              type="button"
+              aria-label="Previous pricing module"
+              onClick={() => goToModule(-1)}
+              style={arrowBtnStyle}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <path d="M11 4L6 9l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            <div style={{
+              flex: 1,
+              minWidth: 0,
+              textAlign: "center",
+              background: "#fff",
+              border: "1px solid #E2E8F0",
+              borderRadius: 14,
+              padding: "10px 12px",
+              boxShadow: "0 2px 12px rgba(0,0,0,.06)",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 18 }}>{mod.icon}</span>
+                <span style={{
+                  fontFamily: "var(--fb)",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: MODULE_COLOURS[mod.id],
+                  letterSpacing: "-.01em",
+                }}>
+                  {mod.label}
                 </span>
-              </button>
-            );
-          })}
-        </div>
+              </div>
+              <span style={{ fontFamily: "var(--fb)", fontSize: 11, color: "#94A3B8", fontWeight: 500 }}>
+                {activeIndex + 1} of {PRICING_MODULES.length}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              aria-label="Next pricing module"
+              onClick={() => goToModule(1)}
+              style={arrowBtnStyle}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <path d="M7 4l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+        ) : (
+          /* ── DESKTOP / TABLET — module tab bar ── */
+          <div style={{
+            background:"#fff",
+            borderRadius:16,
+            border:"1px solid #E2E8F0",
+            padding:"6px",
+            display:"grid",
+            gridTemplateColumns:`repeat(${PRICING_MODULES.length},1fr)`,
+            gap:4,
+            marginBottom: 40,
+            boxShadow:"0 2px 12px rgba(0,0,0,.06)",
+            overflowX:"auto",
+            WebkitOverflowScrolling:"touch",
+            scrollbarWidth:"none",
+            minWidth:0,
+          }}>
+            {PRICING_MODULES.map(m=>{
+              const isAct = active===m.id;
+              const c = MODULE_COLOURS[m.id];
+              return (
+                <button key={m.id} onClick={()=>setActive(m.id)} style={{
+                  display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+                  gap:5,
+                  fontFamily:"var(--fb)",
+                  fontWeight: isAct ? 700 : 400,
+                  color: isAct ? "#fff" : "#64748B",
+                  background: isAct ? c : "transparent",
+                  border:"none",
+                  borderRadius:11,
+                  padding:"10px 8px",
+                  cursor:"pointer",
+                  transition:"all .22s cubic-bezier(.22,1,.36,1)",
+                  boxShadow: isAct ? `0 3px 14px ${c}44` : "none",
+                  whiteSpace:"nowrap",
+                  minWidth:0,
+                }}>
+                  <span style={{ fontSize: 20 }}>{m.icon}</span>
+                  <span style={{ fontSize: 11.5, lineHeight:1.2, textAlign:"center" }}>
+                    {m.label}
+                    {m.placeholder && (
+                      <span style={{ display:"block", fontSize:8, fontWeight:700, opacity:.7, letterSpacing:".04em" }}>BETA</span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* ── MAIN PRICING CARD — fixed height, no jump ── */}
           <div className="reveal" ref={ref} style={{

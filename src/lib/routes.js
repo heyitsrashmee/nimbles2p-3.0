@@ -16,6 +16,7 @@ export const PAGE_SLUGS = [
   "trust",
   "partners",
   "press",
+  "careers",
 ];
 
 const SLUG_SET = new Set(PAGE_SLUGS);
@@ -36,6 +37,7 @@ export const FOOTER_LINKS = {
   "Get Started": "getstarted",
   "Partners": "partners",
   "Press & Media": "press",
+  "Careers": "careers",
   /* Resources */
   "Blog": "resources",
   "Case Studies": "resources",
@@ -47,7 +49,6 @@ export const FOOTER_LINKS = {
 
 /** Footer labels with no page yet — render as non-navigable placeholders */
 export const FOOTER_PLACEHOLDER_LABELS = new Set([
-  "Careers",
   "Blackbox API",
 ]);
 
