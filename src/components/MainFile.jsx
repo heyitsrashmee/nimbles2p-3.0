@@ -24,7 +24,6 @@ import EarlyFinancingPage from "./EarlyFinancingPage";
 import GetStartedPage from "./GetStartedPage";
 import BlogPostPage from "./BlogPostPage";
 import TrustSafetyPage from "./TrustSafetyPage";
-import PartnersPage from "./PartnersPage";
 import PressMediaPage from "./PressMediaPage";
 import CareersPage from "./CareersPage";
 
@@ -1754,9 +1753,6 @@ export default function NimbleS2PHomepage() {
   }
   if (page === "trust") {
     return <TrustSafetyPage onBack={goHome} onNavigate={navigate} />;
-  }
-  if (page === "partners") {
-    return <PartnersPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "press") {
     return <PressMediaPage onBack={goHome} onNavigate={navigate} />;

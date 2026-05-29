@@ -14,7 +14,6 @@ export const PAGE_SLUGS = [
   "resources",
   "blog",
   "trust",
-  "partners",
   "press",
   "careers",
 ];
@@ -35,7 +34,6 @@ export const FOOTER_LINKS = {
   "Pricing": "pricing",
   "Contact": "demo",
   "Get Started": "getstarted",
-  "Partners": "partners",
   "Press & Media": "press",
   "Careers": "careers",
   /* Resources */
@@ -65,7 +63,7 @@ export const FOOTER_COLUMNS = [
       "Early Financing",
     ],
   ],
-  ["COMPANY", ["About Us", "Careers", "Press & Media", "Partners", "Contact"]],
+  ["COMPANY", ["About Us", "Careers", "Press & Media", "Contact"]],
   [
     "RESOURCES",
     ["Blog", "Case Studies", "Automation Smiles", "Guides", "Whitepapers", "Trust Center"],
