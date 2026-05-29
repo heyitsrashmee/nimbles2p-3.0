@@ -21,7 +21,7 @@ export const MEGA_PRODUCTS = {
       tag:"Trending",
       resource: PRODUCT_PAGE_RESOURCES.vdd,
       /* Crop top (logo); keep mid headline in view — object-fit:cover + lower Y anchor */
-      cover: { src: "mega-menu/vdd-cover.png", objectPosition: "center 46%" },
+      cover: { src: "mega-menu/vdd-cover.webp", objectPosition: "center 46%" },
     },
     {
       id:"supplier",
@@ -30,7 +30,7 @@ export const MEGA_PRODUCTS = {
       desc:"Unified interface for suppliers to manage onboarding, documents, communication, and transactions.",
       color:"#6DB657",
       resource: PRODUCT_PAGE_RESOURCES.supplier,
-      cover: { src: "mega-menu/supplier-portal-cover.png", objectPosition: "left 8%" },
+      cover: { src: "mega-menu/supplier-portal-cover.webp", objectPosition: "left 8%" },
     },
     {
       id:"invoice",
@@ -39,7 +39,7 @@ export const MEGA_PRODUCTS = {
       desc:"Agentic 2-way and 3-way matching automation for every invoice type — material, service, and non-PO — with enterprise-scale exception management.",
       color:"#1a1a2e",
       resource: PRODUCT_PAGE_RESOURCES.invoice,
-      cover: { src: "mega-menu/invoice-processing-cover.png", objectPosition: "center center" },
+      cover: { src: "mega-menu/invoice-processing-cover.webp", objectPosition: "center center" },
     },
     {
       id:"rfq",
@@ -48,7 +48,7 @@ export const MEGA_PRODUCTS = {
       desc:"Create, distribute, and evaluate RFQs with supplier comparison and selection.",
       color:"#717C89",
       resource: PRODUCT_PAGE_RESOURCES.rfq,
-      cover: { src: "mega-menu/rfx-management-cover.png", objectPosition: "center center" },
+      cover: { src: "mega-menu/rfx-management-cover.webp", objectPosition: "center center" },
     },
     {
       id:"finance",
@@ -58,7 +58,7 @@ export const MEGA_PRODUCTS = {
       color:"#E06B72",
       tag:"New",
       resource: PRODUCT_PAGE_RESOURCES.finance,
-      cover: { src: "mega-menu/early-financing-cover.png", objectPosition: "center 40%" },
+      cover: { src: "mega-menu/early-financing-cover.webp", objectPosition: "center 40%" },
     },
     {
       id:"analytics",
@@ -68,7 +68,7 @@ export const MEGA_PRODUCTS = {
       color:"#48A9A6",
       tag:"Beta",
       resource: PRODUCT_PAGE_RESOURCES.analytics,
-      cover: { src: "mega-menu/supplier-analytics-cover.png", objectPosition: "center 22%" },
+      cover: { src: "mega-menu/supplier-analytics-cover.webp", objectPosition: "center 22%" },
     },
   ],
 };

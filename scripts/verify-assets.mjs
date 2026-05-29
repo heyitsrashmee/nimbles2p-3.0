@@ -24,10 +24,12 @@ const REQUIRED_IMAGES = [
 const REQUIRED_STATIC = ["arrow.png", "favicon.png"];
 
 const MEGA_MENU_COVERS = [
-  "mega-menu/vdd-cover.png",
-  "mega-menu/supplier-portal-cover.png",
-  "mega-menu/early-financing-cover.png",
-  "mega-menu/supplier-analytics-cover.png",
+  "mega-menu/vdd-cover.webp",
+  "mega-menu/supplier-portal-cover.webp",
+  "mega-menu/invoice-processing-cover.webp",
+  "mega-menu/rfx-management-cover.webp",
+  "mega-menu/early-financing-cover.webp",
+  "mega-menu/supplier-analytics-cover.webp",
 ];
 
 const GIF_MODULES = [
