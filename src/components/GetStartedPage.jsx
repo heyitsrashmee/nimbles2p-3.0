@@ -5,6 +5,7 @@ import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
 import { submitGetStartedForm } from "@/lib/web3forms";
+import { trackLead } from "@/lib/analytics";
 
 /* ═══════════════════════════════════════════════════════════
    GET STARTED — LEAD CAPTURE PAGE
@@ -134,6 +135,7 @@ export default function GetStartedPage({ onBack, onNavigate }) {
     try {
       await submitGetStartedForm(form);
       setSubmitted(true);
+      trackLead("get_started");
     } catch {
       setSubmitError("Something went wrong. Please try again or email us directly.");
     } finally {

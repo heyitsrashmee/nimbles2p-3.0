@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { isValidEmail, submitGatedDownloadForm } from "@/lib/web3forms";
+import { trackLead } from "@/lib/analytics";
 import {
   hasGatedUnlock,
   setGatedUnlock,
@@ -74,6 +75,7 @@ export default function GatedDownloadForm({
       setGatedUnlock(slug);
       if (hasDownload) startDownload();
       setDone(true);
+      trackLead("gated_download", { resource_slug: slug });
       onUnlocked?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");

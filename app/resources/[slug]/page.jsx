@@ -5,12 +5,13 @@ import {
 } from "@/lib/resources/wpcom/service";
 import ResourceArticle from "@/components/ResourceArticle";
 import ResourceArticleError from "@/components/ResourceArticleError";
+import { SITE_URL } from "@/lib/seo";
 
 /* ── ISR: pages are statically generated and revalidated hourly ── */
 export const revalidate = 60;
 export const dynamicParams = true; // slugs not prebuilt still render on-demand
 
-const SITE = "https://nimbles2p.com";
+const SITE = SITE_URL;
 
 /** Prerender every WordPress post at build time. */
 export async function generateStaticParams() {

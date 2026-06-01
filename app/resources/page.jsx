@@ -1,8 +1,9 @@
 import { getResourcesIndex } from "@/lib/resources/wpcom/service";
 import ResourcesRoute from "@/components/ResourcesRoute";
+import { SITE_URL } from "@/lib/seo";
 
 export const revalidate = 60;
-const SITE = "https://nimbles2p.com";
+const SITE = SITE_URL;
 const PAGE_TITLE = "Resources | NimbleS2P";
 const PAGE_DESCRIPTION =
   "Explore insights, practical playbooks, customer success stories, and industry trends that help enterprises transform supplier and procurement operations.";

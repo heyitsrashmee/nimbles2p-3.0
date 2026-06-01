@@ -23,7 +23,11 @@ export function useSiteNavigation(pathname, router) {
     (p, options = {}) => {
       const target = pageToPath(p);
       const hash = options.hash ?? "";
-      const url = hash ? `${target}#${hash}` : target;
+      // Preserve the query string (UTM / campaign params) across in-app
+      // navigations so attribution survives client-side route changes.
+      const search = typeof window !== "undefined" ? window.location.search : "";
+      const base = `${target}${search}`;
+      const url = hash ? `${base}#${hash}` : base;
 
       if (p === "resources") setResourceSection(hash);
       else setResourceSection("");
@@ -39,7 +43,7 @@ export function useSiteNavigation(pathname, router) {
         window.history.replaceState(null, "", url);
         window.dispatchEvent(new HashChangeEvent("hashchange"));
       } else if (pathname === target) {
-        router.push(target);
+        router.push(url);
       }
 
       if (!hash) window.scrollTo({ top: 0, behavior: "smooth" });

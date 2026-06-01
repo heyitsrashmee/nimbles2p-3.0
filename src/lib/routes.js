@@ -12,7 +12,6 @@ export const PAGE_SLUGS = [
   "getstarted",
   "terms",
   "resources",
-  "blog",
   "trust",
   "press",
   "careers",

@@ -5,6 +5,7 @@ import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
 import { submitBookDemoForm } from "@/lib/web3forms";
+import { trackLead } from "@/lib/analytics";
 
 const INDUSTRIES = ["Manufacturing","Energy & Utilities","Chemical","FMCG","Infra & Construction","Textile","Hospitality","Media","Financial Services","Healthcare","Other"];
 const SIZES = ["1–50","51–200","201–500","501–1000","1001–5000","5000+"];
@@ -91,6 +92,7 @@ export default function BookDemoPage({ onBack, onNavigate }) {
     try {
       await submitBookDemoForm(form);
       setSubmitted(true);
+      trackLead("book_demo");
     } catch {
       setSubmitError("Something went wrong. Please try again or email us at info@techpanion.com.");
     } finally {
