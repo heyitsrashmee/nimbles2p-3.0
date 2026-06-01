@@ -491,14 +491,7 @@ export default function TermsPage({ onNavigate, onBack }) {
       <section className="terms-hero">
         <div className="glow-a" /><div className="glow-b" />
         <div className="terms-hero-inner">
-          <h1>Terms and Conditions</h1>
-          <div className="terms-meta">
-            <span>Techpanion Solutions Pvt Ltd</span>
-            <span className="terms-meta-dot" />
-            <span>Effective 1 Jan 2025</span>
-            <span className="terms-meta-dot" />
-            <span>India</span>
-          </div>
+          <h1>Terms Of Use</h1>
         </div>
         <svg className="terms-hero-wave" viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0,40 C200,10 400,70 600,40 C800,10 1000,60 1200,40 C1320,28 1400,50 1440,40 L1440,80 L0,80 Z" fill="rgba(107,53,184,0.2)">

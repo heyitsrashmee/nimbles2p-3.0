@@ -1,5 +1,8 @@
 import { Inter, IBM_Plex_Mono, Kalam } from "next/font/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 import "./globals.css";
+
+const GTM_ID = "GTM-T8WFVVR6";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,6 +45,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} ${kalam.variable}`}>
+      <GoogleTagManager gtmId={GTM_ID} />
       <body
         className={inter.className}
         style={{
