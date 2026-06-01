@@ -515,7 +515,7 @@ function WhyCTA({ onNavigate }) {
           </h2>
 
           <p style={{ fontSize: isMobile ? 15 : 17, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)", marginBottom:40, maxWidth:520, margin:"0 auto 40px" }}>
-            No long sales cycles. No generic demos. A focused session built around your specific procurement challenges — with answers on the day.
+            A focused session built around your unique business requirements—designed to provide relevant insights, practical guidance, and clear answers from the outset.
           </p>
 
           <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
