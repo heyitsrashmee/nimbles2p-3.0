@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { submitGatedDownloadForm } from "./web3forms";
+import { submitGatedDownloadToWeb3Forms } from "./web3formsServer.js";
 
-test("submitGatedDownloadForm uses a per-form access key override", async () => {
+test("submitGatedDownloadToWeb3Forms uses a per-form access key override", async () => {
   const originalFetch = global.fetch;
   const calls = [];
 
@@ -11,6 +11,7 @@ test("submitGatedDownloadForm uses a per-form access key override", async () => 
     calls.push({ url, options });
     return {
       ok: true,
+      headers: { get: (name) => (name === "content-type" ? "application/json" : null) },
       async json() {
         return { success: true };
       },
@@ -18,7 +19,7 @@ test("submitGatedDownloadForm uses a per-form access key override", async () => 
   };
 
   try {
-    await submitGatedDownloadForm({
+    await submitGatedDownloadToWeb3Forms({
       accessKey: "override-key",
       email: "procurement@example.com",
       resourceTitle: "Avoid Compliance Pitfalls",
@@ -31,10 +32,11 @@ test("submitGatedDownloadForm uses a per-form access key override", async () => 
 
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, "https://api.web3forms.com/submit");
+  assert.equal(calls[0].options.headers["Content-Type"], "application/json");
 
-  const fields = Object.fromEntries(calls[0].options.body.entries());
-  assert.equal(fields.access_key, "override-key");
-  assert.equal(fields.email, "procurement@example.com");
-  assert.equal(fields.resource_slug, "vdd");
-  assert.equal(fields.page_source, "Supplier Due Diligence");
+  const body = JSON.parse(calls[0].options.body);
+  assert.equal(body.access_key, "override-key");
+  assert.equal(body.email, "procurement@example.com");
+  assert.equal(body.resource_slug, "vdd");
+  assert.equal(body.page_source, "Supplier Due Diligence");
 });

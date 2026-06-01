@@ -136,8 +136,13 @@ export default function GetStartedPage({ onBack, onNavigate }) {
       await submitGetStartedForm(form);
       setSubmitted(true);
       trackLead("get_started");
-    } catch {
-      setSubmitError("Something went wrong. Please try again or email us directly.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      setSubmitError(
+        msg.includes("not configured")
+          ? "Form is temporarily unavailable. Please email us directly."
+          : "Something went wrong. Please try again or email us directly.",
+      );
     } finally {
       setSubmitting(false);
     }

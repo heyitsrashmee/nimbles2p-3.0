@@ -93,8 +93,13 @@ export default function BookDemoPage({ onBack, onNavigate }) {
       await submitBookDemoForm(form);
       setSubmitted(true);
       trackLead("book_demo");
-    } catch {
-      setSubmitError("Something went wrong. Please try again or email us at info@techpanion.com.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      setSubmitError(
+        msg.includes("not configured")
+          ? "Form is temporarily unavailable. Please email info@techpanion.com."
+          : "Something went wrong. Please try again or email us at info@techpanion.com.",
+      );
     } finally {
       setSending(false);
     }

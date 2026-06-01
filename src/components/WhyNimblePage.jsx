@@ -53,10 +53,10 @@ function WhyHero({ onNavigate }) {
         </p>
 
         <div className="fade-up d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", alignItems:"center" }}>
-          <a href="#story" style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:7, background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", border:"none", borderRadius:10, padding:"12px 32px", fontSize: isMobile ? 14.5 : 15.5, fontWeight:700, cursor:"pointer", fontFamily:"var(--fb)", textDecoration:"none", letterSpacing:"-.01em", boxShadow:"0 4px 24px rgba(232,150,10,.48),0 1px 0 rgba(255,255,255,.15) inset", transition:"transform .2s,box-shadow .2s", width: isMobile ? "100%" : "auto" }}
+          <a href="#transformation" style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:7, background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", border:"none", borderRadius:10, padding:"12px 32px", fontSize: isMobile ? 14.5 : 15.5, fontWeight:700, cursor:"pointer", fontFamily:"var(--fb)", textDecoration:"none", letterSpacing:"-.01em", boxShadow:"0 4px 24px rgba(232,150,10,.48),0 1px 0 rgba(255,255,255,.15) inset", transition:"transform .2s,box-shadow .2s", width: isMobile ? "100%" : "auto" }}
             onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 10px 36px rgba(232,150,10,.62)";}}
             onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(232,150,10,.48),0 1px 0 rgba(255,255,255,.15) inset";}}
-          >See the Full Story ↓</a>
+          >See the Transformation ↓</a>
           <a
             href={pageToPath("getstarted")}
             onClick={(e) => {
@@ -230,7 +230,7 @@ function WhyBeforeAfter() {
   const w = useWidth(); const isMobile = w < 640;
   const ref = useReveal();
   return (
-    <section style={{
+    <section id="transformation" style={{
       background:"linear-gradient(160deg,#0F0C2A 0%,#1a1260 45%,#221868 100%)",
       position:"relative", overflow:"hidden",
       padding: isMobile ? "64px 20px" : "clamp(64px,9vh,104px) 5vw",

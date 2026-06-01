@@ -1,15 +1,22 @@
 import { postToWeb3FormsJson } from "@/lib/web3formsSubmit";
 
-const GET_STARTED_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
-const BOOK_DEMO_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_DEMO_ACCESS_KEY;
-const GATED_DOWNLOAD_KEY =
-  process.env.NEXT_PUBLIC_WEB3FORMS_GATED_ACCESS_KEY ?? GET_STARTED_KEY;
+/** Server-only keys (set in hosting env). Public fallbacks match project Web3Forms forms. */
+const GET_STARTED_KEY =
+  process.env.WEB3FORMS_ACCESS_KEY ??
+  process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ??
+  "18ab8881-fdca-499b-b59c-56a95e1d0709";
 
-/**
- * Submit Get Started lead (browser → Web3Forms).
- * @param {{ name: string, email: string, phone: string, designation?: string, company?: string }} payload
- */
-export async function submitGetStartedForm(payload) {
+const BOOK_DEMO_KEY =
+  process.env.WEB3FORMS_DEMO_ACCESS_KEY ??
+  process.env.NEXT_PUBLIC_WEB3FORMS_DEMO_ACCESS_KEY ??
+  "2d825cc0-cc85-4be9-9966-957015fa1aa2";
+
+const GATED_DOWNLOAD_KEY =
+  process.env.WEB3FORMS_GATED_ACCESS_KEY ??
+  process.env.NEXT_PUBLIC_WEB3FORMS_GATED_ACCESS_KEY ??
+  GET_STARTED_KEY;
+
+export async function submitGetStartedToWeb3Forms(payload) {
   return postToWeb3FormsJson({
     access_key: GET_STARTED_KEY,
     subject: "NimbleS2P — Get Started lead",
@@ -22,10 +29,7 @@ export async function submitGetStartedForm(payload) {
   });
 }
 
-/**
- * Submit Book a Demo request (browser → Web3Forms).
- */
-export async function submitBookDemoForm(form) {
+export async function submitBookDemoToWeb3Forms(form) {
   const fullName = `${form.firstName} ${form.lastName}`.trim();
   return postToWeb3FormsJson({
     access_key: BOOK_DEMO_KEY,
@@ -47,14 +51,10 @@ export async function submitBookDemoForm(form) {
   });
 }
 
-/**
- * Gated guide / PDF download — captures email then client may trigger file download.
- * @param {{ email: string, resourceTitle: string, resourceSlug: string, downloadUrl?: string, pageSource?: string, accessKey?: string }} payload
- */
-export async function submitGatedDownloadForm(payload) {
-  const access_key = payload.accessKey ?? GATED_DOWNLOAD_KEY;
+export async function submitGatedDownloadToWeb3Forms(payload) {
+  const accessKey = payload.accessKey ?? GATED_DOWNLOAD_KEY;
   return postToWeb3FormsJson({
-    access_key,
+    access_key: accessKey,
     subject: `Gated resource — ${payload.resourceTitle}`,
     from_name: payload.email,
     email: payload.email,
@@ -66,10 +66,4 @@ export async function submitGatedDownloadForm(payload) {
       payload.pageSource ? ` — ${payload.pageSource}` : ""
     }`,
   });
-}
-
-/** Basic email format check for gated forms. */
-export function isValidEmail(value) {
-  const trimmed = String(value ?? "").trim();
-  return trimmed.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
 }
