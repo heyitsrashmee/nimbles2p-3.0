@@ -52,14 +52,33 @@ function WhyHero({ onNavigate }) {
           From day one, NimbleS2P brings clarity to supplier operations — every transaction visible, every action traceable.
         </p>
 
-        <div className="fade-up d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+        <div className="fade-up d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", alignItems:"center" }}>
           <a href="#story" style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:7, background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", border:"none", borderRadius:10, padding:"12px 32px", fontSize: isMobile ? 14.5 : 15.5, fontWeight:700, cursor:"pointer", fontFamily:"var(--fb)", textDecoration:"none", letterSpacing:"-.01em", boxShadow:"0 4px 24px rgba(232,150,10,.48),0 1px 0 rgba(255,255,255,.15) inset", transition:"transform .2s,box-shadow .2s", width: isMobile ? "100%" : "auto" }}
             onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 10px 36px rgba(232,150,10,.62)";}}
             onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(232,150,10,.48),0 1px 0 rgba(255,255,255,.15) inset";}}
           >See the Full Story ↓</a>
-          <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }} href="#" style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:7, background:"rgba(16,10,46,.55)", color:"rgba(255,255,255,.8)", border:"1.5px solid rgba(255,255,255,.22)", borderRadius:10, padding:"11px 28px", fontSize: isMobile ? 14.5 : 15.5, fontWeight:500, fontFamily:"var(--fb)", textDecoration:"none", backdropFilter:"blur(10px)", transition:"all .18s", width: isMobile ? "100%" : "auto" }}
-            onMouseEnter={e=>{e.currentTarget.style.background="rgba(38,26,88,.75)";e.currentTarget.style.color="#fff";}}
-            onMouseLeave={e=>{e.currentTarget.style.background="rgba(16,10,46,.55)";e.currentTarget.style.color="rgba(255,255,255,.8)";}}
+          <a
+            href={pageToPath("getstarted")}
+            onClick={(e) => {
+              e.preventDefault();
+              if (typeof onNavigate === "function") onNavigate("getstarted");
+            }}
+            style={{
+              fontSize: isMobile ? 14 : 15,
+              fontWeight: 500,
+              color: "rgba(255,255,255,.6)",
+              fontFamily: "var(--fb)",
+              textDecoration: "none",
+              letterSpacing: "-.01em",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              transition: "color .18s",
+              width: isMobile ? "100%" : "auto",
+              justifyContent: isMobile ? "center" : undefined,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#fff"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,.6)"; }}
           >Get Started →</a>
         </div>
       </div>
@@ -518,7 +537,7 @@ function WhyCTA({ onNavigate }) {
             A focused session built around your unique business requirements—designed to provide relevant insights, practical guidance, and clear answers from the outset.
           </p>
 
-          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", alignItems:"center" }}>
 
             <a
               href={pageToPath("demo")}
