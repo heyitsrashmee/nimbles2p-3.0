@@ -26,7 +26,6 @@ import BlogPostPage from "./BlogPostPage";
 import TrustSafetyPage from "./TrustSafetyPage";
 import PressMediaPage from "./PressMediaPage";
 import CareersPage from "./CareersPage";
-import PartnersPage from "./PartnersPage";
 
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
@@ -1760,9 +1759,6 @@ export default function NimbleS2PHomepage() {
   }
   if (page === "careers") {
     return <CareersPage onBack={goHome} onNavigate={navigate} />;
-  }
-  if (page === "partners") {
-    return <PartnersPage onBack={goHome} onNavigate={navigate} />;
   }
 
   return (

@@ -16,7 +16,6 @@ export const PAGE_SLUGS = [
   "trust",
   "press",
   "careers",
-  "partners",
 ];
 
 const SLUG_SET = new Set(PAGE_SLUGS);
@@ -37,7 +36,6 @@ export const FOOTER_LINKS = {
   "Get Started": "getstarted",
   "Press & Media": "press",
   "Careers": "careers",
-  "Partners": "partners",
   /* Resources */
   "Blog": "resources",
   "Case Studies": "resources",
@@ -65,7 +63,7 @@ export const FOOTER_COLUMNS = [
       "Early Financing",
     ],
   ],
-  ["COMPANY", ["About Us", "Careers", "Press & Media", "Contact", "Partners"]],
+  ["COMPANY", ["About Us", "Careers", "Press & Media", "Contact"]],
   [
     "RESOURCES",
     ["Blog", "Case Studies", "Automation Smiles", "Guides", "Whitepapers", "Trust Center"],
