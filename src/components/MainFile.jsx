@@ -792,6 +792,36 @@ function NimbleDifference() {
 /* ─────────────────────────────────────────
    REAL RESULTS  (replaces AI Features)
 ───────────────────────────────────────── */
+/** Outcomes That Follow — tab colors (cycle by tab index) */
+const OUTCOME_TAB_COLORS = [
+  "#391085", // Indigo Ink
+  "#AB9EC6", // Lilac
+  "#F5F3FE", // Lavender Mist
+  "#E06B72", // Light Coral
+  "#6DB657", // Moss Green
+  "#F1B547", // Honey Bronze
+  "#48A9A6", // Tropical Teal
+  "#717C89", // Slate Grey
+  "#FFFFFF", // White
+  "#000000", // Black
+];
+
+/** Per-tab overrides (others use OUTCOME_TAB_COLORS by index) */
+const OUTCOME_TAB_COLOR_OVERRIDES = {
+  chemical: "#717C89", // Slate Grey
+  energy: "#391085", // Indigo Ink
+  fmcg: "#000000", // Black
+};
+
+function outcomeTabIsLight(hex) {
+  const h = hex.replace("#", "");
+  if (h.length !== 6) return false;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.62;
+}
+
 const INDUSTRIES = [
   {
     id:"chemical",
@@ -990,24 +1020,30 @@ function RealResults() {
 
         {/* ── Industry tabs ── */}
         <div style={{ display:"flex", gap:8, marginBottom:28, flexWrap:"wrap" }}>
-          {INDUSTRIES.map(i => {
-            const isAct = active===i.id;
+          {INDUSTRIES.map((i, index) => {
+            const tabColor =
+              OUTCOME_TAB_COLOR_OVERRIDES[i.id] ??
+              OUTCOME_TAB_COLORS[index % OUTCOME_TAB_COLORS.length];
+            const isAct = active === i.id;
+            const lightActive = isAct && outcomeTabIsLight(tabColor);
+            const actText = lightActive ? "#0F172A" : "#fff";
+            const actBorder = tabColor === "#FFFFFF" ? "#E2E8F0" : tabColor;
             return (
               <button key={i.id} onClick={() => setActive(i.id)} style={{
                 display:"inline-flex", alignItems:"center", gap:8,
                 fontFamily:"var(--fb)", fontSize:13, fontWeight: isAct ? 700 : 500,
-                color: isAct ? "#fff" : "var(--t2)",
-                background: isAct ? (i.tagColor || "#391085") : "#fff",
-                border: `1.5px solid ${isAct ? (i.tagColor || "#391085") : "var(--bd)"}`,
+                color: isAct ? actText : "var(--t2)",
+                background: isAct ? tabColor : "#fff",
+                border: `1.5px solid ${isAct ? actBorder : "var(--bd)"}`,
                 borderRadius:100, padding:"8px 20px",
                 cursor:"pointer",
-                boxShadow: isAct ? `0 3px 14px ${i.tagColor || "#391085"}55` : "none",
+                boxShadow: isAct ? `0 3px 14px ${tabColor}${lightActive ? "44" : "55"}` : "none",
                 transition:"all .22s cubic-bezier(.22,1,.36,1)",
               }}
                 onMouseEnter={e=>{ if(!isAct){ e.currentTarget.style.borderColor="var(--t2)"; e.currentTarget.style.color="var(--t1)"; }}}
                 onMouseLeave={e=>{ if(!isAct){ e.currentTarget.style.borderColor="var(--bd)"; e.currentTarget.style.color="var(--t2)"; }}}
               >
-                <span style={{ fontSize:10, fontWeight:700, color: isAct ? "rgba(255,255,255,.5)" : "var(--t4)", letterSpacing:".04em" }}>{i.num}</span>
+                <span style={{ fontSize:10, fontWeight:700, color: isAct ? (lightActive ? "rgba(15,23,42,.45)" : "rgba(255,255,255,.5)") : "var(--t4)", letterSpacing:".04em" }}>{i.num}</span>
                 {i.label}
               </button>
             );
