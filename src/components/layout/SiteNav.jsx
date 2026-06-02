@@ -102,7 +102,7 @@ export function Nav({ onNavigate, onBack, pageName }) {
           </div>
 
           {/* CTA */}
-          <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("demo"); }} className="nav-cta-desktop" href="#" style={{
+          <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("demo", { cta: { ctaLocation: "nav", buttonText: "Book a Demo" } }); }} className="nav-cta-desktop" href="#" style={{
             display: isMobile ? "none" : "inline-flex", alignItems:"center", gap:6,
             background:"linear-gradient(135deg,#E8960A,#F5A623)",
             color:"#fff", border:"none", borderRadius:9,
@@ -182,7 +182,7 @@ export function Nav({ onNavigate, onBack, pageName }) {
           fontSize:16, fontWeight:700, textDecoration:"none",
           fontFamily:"var(--fb)", boxShadow:"0 4px 20px rgba(232,150,10,.4)",
           marginTop:8,
-        }} onClick={()=>{ setOpen(false); if(onNavigate) onNavigate("demo"); }}>Book a Demo →</a>
+        }} onClick={()=>{ setOpen(false); if(onNavigate) onNavigate("demo", { cta: { ctaLocation: "nav_mobile", buttonText: "Book a Demo" } }); }}>Book a Demo →</a>
       </div>
       )}
     </>

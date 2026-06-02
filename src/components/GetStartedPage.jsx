@@ -5,7 +5,7 @@ import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
 import { submitGetStartedForm } from "@/lib/web3forms";
-import { trackLead } from "@/lib/analytics";
+import { trackLead, trackFormStart } from "@/lib/analytics";
 
 /* ═══════════════════════════════════════════════════════════
    GET STARTED — LEAD CAPTURE PAGE
@@ -228,7 +228,7 @@ export default function GetStartedPage({ onBack, onNavigate }) {
                     <div style={{ fontFamily:"var(--fb)", fontSize:13, color:"#94A3B8" }}>Fields marked <span style={{ color:"#6320E0" }}>*</span> are required</div>
                   </div>
 
-                  <form onSubmit={handleSubmit} noValidate style={{ display:"flex", flexDirection:"column", gap:16 }}>
+                  <form onSubmit={handleSubmit} noValidate onFocus={(e)=>{ if(!e.currentTarget.dataset.started){ e.currentTarget.dataset.started="1"; trackFormStart("get_started"); } }} style={{ display:"flex", flexDirection:"column", gap:16 }}>
                     <FormField id="name" label="Full Name" placeholder="e.g. Rahul Sharma" required isMobile={isMobile} value={form.name} error={errors.name} isTouched={touched.name} onChange={(v) => handleChange("name", v)} onBlur={() => handleBlur("name")} />
                     <FormField id="email" label="Work Email" type="email" placeholder="you@company.com" required isMobile={isMobile} value={form.email} error={errors.email} isTouched={touched.email} onChange={(v) => handleChange("email", v)} onBlur={() => handleBlur("email")} />
                     <FormField id="phone" label="Phone Number" type="tel" placeholder="+91 98765 43210" required isMobile={isMobile} value={form.phone} error={errors.phone} isTouched={touched.phone} onChange={(v) => handleChange("phone", v)} onBlur={() => handleBlur("phone")} />

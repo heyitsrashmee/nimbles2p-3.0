@@ -116,6 +116,17 @@ export const SITEMAP_SLUGS = [
 ];
 
 /**
+ * Whether a catch-all `slug` param is a real marketing route. Home ([] / undefined)
+ * and the single-segment SITEMAP_SLUGS are valid; everything else (unknown slugs,
+ * multi-segment paths) is a 404. `/resources` + `/download` have their own routes.
+ * @param {string[] | undefined} slug
+ */
+export function isKnownCatchAllSlug(slug) {
+  if (!Array.isArray(slug) || slug.length === 0) return true;
+  return slug.length === 1 && SITEMAP_SLUGS.includes(slug[0]);
+}
+
+/**
  * Build a Next.js Metadata object for a given first-segment slug.
  * Unknown slugs fall back to the home metadata (they render the homepage).
  * @param {string | undefined} slug

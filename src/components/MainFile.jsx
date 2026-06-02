@@ -144,7 +144,7 @@ function Hero({ onNavigate }) {
           marginBottom:56,
         }}>
           <a href="#"
-            onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }}
+            onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted", { cta: { ctaLocation: "hero", buttonText: "Get Started" } }); }}
             style={{
               display:"inline-flex", alignItems:"center", justifyContent:"center", gap:8,
               background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff",
@@ -641,7 +641,7 @@ function PlatformModules({ onNavigate }) {
                 href={pageToPath("getstarted")}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (typeof onNavigate === "function") onNavigate("getstarted");
+                  if (typeof onNavigate === "function") onNavigate("getstarted", { cta: { ctaLocation: "platform_modules", buttonText: "Get Started" } });
                 }}
                 style={{
                 display:"flex", alignItems:"center", justifyContent:"center",
@@ -1708,7 +1708,7 @@ function FinalCTA({ onNavigate }) {
         </p>
 
         {/* CTA */}
-        <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }} href="#" style={{
+        <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted", { cta: { ctaLocation: "final_cta", buttonText: "Get Started" } }); }} href="#" style={{
           display:"inline-flex", alignItems:"center", justifyContent:"center", gap:8,
           background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff",
           borderRadius:12, padding: isMobile ? "13px 36px" : "15px 48px",

@@ -5,7 +5,7 @@ import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
 import { submitBookDemoForm } from "@/lib/web3forms";
-import { trackLead } from "@/lib/analytics";
+import { trackLead, trackFormStart } from "@/lib/analytics";
 
 const INDUSTRIES = ["Manufacturing","Energy & Utilities","Chemical","FMCG","Infra & Construction","Textile","Hospitality","Media","Financial Services","Healthcare","Other"];
 const SIZES = ["1–50","51–200","201–500","501–1000","1001–5000","5000+"];
@@ -188,7 +188,7 @@ export default function BookDemoPage({ onBack, onNavigate }) {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} noValidate style={{ padding: isMobile ? "24px 24px 32px" : "32px 40px 40px", display:"flex", flexDirection:"column", gap:28 }}>
+                <form onSubmit={handleSubmit} noValidate onFocus={(e)=>{ if(!e.currentTarget.dataset.started){ e.currentTarget.dataset.started="1"; trackFormStart("book_demo"); } }} style={{ padding: isMobile ? "24px 24px 32px" : "32px 40px 40px", display:"flex", flexDirection:"column", gap:28 }}>
 
                   {/* Contact */}
                   <div>

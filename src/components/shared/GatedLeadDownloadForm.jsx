@@ -13,7 +13,7 @@ import {
   triggerResourceDownload,
 } from "@/lib/gatedResources";
 import { submitGatedDownloadForm } from "@/lib/web3forms";
-import { trackLead } from "@/lib/analytics";
+import { trackLead, trackFormStart, trackResourceDownloadClick } from "@/lib/analytics";
 
 /**
  * Get Started–style gated lead form (full page card or modal).
@@ -72,6 +72,7 @@ export default function GatedLeadDownloadForm({
 
   const startDownload = () => {
     if (!hasDownload) return;
+    trackResourceDownloadClick({ resourceSlug: slug, ctaLocation: "gated_lead_form" });
     triggerResourceDownload({ url: downloadUrl, filename: downloadFilename });
   };
 
@@ -259,6 +260,7 @@ export default function GatedLeadDownloadForm({
       <form
         onSubmit={handleSubmit}
         noValidate
+        onFocus={(e)=>{ if(!e.currentTarget.dataset.started){ e.currentTarget.dataset.started="1"; trackFormStart("gated_download", { resource_slug: slug }); } }}
         style={{ display: "flex", flexDirection: "column", gap: 16 }}
       >
         <LeadFormField

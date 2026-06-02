@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { pageToPath, pathToPage } from "@/lib/routes";
+import { trackCtaClick } from "@/lib/analytics";
 
 /** Shared router navigation — footer resource links work from every page. */
 export function useSiteNavigation(pathname, router) {
@@ -21,6 +22,11 @@ export function useSiteNavigation(pathname, router) {
 
   const navigate = useCallback(
     (p, options = {}) => {
+      // Fire a cta_click only when the call site marks this as a CTA.
+      // Plain menu/footer navigations omit `cta` and stay untracked.
+      if (options.cta) {
+        trackCtaClick({ ...options.cta, destination: p });
+      }
       const target = pageToPath(p);
       const hash = options.hash ?? "";
       // Preserve the query string (UTM / campaign params) across in-app

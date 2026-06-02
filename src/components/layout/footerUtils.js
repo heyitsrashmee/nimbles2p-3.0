@@ -3,6 +3,7 @@ import {
   footerLabelToResourceHash,
   isFooterPlaceholder,
 } from "@/lib/routes";
+import { trackCtaClick } from "@/lib/analytics";
 
 export function goLegalPage(label, onNavigate) {
   if (typeof onNavigate !== "function") return;
@@ -24,5 +25,8 @@ export function goFooterLink(label, onNavigate) {
 export function handleFooterLinkClick(e, label, onNavigate) {
   e.preventDefault();
   if (isFooterPlaceholder(label)) return;
-  if (footerLabelToPage(label)) goFooterLink(label, onNavigate);
+  if (footerLabelToPage(label)) {
+    trackCtaClick({ ctaLocation: "footer", buttonText: label, destination: footerLabelToPage(label) });
+    goFooterLink(label, onNavigate);
+  }
 }

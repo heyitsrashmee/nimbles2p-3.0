@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { isValidEmail, submitGatedDownloadForm } from "@/lib/web3forms";
-import { trackLead } from "@/lib/analytics";
+import { trackLead, trackFormStart, trackResourceDownloadClick } from "@/lib/analytics";
 import {
   hasGatedUnlock,
   setGatedUnlock,
@@ -51,6 +51,7 @@ export default function GatedDownloadForm({
 
   const startDownload = () => {
     if (!hasDownload) return;
+    trackResourceDownloadClick({ resourceSlug: slug, buttonText: buttonLabel, ctaLocation: "gated_download_form" });
     triggerResourceDownload({ url: downloadUrl, filename: downloadFilename });
   };
 
@@ -142,7 +143,7 @@ export default function GatedDownloadForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} onFocus={(e)=>{ if(!e.currentTarget.dataset.started){ e.currentTarget.dataset.started="1"; trackFormStart("gated_download", { resource_slug: slug }); } }}>
       <div
         style={{
           fontSize: 13,
