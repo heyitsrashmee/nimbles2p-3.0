@@ -1,5 +1,7 @@
 import { cache } from "react";
 
+import { enrichArticleWithGatedMeta } from "@/lib/gatedResourceMeta";
+
 import type {
   ResourceArticleData,
   ResourceArticleResult,
@@ -528,10 +530,13 @@ export const getResourceArticleBySlug = cacheFn(
 
       const [post] = await hydratePostsWithCoverFallback(result.posts);
       const relatedPosts = await fetchRelatedPosts(post.id);
+      const article = await enrichArticleWithGatedMeta(
+        mapWpcomPostToArticle(post, relatedPosts),
+      );
 
       return {
         status: "success",
-        article: mapWpcomPostToArticle(post, relatedPosts),
+        article,
       };
     } catch (error) {
       console.warn(`[wpcom] getResourceArticleBySlug(${slug}) failed:`, error);

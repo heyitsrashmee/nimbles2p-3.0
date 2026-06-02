@@ -4,12 +4,11 @@ import { useState, useEffect, useRef, Fragment } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
+import { HomepageFinalCtaButton, HomepageFinalCtaShell } from "@/components/shared/HomepageFinalCtaShell";
+import { getProductGatedDownloadHref } from "@/lib/gatedResourceConfig";
 
 import { PRODUCT_PAGE_RESOURCES } from "@/components/layout/megaMenuData";
-import GatedDownloadForm from "@/components/GatedDownloadForm";
 import { assetUrl } from "@/lib/assetUrl";
-
-const SUPPLIER_PORTAL_RESOURCE_WEB3FORMS_KEY = "ad1286ac-ebf6-4dc5-ace3-812009c9d00a";
 
 /* ═══════════════════════════════════════════════════════════
    SUPPLIER PORTAL — PRODUCT PAGE
@@ -549,52 +548,40 @@ function SPFAQs({ onNavigate }) {
 /* ════════════════════════════════════
    SP CTA
 ════════════════════════════════════ */
-function SPCTA() {
+function SPCTA({ onNavigate }) {
   const w = useWidth(); const isMobile = w < 640;
   const ref = useReveal();
   return (
-    <section style={{ background:"linear-gradient(160deg,#0f0c29 0%,#1a1260 40%,#261d6b 70%,#1e1050 100%)", position:"relative", overflow:"hidden", padding: isMobile ? "64px 20px 80px" : "clamp(72px,9vh,110px) 5vw" }}>
-      <div style={{ position:"absolute", bottom:"-15%", right:"-5%", width:"55%", height:"85%", background:"radial-gradient(ellipse at 80% 80%, rgba(245,166,35,.16) 0%, transparent 60%)", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", top:"-15%", left:"-5%", width:"55%", height:"80%", background:"radial-gradient(ellipse at 20% 20%, rgba(99,32,224,.28) 0%, transparent 60%)", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px)", backgroundSize:"26px 26px", pointerEvents:"none" }} />
-      <div style={{ maxWidth:1040, margin:"0 auto", position:"relative", zIndex:2 }}>
-        <div className="reveal" ref={ref} style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 40 : 80, alignItems:"center" }}>
-          <div>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:"rgba(52,211,153,.12)", border:"1px solid rgba(52,211,153,.28)", borderRadius:100, padding:"5px 14px", marginBottom:20 }}>
-              <span style={{ width:6, height:6, borderRadius:"50%", background:"#34D399", display:"inline-block", animation:"pulse-dot 2s infinite" }} />
-              <span style={{ fontSize:11, fontWeight:700, color:"#6EE7B7", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Free Case Study</span>
-            </div>
-            <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.06, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16 }}>
-              {PRODUCT_PAGE_RESOURCES.supplier.label}
-            </h2>
-            <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>Full case study inside — how India's leading enterprises transformed supplier relationships with NimbleS2P.</p>
-          </div>
-          <div style={{ background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.12)", borderRadius:20, padding: isMobile ? "28px 22px" : "36px 32px", backdropFilter:"blur(16px)" }}>
-            <GatedDownloadForm
-              slug="supplier"
-              title={PRODUCT_PAGE_RESOURCES.supplier.label}
-              pageSource="Supplier Portal"
-              accessKey={SUPPLIER_PORTAL_RESOURCE_WEB3FORMS_KEY}
-              emailPrompt="Enter your work email to get instant access"
-              buttonLabel="Download Full Case Study →"
-              successTitle="Case study on its way!"
-              successMessage={(addr) => `Check your inbox at ${addr}`}
-            />
-          </div>
+    <HomepageFinalCtaShell isMobile={isMobile}>
+      <div className="reveal" ref={ref} style={{ width: "100%" }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:"rgba(52,211,153,.12)", border:"1px solid rgba(52,211,153,.28)", borderRadius:100, padding:"5px 14px", marginBottom: isMobile ? 16 : 28 }}>
+          <span style={{ width:6, height:6, borderRadius:"50%", background:"#34D399", display:"inline-block", animation:"pulse-dot 2s infinite" }} />
+          <span style={{ fontSize:11, fontWeight:700, color:"#6EE7B7", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Free Case Study</span>
         </div>
+        <h2 style={{
+          fontFamily:"var(--fb)", fontWeight:900,
+          fontSize: isMobile ? "clamp(26px,7vw,38px)" : "clamp(36px,4vw,56px)",
+          lineHeight:1.1, letterSpacing:"-.04em",
+          background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)",
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
+          margin:"0 auto 20px", maxWidth:900,
+        }}>
+          {PRODUCT_PAGE_RESOURCES.supplier.label}
+        </h2>
+        <p style={{
+          fontSize: isMobile ? 14 : 16, color:"rgba(255,255,255,.52)",
+          lineHeight:1.75, fontFamily:"var(--fb)",
+          margin:"0 auto 40px", maxWidth:480,
+        }}>
+          Full case study inside — how India&apos;s leading enterprises transformed supplier relationships with NimbleS2P.
+        </p>
+        <HomepageFinalCtaButton
+          isMobile={isMobile}
+          label="Download Now →"
+          href={getProductGatedDownloadHref("supplier")}
+        />
       </div>
-      {/* ── Bottom wave — transition to footer ── */}
-      <div style={{ position:"absolute", bottom:0, left:0, right:0, height:52, overflow:"hidden", pointerEvents:"none" }}>
-        <svg viewBox="0 0 1440 52" preserveAspectRatio="none"
-          style={{ position:"absolute", bottom:0, left:0, width:"200%", height:"100%", animation:"waveSlide 10s linear infinite" }}>
-          <path d="M0,26 C200,8 400,44 600,26 C800,8 1000,42 1200,26 C1360,12 1440,34 1440,26 L1440,52 L0,52 Z" fill="rgba(99,32,224,.12)" />
-          <path d="M0,36 C180,14 380,50 580,32 C780,14 980,46 1180,30 C1340,16 1440,38 1440,36 L1440,52 L0,52 Z" fill="rgba(130,80,230,.07)" />
-        </svg>
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:1,
-          background:"linear-gradient(90deg,transparent,rgba(139,92,246,.4) 30%,rgba(139,92,246,.4) 70%,transparent)"
-        }} />
-      </div>
-    </section>
+    </HomepageFinalCtaShell>
   );
 }
 
@@ -613,7 +600,7 @@ export default function SupplierPortalPage({ onBack, onNavigate }) {
         <SPFeatures />
         <SPBenefits />
         <SPFAQs onNavigate={onNavigate} />
-        <SPCTA />
+        <SPCTA onNavigate={onNavigate} />
       </main>
       <VDDFooter onNavigate={onNavigate} />
     </>

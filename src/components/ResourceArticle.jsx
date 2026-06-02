@@ -20,7 +20,7 @@ export default function ResourceArticle({ post }) {
   const router = useRouter();
   const { navigate } = useSiteNavigation(pathname, router);
 
-  if (post.gated && post.downloadUrl) {
+  if (post.gated) {
     return (
       <GatedResourcePage
         post={post}

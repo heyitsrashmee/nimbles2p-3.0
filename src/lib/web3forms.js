@@ -48,16 +48,33 @@ export async function submitBookDemoForm(form) {
 }
 
 /**
- * Gated guide / PDF download — captures email then client may trigger file download.
- * @param {{ email: string, resourceTitle: string, resourceSlug: string, downloadUrl?: string, pageSource?: string, accessKey?: string }} payload
+ * Gated guide / PDF download — full lead form then client may trigger file download.
+ * @param {{
+ *   name: string;
+ *   email: string;
+ *   designation: string;
+ *   company: string;
+ *   phone: string;
+ *   countryCode?: string;
+ *   resourceTitle: string;
+ *   resourceSlug: string;
+ *   downloadUrl?: string;
+ *   pageSource?: string;
+ *   accessKey?: string;
+ * }} payload
  */
 export async function submitGatedDownloadForm(payload) {
   const access_key = payload.accessKey ?? GATED_DOWNLOAD_KEY;
   return postToWeb3FormsJson({
     access_key,
     subject: `Gated resource — ${payload.resourceTitle}`,
-    from_name: payload.email,
+    from_name: payload.name || payload.email,
+    name: payload.name,
     email: payload.email,
+    phone: payload.phone,
+    designation: payload.designation,
+    company: payload.company,
+    ...(payload.countryCode ? { country_code: payload.countryCode } : {}),
     resource_title: payload.resourceTitle,
     resource_slug: payload.resourceSlug,
     ...(payload.pageSource ? { page_source: payload.pageSource } : {}),
