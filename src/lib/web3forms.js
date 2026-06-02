@@ -1,9 +1,21 @@
 import { postToWeb3FormsJson } from "@/lib/web3formsSubmit";
 
-const GET_STARTED_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
-const BOOK_DEMO_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_DEMO_ACCESS_KEY;
+/**
+ * Web3Forms access keys. These are PUBLIC by design — they're inlined into the
+ * client bundle so the browser can POST directly to Web3Forms. The env vars are
+ * the source of truth, but we fall back to the known public keys so the forms
+ * keep working even if NEXT_PUBLIC_WEB3FORMS_* aren't set in the deploy
+ * environment (e.g. missing in Vercel Production). Override via env per-env.
+ */
+const FALLBACK_GET_STARTED_KEY = "18ab8881-fdca-499b-b59c-56a95e1d0709";
+const FALLBACK_BOOK_DEMO_KEY = "2d825cc0-cc85-4be9-9966-957015fa1aa2";
+
+const GET_STARTED_KEY =
+  process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || FALLBACK_GET_STARTED_KEY;
+const BOOK_DEMO_KEY =
+  process.env.NEXT_PUBLIC_WEB3FORMS_DEMO_ACCESS_KEY || FALLBACK_BOOK_DEMO_KEY;
 const GATED_DOWNLOAD_KEY =
-  process.env.NEXT_PUBLIC_WEB3FORMS_GATED_ACCESS_KEY ?? GET_STARTED_KEY;
+  process.env.NEXT_PUBLIC_WEB3FORMS_GATED_ACCESS_KEY || GET_STARTED_KEY;
 
 /**
  * Submit Get Started lead (browser → Web3Forms).
