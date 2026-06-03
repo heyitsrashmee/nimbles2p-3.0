@@ -155,17 +155,26 @@ function SAHero({ onNavigate }) {
           Where supplier experience meets finance control. Enterprise automation that suppliers actually respond to.
         </p>
 
-        {/* CTA buttons */}
-        <div className="fade-up d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:52 }}>
-          <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }} href="#"
-            style={{ display:"inline-flex", alignItems:"center", gap:7, background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", border:"none", borderRadius:10, padding:"13px 32px", fontSize:15.5, fontWeight:700, cursor:"pointer", fontFamily:"var(--fb)", textDecoration:"none", letterSpacing:"-.01em", boxShadow:"0 4px 24px rgba(232,150,10,.48)", transition:"transform .2s,box-shadow .2s", width: isMobile ? "100%" : "auto" }}
+        {/* CTAs — match RFx Management (side-by-side on mobile) */}
+        <div className="fade-up d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:56 }}>
+          <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }} href="#" style={{ display:"inline-flex", alignItems:"center", gap:8,
+            background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff",
+            borderRadius:12, padding: isMobile ? "13px 28px" : "14px 34px",
+            fontSize: isMobile ? 15 : 16, fontWeight:700,
+            textDecoration:"none", fontFamily:"var(--fb)", letterSpacing:"-.01em",
+            boxShadow:"0 6px 32px rgba(232,150,10,.52)",
+            transition:"transform .2s, box-shadow .2s", }}
             onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 10px 36px rgba(232,150,10,.62)";}}
-            onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(232,150,10,.48)";}}
+            onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(232,150,10,.48),0 1px 0 rgba(255,255,255,.15) inset";}}
           >Get Started →</a>
-          <a href="#features"
-            style={{ display:"inline-flex", alignItems:"center", gap:7, background:"rgba(99,32,224,.18)", color:"rgba(255,255,255,.85)", border:"1.5px solid rgba(139,92,246,.4)", borderRadius:10, padding:"12px 28px", fontSize:15, fontWeight:500, fontFamily:"var(--fb)", textDecoration:"none", backdropFilter:"blur(10px)", transition:"all .18s", width: isMobile ? "100%" : "auto" }}
-            onMouseEnter={e=>{e.currentTarget.style.background="rgba(99,32,224,.35)";e.currentTarget.style.color="#fff";}}
-            onMouseLeave={e=>{e.currentTarget.style.background="rgba(99,32,224,.18)";e.currentTarget.style.color="rgba(255,255,255,.85)";}}
+          <a href="#features" style={{
+            fontSize: isMobile ? 14 : 15, fontWeight:500, color:"rgba(255,255,255,.6)",
+            fontFamily:"var(--fb)", textDecoration:"none", letterSpacing:"-.01em",
+            display:"inline-flex", alignItems:"center", gap:5,
+            transition:"color .18s",
+          }}
+            onMouseEnter={e=>e.currentTarget.style.color="#fff"}
+            onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,.6)"}
           >Explore Features ↓</a>
         </div>
 

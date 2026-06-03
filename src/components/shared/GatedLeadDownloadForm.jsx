@@ -13,7 +13,7 @@ import {
   triggerResourceDownload,
 } from "@/lib/gatedResources";
 import { submitGatedDownloadForm } from "@/lib/web3forms";
-import { trackLead, trackFormStart, trackResourceDownloadClick } from "@/lib/analytics";
+import { trackLead, trackFormError, trackResourceDownloadClick } from "@/lib/analytics";
 
 /**
  * Get Started–style gated lead form (full page card or modal).
@@ -130,7 +130,7 @@ export default function GatedLeadDownloadForm({
         accessKey: customization.accessKey,
       });
       setGatedUnlock(slug);
-      trackLead("gated_download", { resource_slug: slug });
+      trackLead("gated_download", { form_type: "gated_download", resource_slug: slug });
       if (hasDownload) {
         if (downloadUrl.includes("drive.google.com")) {
           window.location.assign(downloadUrl);
@@ -142,6 +142,7 @@ export default function GatedLeadDownloadForm({
       onSubmitted?.();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
+      trackFormError("gated_download", { form_type: "gated_download", resource_slug: slug, message: msg || "submit_failed" });
       setSubmitError(
         msg.includes("not configured")
           ? "Form is temporarily unavailable. Please email us directly."
@@ -260,7 +261,8 @@ export default function GatedLeadDownloadForm({
       <form
         onSubmit={handleSubmit}
         noValidate
-        onFocus={(e)=>{ if(!e.currentTarget.dataset.started){ e.currentTarget.dataset.started="1"; trackFormStart("gated_download", { resource_slug: slug }); } }}
+        data-analytics-form="gated_download"
+        data-analytics-form-type="gated_download"
         style={{ display: "flex", flexDirection: "column", gap: 16 }}
       >
         <LeadFormField

@@ -124,20 +124,17 @@ function VDDHero({ onNavigate }) {
           A unified platform for self-service supplier onboarding, statutory, legal, and financial checks, built for scalable supplier management.
         </p>
 
-        {/* CTAs */}
+        {/* CTAs — match RFx Management (side-by-side on mobile) */}
         <div className="fade-up d3" style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginBottom:56 }}>
-          <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }} href="#" style={{
-            display:"inline-flex", alignItems:"center", gap:8,
+          <a onClick={e=>{ e.preventDefault(); if(typeof onNavigate==="function") onNavigate("getstarted"); }} href="#" style={{ display:"inline-flex", alignItems:"center", gap:8,
             background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff",
             borderRadius:12, padding: isMobile ? "13px 28px" : "14px 34px",
             fontSize: isMobile ? 15 : 16, fontWeight:700,
             textDecoration:"none", fontFamily:"var(--fb)", letterSpacing:"-.01em",
             boxShadow:"0 6px 32px rgba(232,150,10,.52)",
-            transition:"transform .2s, box-shadow .2s",
-            width: isMobile ? "100%" : "auto",
-          }}
-            onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 14px 44px rgba(232,150,10,.65)"; }}
-            onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 32px rgba(232,150,10,.52)"; }}
+            transition:"transform .2s, box-shadow .2s", }}
+            onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 10px 36px rgba(232,150,10,.62)";}}
+            onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(232,150,10,.48),0 1px 0 rgba(255,255,255,.15) inset";}}
           >Get Started →</a>
           <a href="#compare" style={{
             fontSize: isMobile ? 14 : 15, fontWeight:500, color:"rgba(255,255,255,.6)",

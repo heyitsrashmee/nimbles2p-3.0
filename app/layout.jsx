@@ -1,6 +1,7 @@
 import { Inter, IBM_Plex_Mono, Kalam } from "next/font/google";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { SITE_URL } from "@/lib/seo";
+import AnalyticsProvider from "@/components/analytics/AnalyticsProvider";
 import "./globals.css";
 
 const GTM_ID = "GTM-T8WFVVR6";
@@ -82,6 +83,7 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
+        <AnalyticsProvider />
         {children}
       </body>
     </html>

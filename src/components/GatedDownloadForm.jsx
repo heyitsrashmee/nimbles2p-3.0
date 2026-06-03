@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { isValidEmail, submitGatedDownloadForm } from "@/lib/web3forms";
-import { trackLead, trackFormStart, trackResourceDownloadClick } from "@/lib/analytics";
+import { trackLead, trackFormError, trackResourceDownloadClick } from "@/lib/analytics";
 import {
   hasGatedUnlock,
   setGatedUnlock,
@@ -76,10 +76,12 @@ export default function GatedDownloadForm({
       setGatedUnlock(slug);
       if (hasDownload) startDownload();
       setDone(true);
-      trackLead("gated_download", { resource_slug: slug });
+      trackLead("gated_download", { form_type: "gated_download", resource_slug: slug });
       onUnlocked?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      const msg = err instanceof Error ? err.message : "";
+      trackFormError("gated_download", { form_type: "gated_download", resource_slug: slug, message: msg || "submit_failed" });
+      setError(msg || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -143,7 +145,7 @@ export default function GatedDownloadForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} onFocus={(e)=>{ if(!e.currentTarget.dataset.started){ e.currentTarget.dataset.started="1"; trackFormStart("gated_download", { resource_slug: slug }); } }}>
+    <form onSubmit={handleSubmit} data-analytics-form="gated_download" data-analytics-form-type="gated_download">
       <div
         style={{
           fontSize: 13,

@@ -5,7 +5,7 @@ import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
 import { submitBookDemoForm } from "@/lib/web3forms";
-import { trackLead, trackFormStart } from "@/lib/analytics";
+import { trackLead, trackFormError } from "@/lib/analytics";
 
 const INDUSTRIES = ["Manufacturing","Energy & Utilities","Chemical","FMCG","Infra & Construction","Textile","Hospitality","Media","Financial Services","Healthcare","Other"];
 const SIZES = ["1–50","51–200","201–500","501–1000","1001–5000","5000+"];
@@ -92,9 +92,10 @@ export default function BookDemoPage({ onBack, onNavigate }) {
     try {
       await submitBookDemoForm(form);
       setSubmitted(true);
-      trackLead("book_demo");
+      trackLead("book_demo", { form_type: "demo" });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
+      trackFormError("book_demo", { form_type: "demo", message: msg || "submit_failed" });
       setSubmitError(
         msg.includes("not configured")
           ? "Form is temporarily unavailable. Please email info@techpanion.com."
@@ -188,7 +189,7 @@ export default function BookDemoPage({ onBack, onNavigate }) {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} noValidate onFocus={(e)=>{ if(!e.currentTarget.dataset.started){ e.currentTarget.dataset.started="1"; trackFormStart("book_demo"); } }} style={{ padding: isMobile ? "24px 24px 32px" : "32px 40px 40px", display:"flex", flexDirection:"column", gap:28 }}>
+                <form onSubmit={handleSubmit} noValidate data-analytics-form="book_demo" data-analytics-form-type="demo" style={{ padding: isMobile ? "24px 24px 32px" : "32px 40px 40px", display:"flex", flexDirection:"column", gap:28 }}>
 
                   {/* Contact */}
                   <div>
