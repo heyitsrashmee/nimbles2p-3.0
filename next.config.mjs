@@ -21,7 +21,8 @@ const legacyRedirects = [
   { source: "/terms-and-conditions", destination: "/terms", permanent: true },
   { source: "/inquiry-lp-1", destination: "/getstarted", permanent: true },
   // Legal / misc → closest existing page
-  { source: "/privacy", destination: "/terms", permanent: true },
+  // NOTE: /privacy now has its own dedicated Privacy Policy page (see
+  // PrivacyPolicyPage / routes.js), so it must NOT redirect to /terms.
   { source: "/disclaimer", destination: "/terms", permanent: true },
   { source: "/refund-policy", destination: "/terms", permanent: true },
   { source: "/thank-you", destination: "/", permanent: true },

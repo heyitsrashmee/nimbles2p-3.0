@@ -67,8 +67,9 @@ const CSS = `
   .lp-contact-grid{display:flex;flex-wrap:wrap;gap:10px 28px}
   .lp-contact-item{display:flex;flex-direction:column;gap:2px}
   .lp-contact-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-  .lp-contact-val{font-size:14px;font-weight:600;color:#fff;text-decoration:none}
-  .lp-contact-val:hover{text-decoration:underline}
+  .lp-contact-val{font-size:14px;font-weight:600;color:#fff;text-decoration:none;cursor:default}
+  a.lp-contact-val{cursor:pointer}
+  a.lp-contact-val:hover{text-decoration:underline}
   @media(max-width:900px){
     .lp-inner{grid-template-columns:1fr;gap:8px}
     .lp-toc{position:static;max-height:none;margin-bottom:24px}

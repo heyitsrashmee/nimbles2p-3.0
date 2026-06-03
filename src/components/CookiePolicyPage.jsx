@@ -8,7 +8,9 @@ import LegalPage from "@/components/shared/LegalPage";
  */
 const EFFECTIVE_DATE = "June 3, 2026";
 const LAST_UPDATED = "June 3, 2026";
-const PRIVACY_EMAIL = "privacy@nimbles2p.com";
+const PRIVACY_EMAIL = "info@techpanion.com";
+const COMPANY_ADDRESS =
+  "1/416 Vidyadhar Nagar, Jhotwada, Jaipur, Rajasthan 302023, India";
 
 const SECTIONS = [
   {
@@ -162,7 +164,7 @@ const CONTACT = {
   body: "Contact us and we'll be happy to help with anything related to this Cookie Policy.",
   company: "NimbleS2P by Techpanion Solutions Private Limited",
   email: PRIVACY_EMAIL,
-  address: "[Insert registered office address]",
+  address: COMPANY_ADDRESS,
 };
 
 export default function CookiePolicyPage({ onNavigate, onBack }) {
