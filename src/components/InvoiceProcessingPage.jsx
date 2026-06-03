@@ -936,7 +936,7 @@ function IPCTA() {
         }}>
           <span style={{ width:7, height:7, borderRadius:"50%", background:"#F5A623", boxShadow:"0 0 8px rgba(245,166,35,.8)", display:"inline-block", animation:"pulse-dot 2.4s ease-in-out infinite" }} />
           <span style={{ fontSize:12, fontWeight:600, color:"#F5D060", fontFamily:"var(--fb)", letterSpacing:".04em" }}>
-            See NimbleS2P In Action
+            Blog
           </span>
         </div>
 
