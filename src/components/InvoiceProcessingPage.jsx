@@ -880,7 +880,8 @@ function IPFAQs({ onNavigate }) {
 }
 
 /** Invoice Processing bottom CTA → WordPress resource */
-const IP_CTA_RESOURCE_HREF = "/resources/invoice-management-for-enterprises";
+const IP_CTA_RESOURCE_HREF =
+  "/resources/9-ways-to-transform-invoice-management-for-enterprises";
 
 /* ════════════════════════════════════
    7. CTA — matches homepage FinalCTA

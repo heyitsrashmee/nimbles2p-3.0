@@ -14,6 +14,7 @@ import {
 } from "@/lib/gatedResources";
 import { submitGatedDownloadForm } from "@/lib/web3forms";
 import { trackLead, trackFormError, trackResourceDownloadClick } from "@/lib/analytics";
+import ConsentCheckboxes from "@/components/shared/ConsentCheckboxes";
 
 /**
  * Get Started–style gated lead form (full page card or modal).
@@ -57,6 +58,8 @@ export default function GatedLeadDownloadForm({
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   const id = (name) => (fieldIdPrefix ? `${fieldIdPrefix}-${name}` : name);
 
@@ -110,6 +113,10 @@ export default function GatedLeadDownloadForm({
     const errs = validate(form);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
+    if (!consent) {
+      setSubmitError("Please agree to the Privacy Policy to continue.");
+      return;
+    }
 
     const phoneFormatted = formatPhoneWithCountryCode(form.countryCode, form.phone);
 
@@ -128,6 +135,7 @@ export default function GatedLeadDownloadForm({
         downloadUrl: hasDownload ? downloadUrl : undefined,
         pageSource: pageSource ?? `Resource: ${title}`,
         accessKey: customization.accessKey,
+        marketingOptIn: marketing,
       });
       setGatedUnlock(slug);
       trackLead("gated_download", { form_type: "gated_download", resource_slug: slug });
@@ -339,13 +347,21 @@ export default function GatedLeadDownloadForm({
           </p>
         ) : null}
 
+        <ConsentCheckboxes
+          idPrefix={`gatedlead-${slug}`}
+          consent={consent}
+          onConsentChange={setConsent}
+          marketing={marketing}
+          onMarketingChange={setMarketing}
+        />
+
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !consent}
           style={{
             marginTop: 4,
             width: "100%",
-            background: submitting
+            background: (submitting || !consent)
               ? "rgba(99,32,224,.5)"
               : "linear-gradient(135deg,#6320E0,#8B5CF6)",
             color: "#fff",
@@ -354,10 +370,10 @@ export default function GatedLeadDownloadForm({
             padding: "15px 24px",
             fontSize: 16,
             fontWeight: 700,
-            cursor: submitting ? "not-allowed" : "pointer",
+            cursor: (submitting || !consent) ? "not-allowed" : "pointer",
             fontFamily: "var(--fb)",
             letterSpacing: "-.01em",
-            boxShadow: submitting ? "none" : "0 6px 24px rgba(99,32,224,.4)",
+            boxShadow: (submitting || !consent) ? "none" : "0 6px 24px rgba(99,32,224,.4)",
           }}
         >
           {submitting ? "Submitting…" : submitLabel}

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Fragment } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
+import ProductPageBottomCta from "@/components/shared/ProductPageBottomCta";
 
 import { PRODUCT_PAGE_RESOURCES } from "@/components/layout/megaMenuData";
 
@@ -945,60 +946,19 @@ function EFFAQs({ onNavigate }) {
   );
 }
 
-/* ════════════════════════════════════
-   EF 11 — CTA
-════════════════════════════════════ */
-function EFCTA({ onNavigate }) {
-  const w = useWidth(); const isMobile = w < 640;
-  const [email, setEmail] = useState(""); const [done, setDone] = useState(false);
-  return (
-    <section style={{ background:"linear-gradient(160deg,#0f0c29 0%,#1a1260 40%,#261d6b 70%,#1e1050 100%)", position:"relative", overflow:"hidden", padding: isMobile ? "72px 20px 88px" : "clamp(72px,9vh,110px) 5vw" }}>
-      <div style={{ position:"absolute", top:"-15%", left:"-5%", width:"55%", height:"80%", background:"radial-gradient(ellipse at 20% 20%, rgba(99,32,224,.28) 0%, transparent 60%)", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", bottom:"-15%", right:"-5%", width:"55%", height:"85%", background:"radial-gradient(ellipse at 80% 80%, rgba(245,166,35,.14) 0%, transparent 60%)", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px)", backgroundSize:"26px 26px", pointerEvents:"none" }} />
+/** Early Financing bottom CTA → related SCF blog */
+const EF_CTA_RESOURCE_HREF = "/resources/supply-chain-finance";
 
-      <div style={{ maxWidth:1040, margin:"0 auto", position:"relative", zIndex:2 }}>
-        <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 40 : 80, alignItems:"center" }}>
-          <div>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:"rgba(245,166,35,.15)", border:"1px solid rgba(245,166,35,.35)", borderRadius:100, padding:"5px 14px", marginBottom:20 }}>
-              <span style={{ width:6, height:6, borderRadius:"50%", background:"#F5A623", display:"inline-block", animation:"pulse-dot 2s infinite" }} />
-              <span style={{ fontSize:11, fontWeight:700, color:"#F5D060", fontFamily:"var(--fb)", letterSpacing:".05em", textTransform:"uppercase" }}>Blog</span>
-            </div>
-            <h2 style={{ fontFamily:"var(--fb)", fontWeight:900, fontSize: isMobile ? "clamp(24px,7vw,34px)" : "clamp(26px,3.2vw,40px)", lineHeight:1.12, letterSpacing:"-.04em", background:"linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:16, paddingBottom:8 }}>
-              {PRODUCT_PAGE_RESOURCES.finance.label}
-            </h2>
-            <p style={{ fontSize: isMobile ? 14.5 : 16, color:"rgba(255,255,255,.48)", lineHeight:1.75, fontFamily:"var(--fb)" }}>
-              Get your early financing programs live with pre-integrated lenders, automated workflows, and enterprise-grade compliance — all in one platform.
-            </p>
-          </div>
-          <div style={{ background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.12)", borderRadius:20, padding: isMobile ? "28px 22px" : "36px 32px", backdropFilter:"blur(16px)" }}>
-            {!done ? (
-              <>
-                <div style={{ fontSize:13, fontWeight:600, color:"rgba(255,255,255,.5)", fontFamily:"var(--fb)", marginBottom:20 }}>Enter your work email to get started</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-                  <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@company.com"
-                    style={{ width:"100%", background:"rgba(255,255,255,.08)", border:"1.5px solid rgba(255,255,255,.16)", borderRadius:10, outline:"none", padding:"13px 16px", fontSize:15, color:"#fff", fontFamily:"var(--fb)", transition:"border-color .18s" }}
-                    onFocus={e=>e.target.style.borderColor="rgba(245,166,35,.6)"}
-                    onBlur={e=>e.target.style.borderColor="rgba(255,255,255,.16)"}
-                  />
-                  <button onClick={()=>{ if(email) setDone(true); }} style={{ width:"100%", background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff", border:"none", borderRadius:10, padding:"13px 24px", fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"var(--fb)", boxShadow:"0 6px 24px rgba(232,150,10,.45)", transition:"all .2s" }}
-                    onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(232,150,10,.6)"; }}
-                    onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 24px rgba(232,150,10,.45)"; }}
-                  >Book a Demo →</button>
-                </div>
-                <p style={{ fontSize:11.5, color:"rgba(255,255,255,.22)", marginTop:14, fontFamily:"var(--fb)", textAlign:"center" }}>No spam. Unsubscribe anytime.</p>
-              </>
-            ) : (
-              <div style={{ textAlign:"center", padding:"20px 0" }}>
-                <div style={{ fontSize:40, marginBottom:14 }}>✅</div>
-                <div style={{ fontSize:16, fontWeight:700, color:"#F5D060", fontFamily:"var(--fb)", marginBottom:8 }}>We'll be in touch!</div>
-                <div style={{ fontSize:14, color:"rgba(255,255,255,.45)", fontFamily:"var(--fb)" }}>Check your inbox at {email}</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
+function EFCTA() {
+  return (
+    <ProductPageBottomCta
+      eyebrow="Blog"
+      eyebrowStyle="orange"
+      title={PRODUCT_PAGE_RESOURCES.finance.label}
+      description="Get your early financing programs live with pre-integrated lenders, automated workflows, and enterprise-grade compliance — all in one platform."
+      ctaLabel="Read More →"
+      ctaHref={EF_CTA_RESOURCE_HREF}
+    />
   );
 }
 
@@ -1017,7 +977,7 @@ export default function EarlyFinancingPage({ onBack, onNavigate }) {
         <EFComparison />
         <EFEnterprise />
         <EFFAQs onNavigate={onNavigate} />
-        <EFCTA onNavigate={onNavigate} />
+        <EFCTA />
       </main>
       <VDDFooter onNavigate={onNavigate} />
     </>

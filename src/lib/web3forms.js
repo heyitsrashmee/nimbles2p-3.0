@@ -31,6 +31,8 @@ export async function submitGetStartedForm(payload) {
     phone: payload.phone,
     ...(payload.designation ? { designation: payload.designation } : {}),
     ...(payload.company ? { company: payload.company } : {}),
+    privacy_consent: "Yes",
+    marketing_opt_in: payload.marketingOptIn ? "Yes" : "No",
   });
 }
 
@@ -56,6 +58,8 @@ export async function submitBookDemoForm(form) {
     challenge: form.challenge || "—",
     timeline: form.timeline,
     message: form.message || "—",
+    privacy_consent: "Yes",
+    marketing_opt_in: form.marketingOptIn ? "Yes" : "No",
   });
 }
 
@@ -91,6 +95,8 @@ export async function submitGatedDownloadForm(payload) {
     resource_slug: payload.resourceSlug,
     ...(payload.pageSource ? { page_source: payload.pageSource } : {}),
     ...(payload.downloadUrl ? { download_url: payload.downloadUrl } : {}),
+    privacy_consent: "Yes",
+    marketing_opt_in: payload.marketingOptIn ? "Yes" : "No",
     message: `Resource requested: ${payload.resourceTitle} (${payload.resourceSlug})${
       payload.pageSource ? ` — ${payload.pageSource}` : ""
     }`,

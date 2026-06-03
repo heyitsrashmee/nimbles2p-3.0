@@ -11,6 +11,8 @@ export const PAGE_SLUGS = [
   "finance",
   "getstarted",
   "terms",
+  "privacy",
+  "cookies",
   "resources",
   "trust",
   "press",

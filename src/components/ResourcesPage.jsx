@@ -36,6 +36,7 @@ import { resourceHashToFilter, resourceFilterToHash } from "@/lib/routes";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
+import ConsentCheckboxes from "@/components/shared/ConsentCheckboxes";
 
 /* ── Design tokens (mirrors globalStyles in main artifact) ── */
 const TOKEN = {
@@ -453,6 +454,7 @@ function ResourcesGrid({ featuredPost, posts, isMobile, sectionHash }) {
 function NewsletterCTA({ isMobile, data }) {  // ← CMS: data prop for heading/sub copy
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [consent, setConsent] = useState(false);
   const heading = data?.heading || "Stay ahead of procurement.";  // ← CMS
   const sub = data?.sub || "Get the latest insights, playbooks, and automation stories delivered to your inbox.";  // ← CMS
 
@@ -477,20 +479,24 @@ function NewsletterCTA({ isMobile, data }) {  // ← CMS: data prop for heading/
             ✅ You're in! First issue lands in your inbox soon.
           </div>
         ) : (
-          <div style={{ display:"flex", gap:10, maxWidth:440, margin:"0 auto", flexDirection: isMobile ? "column" : "row" }}>
-            <input type="email" placeholder="Your work email" value={email} onChange={e => setEmail(e.target.value)}
-              style={{ flex:1, padding:"12px 16px", borderRadius:9, border:"1.5px solid rgba(255,255,255,.15)", background:"rgba(255,255,255,.08)", color:"#fff", fontFamily:TOKEN.fb, fontSize:14.5, outline:"none", backdropFilter:"blur(8px)", transition:"border-color .18s" }}
-              onFocus={e => e.target.style.borderColor = "rgba(255,255,255,.5)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,.15)"}
-            />
-            <button onClick={() => email && setSubmitted(true)} style={{
-              background:"linear-gradient(135deg,#E8960A,#F5A623)", color:"#fff", border:"none", borderRadius:9,
-              padding:"12px 24px", fontFamily:TOKEN.fb, fontSize:14.5, fontWeight:700, cursor:"pointer",
-              boxShadow:"0 4px 20px rgba(232,150,10,.4)", transition:"transform .2s, box-shadow .2s", whiteSpace:"nowrap",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 8px 28px rgba(232,150,10,.6)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 4px 20px rgba(232,150,10,.4)"; }}
-            >Subscribe →</button>
+          <div style={{ maxWidth:440, margin:"0 auto", display:"flex", flexDirection:"column", gap:16 }}>
+            <div style={{ display:"flex", gap:10, flexDirection: isMobile ? "column" : "row" }}>
+              <input type="email" placeholder="Your work email" value={email} onChange={e => setEmail(e.target.value)}
+                style={{ flex:1, padding:"12px 16px", borderRadius:9, border:"1.5px solid rgba(255,255,255,.15)", background:"rgba(255,255,255,.08)", color:"#fff", fontFamily:TOKEN.fb, fontSize:14.5, outline:"none", backdropFilter:"blur(8px)", transition:"border-color .18s" }}
+                onFocus={e => e.target.style.borderColor = "rgba(255,255,255,.5)"}
+                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,.15)"}
+              />
+              <button onClick={() => email && consent && setSubmitted(true)} disabled={!consent} style={{
+                background:"linear-gradient(135deg,#E8960A,#F5A623)", color:"#fff", border:"none", borderRadius:9,
+                padding:"12px 24px", fontFamily:TOKEN.fb, fontSize:14.5, fontWeight:700, cursor: consent ? "pointer" : "not-allowed",
+                opacity: consent ? 1 : 0.6,
+                boxShadow:"0 4px 20px rgba(232,150,10,.4)", transition:"transform .2s, box-shadow .2s", whiteSpace:"nowrap",
+              }}
+                onMouseEnter={e => { if(consent){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 8px 28px rgba(232,150,10,.6)"; }}}
+                onMouseLeave={e => { e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 4px 20px rgba(232,150,10,.4)"; }}
+              >Subscribe →</button>
+            </div>
+            <ConsentCheckboxes dark idPrefix="newsletter" consent={consent} onConsentChange={setConsent} showMarketing={false} style={{ textAlign:"left" }} />
           </div>
         )}
         <p style={{ fontFamily:TOKEN.fb, fontSize:11.5, color:"rgba(255,255,255,.25)", marginTop:14 }}>No spam. Unsubscribe anytime.</p>

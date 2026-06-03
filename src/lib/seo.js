@@ -77,6 +77,16 @@ export const PAGE_META = {
     description:
       "The terms and conditions governing the use of NimbleS2P's website and source-to-pay platform.",
   },
+  privacy: {
+    title: "Privacy Policy — NimbleS2P",
+    description:
+      "How NimbleS2P (Techpanion Solutions Private Limited) collects, uses, shares, and protects the personal information of enterprises, suppliers, partners, and website visitors.",
+  },
+  cookies: {
+    title: "Cookie Policy — NimbleS2P",
+    description:
+      "How NimbleS2P uses cookies and similar technologies — including Google Analytics, Google Tag Manager, and the LinkedIn Insight Tag — and how you can manage your preferences.",
+  },
   trust: {
     title: "Trust Center — Security & Compliance — NimbleS2P",
     description:
@@ -110,6 +120,8 @@ export const SITEMAP_SLUGS = [
   "finance",
   "getstarted",
   "terms",
+  "privacy",
+  "cookies",
   "trust",
   "press",
   "careers",

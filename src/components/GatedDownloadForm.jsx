@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { isValidEmail, submitGatedDownloadForm } from "@/lib/web3forms";
 import { trackLead, trackFormError, trackResourceDownloadClick } from "@/lib/analytics";
+import ConsentCheckboxes from "@/components/shared/ConsentCheckboxes";
 import {
   hasGatedUnlock,
   setGatedUnlock,
@@ -42,6 +43,8 @@ export default function GatedDownloadForm({
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
     if (hasGatedUnlock(slug)) setDone(true);
@@ -62,6 +65,10 @@ export default function GatedDownloadForm({
       setError("Please enter a valid email address.");
       return;
     }
+    if (!consent) {
+      setError("Please agree to the Privacy Policy to continue.");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
@@ -72,6 +79,7 @@ export default function GatedDownloadForm({
         downloadUrl: hasDownload ? downloadUrl : undefined,
         pageSource,
         accessKey,
+        marketingOptIn: marketing,
       });
       setGatedUnlock(slug);
       if (hasDownload) startDownload();
@@ -179,6 +187,14 @@ export default function GatedDownloadForm({
             fontFamily: "var(--fb)",
           }}
         />
+        <ConsentCheckboxes
+          dark
+          idPrefix={`gated-${slug}`}
+          consent={consent}
+          onConsentChange={setConsent}
+          marketing={marketing}
+          onMarketingChange={setMarketing}
+        />
         {error ? (
           <p style={{ fontSize: 13, color: "#FCA5A5", margin: 0, fontFamily: "var(--fb)" }}>
             {error}
@@ -186,7 +202,7 @@ export default function GatedDownloadForm({
         ) : null}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !consent}
           style={{
             width: "100%",
             background: "linear-gradient(135deg,#E8920A,#F5B020)",
@@ -196,9 +212,9 @@ export default function GatedDownloadForm({
             padding: "13px 24px",
             fontSize: 15,
             fontWeight: 700,
-            cursor: loading ? "wait" : "pointer",
+            cursor: loading ? "wait" : !consent ? "not-allowed" : "pointer",
             fontFamily: "var(--fb)",
-            opacity: loading ? 0.75 : 1,
+            opacity: loading || !consent ? 0.75 : 1,
             boxShadow: "0 6px 24px rgba(232,150,10,.45)",
           }}
         >

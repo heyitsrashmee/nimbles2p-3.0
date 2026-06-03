@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
+import ConsentCheckboxes from "@/components/shared/ConsentCheckboxes";
 import { submitGetStartedForm } from "@/lib/web3forms";
 import { trackLead, trackFormError } from "@/lib/analytics";
 
@@ -89,6 +90,8 @@ export default function GetStartedPage({ onBack, onNavigate }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   const validate = (fields) => {
     const e = {};
@@ -129,11 +132,15 @@ export default function GetStartedPage({ onBack, onNavigate }) {
     const errs = validate(form);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
+    if (!consent) {
+      setSubmitError("Please agree to the Privacy Policy to continue.");
+      return;
+    }
 
     setSubmitting(true);
     setSubmitError("");
     try {
-      await submitGetStartedForm(form);
+      await submitGetStartedForm({ ...form, marketingOptIn: marketing });
       setSubmitted(true);
       trackLead("get_started", { form_type: "lead" });
     } catch (err) {
@@ -236,6 +243,14 @@ export default function GetStartedPage({ onBack, onNavigate }) {
                     <FormField id="designation" label="Designation" placeholder="e.g. VP Procurement" isMobile={isMobile} value={form.designation} error={errors.designation} isTouched={touched.designation} onChange={(v) => handleChange("designation", v)} onBlur={() => handleBlur("designation")} />
                     <FormField id="company" label="Company Name" placeholder="e.g. Tata Motors" isMobile={isMobile} value={form.company} error={errors.company} isTouched={touched.company} onChange={(v) => handleChange("company", v)} onBlur={() => handleBlur("company")} />
 
+                    <ConsentCheckboxes
+                      idPrefix="getstarted"
+                      consent={consent}
+                      onConsentChange={setConsent}
+                      marketing={marketing}
+                      onMarketingChange={setMarketing}
+                    />
+
                     {submitError && (
                       <p style={{ fontFamily:"var(--fb)", fontSize:13, color:"#EF4444", margin:0, textAlign:"center" }}>
                         {submitError}
@@ -243,20 +258,20 @@ export default function GetStartedPage({ onBack, onNavigate }) {
                     )}
 
                     {/* Submit */}
-                    <button type="submit" disabled={submitting}
+                    <button type="submit" disabled={submitting || !consent}
                       style={{
                         marginTop:4, width:"100%",
-                        background: submitting ? "rgba(99,32,224,.5)" : "linear-gradient(135deg,#6320E0,#8B5CF6)",
+                        background: (submitting || !consent) ? "rgba(99,32,224,.5)" : "linear-gradient(135deg,#6320E0,#8B5CF6)",
                         color:"#fff", border:"none", borderRadius:12,
                         padding:"15px 24px", fontSize:16, fontWeight:700,
-                        cursor: submitting ? "not-allowed" : "pointer",
+                        cursor: (submitting || !consent) ? "not-allowed" : "pointer",
                         fontFamily:"var(--fb)", letterSpacing:"-.01em",
-                        boxShadow: submitting ? "none" : "0 6px 24px rgba(99,32,224,.4)",
+                        boxShadow: (submitting || !consent) ? "none" : "0 6px 24px rgba(99,32,224,.4)",
                         transition:"all .2s",
                         display:"flex", alignItems:"center", justifyContent:"center", gap:10,
                       }}
-                      onMouseEnter={e=>{ if(!submitting){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(99,32,224,.55)"; }}}
-                      onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=submitting?"none":"0 6px 24px rgba(99,32,224,.4)"; }}
+                      onMouseEnter={e=>{ if(!submitting && consent){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(99,32,224,.55)"; }}}
+                      onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=(submitting || !consent)?"none":"0 6px 24px rgba(99,32,224,.4)"; }}
                     >
                       {submitting ? (
                         <>

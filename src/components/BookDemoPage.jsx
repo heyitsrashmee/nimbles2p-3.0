@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth } from "@/components/shared/pageUi";
+import ConsentCheckboxes from "@/components/shared/ConsentCheckboxes";
 import { submitBookDemoForm } from "@/lib/web3forms";
 import { trackLead, trackFormError } from "@/lib/analytics";
 
@@ -64,6 +65,8 @@ export default function BookDemoPage({ onBack, onNavigate }) {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitError, setSubmitError] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   const set = (k,v) => {
     const next = {...form,[k]:v};
@@ -87,10 +90,14 @@ export default function BookDemoPage({ onBack, onNavigate }) {
     const allT = {}; REQUIRED.forEach(k=>allT[k]=true);
     setTouched(allT);
     if (!validateForm()) return;
+    if (!consent) {
+      setSubmitError("Please agree to the Privacy Policy to continue.");
+      return;
+    }
     setSending(true);
     setSubmitError("");
     try {
-      await submitBookDemoForm(form);
+      await submitBookDemoForm({ ...form, marketingOptIn: marketing });
       setSubmitted(true);
       trackLead("book_demo", { form_type: "demo" });
     } catch (err) {
@@ -272,18 +279,24 @@ export default function BookDemoPage({ onBack, onNavigate }) {
                     </DemoFormField>
                   </div>
 
+                  <ConsentCheckboxes
+                    idPrefix="bookdemo"
+                    consent={consent}
+                    onConsentChange={setConsent}
+                    marketing={marketing}
+                    onMarketingChange={setMarketing}
+                    style={{ paddingTop: 8, borderTop: "1px solid #F1F5F9" }}
+                  />
+
                   {submitError && (
                     <p style={{ fontFamily:"var(--fb)", fontSize:13, color:"#EF4444", margin:0, textAlign:"center" }}>{submitError}</p>
                   )}
 
                   {/* Submit row */}
-                  <div style={{ paddingTop:8, borderTop:"1px solid #F1F5F9", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:16 }}>
-                    <p style={{ fontSize:11.5, color:"#94A3B8", fontFamily:"var(--fb)", maxWidth:340, margin:0, lineHeight:1.6 }}>
-                      By submitting, you agree to our <span style={{ color:"#6320E0", cursor:"pointer" }}>Privacy Policy</span>. We'll only use your info to schedule and prepare your demo.
-                    </p>
-                    <button type="submit" disabled={sending} style={{ display:"inline-flex", alignItems:"center", gap:8, background: sending?"rgba(99,32,224,.5)":"linear-gradient(135deg,#6320E0,#8B5CF6)", color:"#fff", borderRadius:12, padding:"14px 32px", fontSize:15, fontWeight:700, fontFamily:"var(--fb)", border:"none", cursor: sending?"not-allowed":"pointer", boxShadow: sending?"none":"0 6px 24px rgba(99,32,224,.4)", transition:"all .2s", letterSpacing:"-.01em", flexShrink:0 }}
-                      onMouseEnter={e=>{ if(!sending){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(99,32,224,.55)"; }}}
-                      onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=sending?"none":"0 6px 24px rgba(99,32,224,.4)"; }}
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", flexWrap:"wrap", gap:16 }}>
+                    <button type="submit" disabled={sending || !consent} style={{ display:"inline-flex", alignItems:"center", gap:8, background: (sending || !consent)?"rgba(99,32,224,.5)":"linear-gradient(135deg,#6320E0,#8B5CF6)", color:"#fff", borderRadius:12, padding:"14px 32px", fontSize:15, fontWeight:700, fontFamily:"var(--fb)", border:"none", cursor: (sending || !consent)?"not-allowed":"pointer", boxShadow: (sending || !consent)?"none":"0 6px 24px rgba(99,32,224,.4)", transition:"all .2s", letterSpacing:"-.01em", flexShrink:0 }}
+                      onMouseEnter={e=>{ if(!sending && consent){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 10px 32px rgba(99,32,224,.55)"; }}}
+                      onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=(sending || !consent)?"none":"0 6px 24px rgba(99,32,224,.4)"; }}
                     >
                       {sending ? (
                         <>

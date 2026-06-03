@@ -364,8 +364,8 @@ function RFQFAQs({ onNavigate }) {
   );
 }
 
-/** RFx Management bottom CTA → resource (matches Invoice Processing layout) */
-const RFQ_CTA_RESOURCE_HREF = "/resources/rfq-best-practices";
+/** RFx Management bottom CTA → Book a Demo */
+const RFQ_CTA_DEMO_HREF = "/demo";
 
 /* ════════════════════════════════════
    6. CTA — matches Invoice Processing IPCTA
@@ -445,7 +445,7 @@ function RFQCTA() {
         </p>
 
         <a
-          href={RFQ_CTA_RESOURCE_HREF}
+          href={RFQ_CTA_DEMO_HREF}
           style={{
             display:"inline-flex", alignItems:"center", justifyContent:"center", gap:8,
             background:"linear-gradient(135deg,#E8920A,#F5B020)", color:"#fff",
@@ -459,7 +459,7 @@ function RFQCTA() {
           onMouseEnter={(e) => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 14px 40px rgba(232,150,10,.65)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 28px rgba(232,150,10,.5), 0 1px 0 rgba(255,255,255,.15) inset"; }}
         >
-          Read More →
+          Book a Demo →
         </a>
       </div>
 

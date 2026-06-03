@@ -5,12 +5,18 @@ import {
 } from "@/lib/routes";
 import { trackCtaClick } from "@/lib/analytics";
 
+/** Footer legal label → dedicated page slug. */
+export function legalLabelToPage(label) {
+  if (label === "Privacy Policy") return "privacy";
+  if (label === "Cookie Policy") return "cookies";
+  return "terms"; // "Terms of Use" / "Terms & Conditions"
+}
+
 export function goLegalPage(label, onNavigate) {
   if (typeof onNavigate !== "function") return;
-  if (label === "Terms of Use" || label === "Terms & Conditions") window.location.hash = "";
-  else if (label === "Privacy Policy") window.location.hash = "intro";
-  else if (label === "Cookie Policy") window.location.hash = "analytics";
-  onNavigate("terms");
+  const page = legalLabelToPage(label);
+  trackCtaClick({ ctaLocation: "footer_legal", buttonText: label, destination: page });
+  onNavigate(page);
 }
 
 export function goFooterLink(label, onNavigate) {

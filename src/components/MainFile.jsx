@@ -3,6 +3,8 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import TermsPage from "./NimbleS2PTerms";
+import PrivacyPolicyPage from "./PrivacyPolicyPage";
+import CookiePolicyPage from "./CookiePolicyPage";
 import VDDAnimation from "@gifs/VDDAnimation";
 import RFQAgentDemo from "@gifs/RFQAgent";
 import SupplierPortalAnimation from "@gifs/SupplierPortalAnimation";
@@ -1783,6 +1785,12 @@ export default function NimbleS2PHomepage() {
   }
   if (page === "terms") {
     return <TermsPage onBack={goHome} onNavigate={navigate} />;
+  }
+  if (page === "privacy") {
+    return <PrivacyPolicyPage onBack={goHome} onNavigate={navigate} />;
+  }
+  if (page === "cookies") {
+    return <CookiePolicyPage onBack={goHome} onNavigate={navigate} />;
   }
   if (page === "blog") {
     return <BlogPostPage onBack={goHome} onNavigate={navigate} />;
