@@ -30,7 +30,7 @@ const kalam = Kalam({
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "NimbleS2P — AI-Orchestrated Source-to-Pay for the Indian Enterprise",
+    default: "NimbleS2P — AI-Orchestrated Compliance-First Source-to-Pay Software",
     template: "%s",
   },
   description:
