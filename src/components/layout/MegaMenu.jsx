@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { assetUrl } from "@/lib/assetUrl";
 import { pageToPath } from "@/lib/routes";
+import { getProductGatedDownloadHref } from "@/lib/gatedResourceConfig";
 import { MEGA_PRODUCTS } from "./megaMenuData";
 
 export function MegaMenu({ onClose, onNavigate }) {
@@ -19,6 +20,13 @@ export function MegaMenu({ onClose, onNavigate }) {
 
   const active = items.find((i) => i.id === hovered) || items[0];
   const res = wpFeatured?.[active.id] ?? active.resource;
+
+  // Products with a gated download form (vdd, supplier, finance) point the
+  // card CTA at their /download/<key> form instead of generic Get Started.
+  const gatedDownloadHref = getProductGatedDownloadHref(active.id);
+  const ctaHref = gatedDownloadHref ?? pageToPath("getstarted");
+  const ctaNavTarget = gatedDownloadHref ? `download/${active.id}` : "getstarted";
+  const ctaLabel = gatedDownloadHref ? "Download →" : "Get Started →";
 
   const TAG = {
     "New":      { bg:"#EEF2FF", color:"#4338CA", border:"#C7D2FE", dot:"#818CF8" },
@@ -226,11 +234,11 @@ export function MegaMenu({ onClose, onNavigate }) {
 
                 {/* Compact CTA pill */}
                 <a
-                  href={pageToPath("getstarted")}
+                  href={ctaHref}
                   onClick={(e) => {
                     e.preventDefault();
                     onClose();
-                    if (typeof onNavigate === "function") onNavigate("getstarted");
+                    if (typeof onNavigate === "function") onNavigate(ctaNavTarget);
                   }}
                   style={{
                   display:"inline-flex", alignItems:"center", gap:5, flexShrink:0,
@@ -243,7 +251,7 @@ export function MegaMenu({ onClose, onNavigate }) {
                 }}
                   onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow=`0 6px 18px ${active.color}50`; }}
                   onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=`0 3px 12px ${active.color}3a`; }}
-                >Get Started →</a>
+                >{ctaLabel}</a>
               </div>
 
             </div>
