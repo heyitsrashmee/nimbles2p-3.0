@@ -58,7 +58,7 @@ export const MEGA_PRODUCTS = {
       color:"#E06B72",
       tag:"New",
       resource: PRODUCT_PAGE_RESOURCES.finance,
-      cover: { src: "mega-menu/early-financing-cover.webp", objectPosition: "center 40%" },
+      cover: { src: "mega-menu/early-financing-cover.webp", objectPosition: "center center" },
     },
     {
       id:"analytics",
