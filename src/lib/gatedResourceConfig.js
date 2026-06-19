@@ -35,6 +35,18 @@ export const GATED_RESOURCE_BY_SLUG_MATCH = {
       ["⚡", "Instant access", "Download starts right after you submit the form."],
     ],
   },
+  "early-financing": {
+    eyebrow: "Free Guide",
+    formCardTitle: "Download your guide",
+    submitLabel: "Download Guide →",
+    // Dedicated Web3Forms form for the Early Financing download.
+    accessKey: "7f0fb486-c13c-413d-8bec-7331332e61e9",
+    trustPoints: [
+      ["💸", "Faster programs", "Launch scalable supply chain finance with pre-integrated lenders."],
+      ["🔒", "Your data is safe", "We never share or sell your information."],
+      ["⚡", "Instant access", "Download starts right after you submit the form."],
+    ],
+  },
 };
 
 const DEFAULT_CUSTOMIZATION = {
@@ -55,12 +67,14 @@ const DEFAULT_CUSTOMIZATION = {
 export const PRODUCT_GATED_RESOURCE_SLUGS = {
   vdd: "7-onboarding-mistakes",
   supplier: "behind-the-scenes-of-supplier-experience-transformation",
+  finance: "early-financing-launch-scalable-scf-programs",
 };
 
 /** Display titles (kept in sync with megaMenuData.js). */
 const PRODUCT_GATED_TITLES = {
   vdd: "7 Most Expensive Onboarding Mistakes",
   supplier: "Behind the scenes of supplier experience transformation",
+  finance: "Launch Scalable SCF Programs Faster",
 };
 
 /** Google Drive URLs — opened after the visitor submits the gated form. */
@@ -68,15 +82,19 @@ export const PRODUCT_GATED_DOWNLOAD_URLS = {
   vdd: "https://drive.google.com/file/d/12mRVqZeB6EzWo750BhhKQWGgcADJevhA/view?usp=sharing",
   supplier:
     "https://drive.google.com/file/d/1iFBmYXs9A03ka7vXKf6vHVYhnYJ-K4QL/view?usp=sharing",
+  finance:
+    "https://drive.google.com/file/d/1CTctJOWnZNv4fKZfAX3C7uVyTX3N8_ie/view?usp=sharing",
 };
 
 const PRODUCT_GATED_EXCERPTS = {
   vdd: "Download our guide to avoid the pitfalls that cost enterprises crores in delayed payments, audit failures, and compliance gaps every year.",
   supplier:
     "Full case study inside — how India's leading enterprises transformed supplier relationships with NimbleS2P.",
+  finance:
+    "Get your early financing programs live with pre-integrated lenders, automated workflows, and enterprise-grade compliance — all in one platform.",
 };
 
-const VALID_PRODUCT_KEYS = new Set(["vdd", "supplier"]);
+const VALID_PRODUCT_KEYS = new Set(["vdd", "supplier", "finance"]);
 
 /**
  * @param {string} slug

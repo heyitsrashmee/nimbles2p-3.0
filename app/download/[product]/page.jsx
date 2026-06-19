@@ -6,7 +6,7 @@ import {
 } from "@/lib/gatedResourceConfig";
 
 export function generateStaticParams() {
-  return [{ product: "vdd" }, { product: "supplier" }];
+  return [{ product: "vdd" }, { product: "supplier" }, { product: "finance" }];
 }
 
 export async function generateMetadata({ params }) {

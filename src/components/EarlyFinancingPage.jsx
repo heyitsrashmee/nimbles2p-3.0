@@ -946,17 +946,17 @@ function EFFAQs({ onNavigate }) {
   );
 }
 
-/** Early Financing bottom CTA → related SCF blog */
-const EF_CTA_RESOURCE_HREF = "/resources/supply-chain-finance";
+/** Early Financing bottom CTA → gated download form */
+const EF_CTA_RESOURCE_HREF = "/download/finance";
 
 function EFCTA() {
   return (
     <ProductPageBottomCta
-      eyebrow="Blog"
+      eyebrow="Free Guide"
       eyebrowStyle="orange"
       title={PRODUCT_PAGE_RESOURCES.finance.label}
       description="Get your early financing programs live with pre-integrated lenders, automated workflows, and enterprise-grade compliance — all in one platform."
-      ctaLabel="Read More →"
+      ctaLabel="Download Now →"
       ctaHref={EF_CTA_RESOURCE_HREF}
     />
   );

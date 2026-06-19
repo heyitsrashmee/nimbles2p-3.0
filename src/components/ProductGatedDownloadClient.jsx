@@ -5,8 +5,14 @@ import GatedResourceDownloadPage from "@/components/GatedResourceDownloadPage";
 import { useSiteNavigation } from "@/lib/siteNavigation";
 
 /**
- * /download/vdd and /download/supplier — Get Started layout + gated form.
+ * /download/vdd, /download/supplier and /download/finance — Get Started layout + gated form.
  */
+const BACK_LABELS = {
+  vdd: "Supplier Due Diligence",
+  supplier: "Supplier Portal",
+  finance: "Early Financing",
+};
+
 export default function ProductGatedDownloadClient({ post }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -18,7 +24,7 @@ export default function ProductGatedDownloadClient({ post }) {
       post={post}
       onNavigate={navigate}
       onBack={() => navigate(backPage)}
-      backLabel={backPage === "vdd" ? "Supplier Due Diligence" : "Supplier Portal"}
+      backLabel={BACK_LABELS[backPage] ?? "Resources"}
     />
   );
 }
