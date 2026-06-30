@@ -15,7 +15,7 @@
 export const SITE_URL = "https://www.nimbles2p.com";
 
 const DEFAULT_TITLE =
-  "NimbleS2P — AI-Orchestrated Source-to-Pay for the Indian Enterprise";
+  "NimbleS2P — AI-Orchestrated Compliance-First Source-to-Pay Software";
 const DEFAULT_DESCRIPTION =
   "NimbleS2P is a compliance-first AI platform for source-to-pay — supplier due diligence, onboarding, RFx, invoice processing, and supplier analytics for the Indian enterprise.";
 
