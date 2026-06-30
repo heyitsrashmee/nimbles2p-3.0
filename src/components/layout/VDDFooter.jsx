@@ -75,7 +75,7 @@ export function VDDFooter({ onNavigate }) {
                 <span className="tw-cursor" />
               </p>
             </div>
-            <p style={{ fontSize:13, color:"rgba(255,255,255,.35)", lineHeight:1.7, fontFamily:"var(--fb)", maxWidth:260, marginBottom: isMobile ? 16 : "clamp(14px,2vh,24px)" }}>AI-orchestrated source-to-pay — purpose-built for the Indian enterprise.</p>
+            <p style={{ fontSize:13, color:"rgba(255,255,255,.35)", lineHeight:1.7, fontFamily:"var(--fb)", maxWidth:260, marginBottom: isMobile ? 16 : "clamp(14px,2vh,24px)" }}>Compliance-First AI Platform</p>
             <div style={{ display:"flex", gap:8 }}>
               {socials.map(s=>(
                 <a
