@@ -619,17 +619,17 @@ function SAFAQs({ onNavigate }) {
   );
 }
 
-/** Supplier Analytics bottom CTA → related analytics blog */
-const SA_CTA_RESOURCE_HREF = "/resources/data-driven-vendor-decision-making";
+/** Supplier Analytics bottom CTA → gated download form */
+const SA_CTA_RESOURCE_HREF = "/download/analytics";
 
 function SACTA() {
   return (
     <ProductPageBottomCta
-      eyebrow="Blog"
-      eyebrowStyle="green"
+      eyebrow="Executive Guide"
+      eyebrowStyle="orange"
       title={PRODUCT_PAGE_RESOURCES.analytics.label}
-      description="Get real-time visibility into supplier risk, compliance, performance, and operational health with AI-driven analytics."
-      ctaLabel="Read More →"
+      description="The metrics — and the dashboard — that matter to every leader in the buying group. A guide for finance, procurement and risk leaders."
+      ctaLabel="Download Now →"
       ctaHref={SA_CTA_RESOURCE_HREF}
     />
   );
