@@ -21,7 +21,7 @@ export function MegaMenu({ onClose, onNavigate }) {
   const active = items.find((i) => i.id === hovered) || items[0];
   const res = wpFeatured?.[active.id] ?? active.resource;
 
-  // Products with a gated download form (vdd, supplier, finance) point the
+  // Products with a gated download form (vdd, supplier, finance, analytics) point the
   // card CTA at their /download/<key> form instead of generic Get Started.
   const gatedDownloadHref = getProductGatedDownloadHref(active.id);
   const ctaHref = gatedDownloadHref ?? pageToPath("getstarted");

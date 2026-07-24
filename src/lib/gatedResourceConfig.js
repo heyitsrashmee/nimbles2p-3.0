@@ -47,6 +47,18 @@ export const GATED_RESOURCE_BY_SLUG_MATCH = {
       ["⚡", "Instant access", "Download starts right after you submit the form."],
     ],
   },
+  "supplier-analytics": {
+    eyebrow: "Free Guide",
+    formCardTitle: "Download your guide",
+    submitLabel: "Download Guide →",
+    // Dedicated Web3Forms form for the Supplier Analytics download.
+    accessKey: "dc2cc363-8646-4cc7-8d0c-4d4abcba8bb6",
+    trustPoints: [
+      ["📊", "Signals you're missing", "Turn supplier data into early warnings on risk and performance."],
+      ["🔒", "Your data is safe", "We never share or sell your information."],
+      ["⚡", "Instant access", "Download starts right after you submit the form."],
+    ],
+  },
 };
 
 const DEFAULT_CUSTOMIZATION = {
@@ -68,6 +80,7 @@ export const PRODUCT_GATED_RESOURCE_SLUGS = {
   vdd: "7-onboarding-mistakes",
   supplier: "behind-the-scenes-of-supplier-experience-transformation",
   finance: "early-financing-launch-scalable-scf-programs",
+  analytics: "supplier-analytics-your-supplier-network-is-talking",
 };
 
 /** Display titles (kept in sync with megaMenuData.js). */
@@ -75,6 +88,7 @@ const PRODUCT_GATED_TITLES = {
   vdd: "7 Most Expensive Onboarding Mistakes",
   supplier: "Behind the scenes of supplier experience transformation",
   finance: "Launch Scalable SCF Programs Faster",
+  analytics: "Your Supplier Network Is Talking. Are You Listening?",
 };
 
 /** Google Drive URLs — opened after the visitor submits the gated form. */
@@ -84,6 +98,8 @@ export const PRODUCT_GATED_DOWNLOAD_URLS = {
     "https://drive.google.com/file/d/1iFBmYXs9A03ka7vXKf6vHVYhnYJ-K4QL/view?usp=sharing",
   finance:
     "https://drive.google.com/file/d/1CTctJOWnZNv4fKZfAX3C7uVyTX3N8_ie/view?usp=sharing",
+  analytics:
+    "https://drive.google.com/file/d/1ROZST5z8VxS9l6koE2yLPy2fCzrc2pcD/view?usp=sharing",
 };
 
 const PRODUCT_GATED_EXCERPTS = {
@@ -92,9 +108,11 @@ const PRODUCT_GATED_EXCERPTS = {
     "Full case study inside — how India's leading enterprises transformed supplier relationships with NimbleS2P.",
   finance:
     "Get your early financing programs live with pre-integrated lenders, automated workflows, and enterprise-grade compliance — all in one platform.",
+  analytics:
+    "Your suppliers are already sending the signals — spend, delivery, compliance, and risk. Download the guide to turn that data into decisions your procurement and finance teams can act on.",
 };
 
-const VALID_PRODUCT_KEYS = new Set(["vdd", "supplier", "finance"]);
+const VALID_PRODUCT_KEYS = new Set(["vdd", "supplier", "finance", "analytics"]);
 
 /**
  * @param {string} slug

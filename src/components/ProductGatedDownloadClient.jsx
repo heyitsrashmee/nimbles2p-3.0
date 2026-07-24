@@ -5,12 +5,14 @@ import GatedResourceDownloadPage from "@/components/GatedResourceDownloadPage";
 import { useSiteNavigation } from "@/lib/siteNavigation";
 
 /**
- * /download/vdd, /download/supplier and /download/finance — Get Started layout + gated form.
+ * /download/vdd, /download/supplier, /download/finance and /download/analytics —
+ * Get Started layout + gated form.
  */
 const BACK_LABELS = {
   vdd: "Supplier Due Diligence",
   supplier: "Supplier Portal",
   finance: "Early Financing",
+  analytics: "Supplier Analytics",
 };
 
 export default function ProductGatedDownloadClient({ post }) {
