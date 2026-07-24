@@ -69,7 +69,7 @@ function Hero({ onNavigate }) {
 
   const statsData = [
     ["$11","B+","WORTH OF TRANSACTIONS"],
-    ["1","M+","SUPPLIERS ONBOARDED"],
+    ["200","K+","SUPPLIER ECOSYSTEM"],
     ["600","M+","ENTERPRISE ACTIONS"],
     ["10","x","FASTER DUE DILIGENCE"],
   ];
@@ -409,7 +409,7 @@ function LogoMarquee() {
         color:"#1E3A5F",
         fontFamily:"var(--fb)",
       }}>
-        The CFO's #1 Choice — Powering 1M+ suppliers across enterprises
+        The CFO's #1 Choice — Powering a 200K+ supplier ecosystem across enterprises
       </div>
 
       {/* Two identical sets; pixel-accurate --marquee-shift = seamless loop */}
