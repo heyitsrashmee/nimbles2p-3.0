@@ -7,7 +7,7 @@ export const PRODUCT_PAGE_RESOURCES = {
   invoice:   { type:"diagnostic", label:"Get the CFO Diagnostic: How Mature Is Your Invoice Process?", meta:"Free diagnostic", icon:"📋" },
   rfq:       { type:"diagnostic", label:"The RFQ Reality Index", meta:"Free diagnostic", icon:"📋" },
   finance:   { type:"blog",       label:"Launch Scalable SCF Programs Faster", meta:"Blog", icon:"✍️" },
-  analytics: { type:"blog",      label:"Your Supplier Network Is Talking. Are You Listening?", meta:"Blog", icon:"✍️" },
+  analytics: { type:"guide",     label:"Supplier Analytics by Role", meta:"Executive guide", icon:"📊" },
 };
 
 export const MEGA_PRODUCTS = {
@@ -68,7 +68,7 @@ export const MEGA_PRODUCTS = {
       color:"#48A9A6",
       tag:"Beta",
       resource: PRODUCT_PAGE_RESOURCES.analytics,
-      cover: { src: "mega-menu/supplier-analytics-cover.webp", objectPosition: "center 22%" },
+      cover: { src: "mega-menu/supplier-analytics-cover.webp", objectPosition: "left center" },
     },
   ],
 };

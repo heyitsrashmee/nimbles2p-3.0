@@ -19,11 +19,15 @@ export function MegaMenu({ onClose, onNavigate }) {
   }, []);
 
   const active = items.find((i) => i.id === hovered) || items[0];
-  const res = wpFeatured?.[active.id] ?? active.resource;
 
   // Products with a gated download form (vdd, supplier, finance, analytics) point the
   // card CTA at their /download/<key> form instead of generic Get Started.
   const gatedDownloadHref = getProductGatedDownloadHref(active.id);
+
+  // Gated products advertise the exact asset the CTA delivers, so their card keeps
+  // the static resource + cover. Only non-gated products fall back to WP featured posts.
+  const res = (!gatedDownloadHref && wpFeatured?.[active.id]) || active.resource;
+
   const ctaHref = gatedDownloadHref ?? pageToPath("getstarted");
   const ctaNavTarget = gatedDownloadHref ? `download/${active.id}` : "getstarted";
   const ctaLabel = gatedDownloadHref ? "Download →" : "Get Started →";
