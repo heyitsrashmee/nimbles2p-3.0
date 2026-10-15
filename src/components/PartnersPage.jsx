@@ -8,19 +8,11 @@ import ProductPageBottomCta from "@/components/shared/ProductPageBottomCta";
 
 /* ═══════════════════════════════════════════════════════════
    Partners page
-   Structure: hero → partner types strip → three-step program
-   (timeline + visual) → programme benefits grid → ecosystem
-   proof → FAQs → bottom CTA. Nav, footer, FAQ and CTA reuse the
+   Structure: hero → three-step program (timeline + visual) →
+   platform modules → FAQs → bottom CTA. Nav, footer, FAQ and CTA reuse the
    shared product-page patterns; page CSS is scoped under
    .partners-page.
 ═══════════════════════════════════════════════════════════ */
-
-const PARTNER_TYPES = [
-  "Technology & ERP Partners",
-  "Banks & Financing Partners",
-  "Consulting & Implementation Partners",
-  "Referral & Channel Partners",
-];
 
 const STEPS = [
   {
@@ -390,15 +382,6 @@ export default function PartnersPage({ onBack, onNavigate }) {
           </div>
         </section>
 
-        {/* ══ PARTNER TYPES STRIP ══ */}
-        <section className="pt-strip">
-          <div className="pt-strip-label">Built for Every Kind of Partner</div>
-          <div className="pt-strip-row">
-            {PARTNER_TYPES.map((t) => (
-              <span className="pt-strip-chip" key={t}>{t}</span>
-            ))}
-          </div>
-        </section>
         <div className="pt-divider" aria-hidden="true" />
 
         {/* ══ PROGRAMME STEPS ══ */}
@@ -486,11 +469,6 @@ const PARTNERS_CSS = `
 .partners-page .pt-hero-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
 .partners-page .pt-hero-pills span{font-family:var(--fb);font-size:12.5px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:7px 16px;}
 
-/* ── Partner types strip ── */
-.partners-page .pt-strip{background:#fff;padding:36px 5vw 40px;text-align:center;}
-.partners-page .pt-strip-label{font-family:var(--fb);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1E3A5F;margin-bottom:20px;}
-.partners-page .pt-strip-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;max-width:1080px;margin:0 auto;}
-.partners-page .pt-strip-chip{font-family:var(--fb);font-size:14px;font-weight:600;color:var(--p700);background:#FAFBFF;border:1.5px solid var(--bd);border-radius:100px;padding:10px 20px;}
 .partners-page .pt-divider{height:3px;width:100%;background:linear-gradient(90deg,var(--p500),var(--p300),#F59E0B);display:block;}
 
 /* ── Sections ── */
