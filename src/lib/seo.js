@@ -96,6 +96,11 @@ export const PAGE_META = {
     description:
       "NimbleS2P in the news. Press coverage, media resources, and the latest announcements about our AI-orchestrated source-to-pay platform.",
   },
+  partners: {
+    title: "Partners — NimbleS2P",
+    description:
+      "Partner with NimbleS2P. Technology, banking, consulting and channel partners get integration guidance, enablement and co-selling support for AI-orchestrated source-to-pay.",
+  },
   careers: {
     title: "Careers — NimbleS2P",
     description:
@@ -124,6 +129,7 @@ export const SITEMAP_SLUGS = [
   "trust",
   "press",
   "careers",
+  "partners",
 ];
 
 /**
