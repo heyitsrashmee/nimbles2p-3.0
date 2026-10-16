@@ -14,6 +14,8 @@ const GET_STARTED_KEY =
   process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || FALLBACK_GET_STARTED_KEY;
 const BOOK_DEMO_KEY =
   process.env.NEXT_PUBLIC_WEB3FORMS_DEMO_ACCESS_KEY || FALLBACK_BOOK_DEMO_KEY;
+const PARTNER_KEY =
+  process.env.NEXT_PUBLIC_WEB3FORMS_PARTNER_ACCESS_KEY || GET_STARTED_KEY;
 const GATED_DOWNLOAD_KEY =
   process.env.NEXT_PUBLIC_WEB3FORMS_GATED_ACCESS_KEY || GET_STARTED_KEY;
 
@@ -100,6 +102,28 @@ export async function submitGatedDownloadForm(payload) {
     message: `Resource requested: ${payload.resourceTitle} (${payload.resourceSlug})${
       payload.pageSource ? ` — ${payload.pageSource}` : ""
     }`,
+  });
+}
+
+/**
+ * Submit Partner enquiry (browser → Web3Forms).
+ */
+export async function submitPartnerForm(form) {
+  return postToWeb3FormsJson({
+    access_key: PARTNER_KEY,
+    subject: `Partner enquiry — ${form.company} (${form.practice})`,
+    from_name: form.name,
+    name: form.name,
+    email: form.email,
+    phone: form.phone,
+    company: form.company,
+    country: form.country,
+    practice: form.practice,
+    partnership_model: form.model || "Not sure yet",
+    message: form.message || "—",
+    page_source: "Partners page",
+    privacy_consent: "Yes",
+    marketing_opt_in: form.marketingOptIn ? "Yes" : "No",
   });
 }
 

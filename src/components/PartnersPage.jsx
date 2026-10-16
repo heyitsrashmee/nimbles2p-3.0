@@ -4,46 +4,33 @@ import { useEffect, useRef, useState } from "react";
 import { Nav } from "@/components/layout/SiteNav";
 import { VDDFooter } from "@/components/layout/VDDFooter";
 import { useWidth, useReveal, Eyebrow } from "@/components/shared/pageUi";
-import ProductPageBottomCta from "@/components/shared/ProductPageBottomCta";
+import ConsentCheckboxes from "@/components/shared/ConsentCheckboxes";
+import { submitPartnerForm, isValidEmail } from "@/lib/web3forms";
+import { trackLead, trackFormError } from "@/lib/analytics";
 
 /* ═══════════════════════════════════════════════════════════
    Partners page
-   Structure: hero → three-step program (timeline + visual) →
-   platform modules → FAQs → bottom CTA. Nav, footer, FAQ and CTA reuse the
+   Structure: hero → statement → opportunity (timeline + market card) →
+   platform modules → partner types → enrol form. Nav, footer reuse the
    shared product-page patterns; page CSS is scoped under
    .partners-page.
 ═══════════════════════════════════════════════════════════ */
 
-const STEPS = [
+const OPPORTUNITY = [
   {
-    title: "Connect Your Customers To Smarter Source-to-Pay",
-    desc: "Bring NimbleS2P into the conversations you are already having with finance and procurement leaders. We give you the positioning, demos and enablement to make the introduction count.",
-    bullets: [
-      "Joint discovery and demo support from our team",
-      "Ready-to-use messaging for procurement and finance buyers",
-      "A named partner manager from day one",
-    ],
-    visual: "connect",
+    title: "Compliance Is Now Continuous",
+    desc: "E-invoicing and GST mandates mean every supplier and invoice gets checked live, not at audit time.",
+    tag: "50+ real-time checks",
   },
   {
-    title: "Build And Deliver Together",
-    desc: "Integrate with NimbleS2P or implement it alongside your own services. Our platform is built to sit on top of the ERP and finance systems enterprises already run.",
-    bullets: [
-      "Integration guidance for ERP and finance systems",
-      "Implementation playbooks and technical enablement",
-      "Shared delivery plans for faster go-live",
-    ],
-    visual: "deliver",
+    title: "AI Pays Off First In Payables",
+    desc: "Invoices outgrow finance teams. AI agents match, flag and chase, with results in the first billing cycle.",
+    tag: "Agentic 3-way matching",
   },
   {
-    title: "Grow Revenue As The Platform Scales",
-    desc: "As your customers expand across supplier due diligence, invoice processing, RFx and early financing, the value of the relationship grows with them.",
-    bullets: [
-      "Co-selling across the full source-to-pay suite",
-      "Joint account planning and pipeline reviews",
-      "Visibility into customer outcomes and adoption",
-    ],
-    visual: "grow",
+    title: "The Mid-Market Is Wide Open",
+    desc: "Legacy suites were built for the Fortune 500. Your clients need modular S2P on the ERP they already run.",
+    tag: "Any ERP · Start with one module",
   },
 ];
 
@@ -87,95 +74,71 @@ const MODULES = [
   },
 ];
 
-const FAQS = [
+const PARTNER_TYPES = [
   {
-    q: "Who can become a NimbleS2P partner?",
-    a: "Technology and ERP vendors, banks and financing providers, consulting and implementation firms, and referral partners who work with finance, procurement and supply chain teams.",
+    title: "ERP Implementation Partners",
+    desc: "Your ERP go-live stops at the purchase order. Extend the project into supplier onboarding, invoice automation and RFx — on SAP, Oracle, Dynamics or whichever ERP the client runs.",
+    tag: "Resell & implement",
+    icon: (
+      <>
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        <path d="M10 6.5h2.5a1.5 1.5 0 0 1 1.5 1.5v6" />
+      </>
+    ),
   },
   {
-    q: "What does the partnership involve?",
-    a: "It depends on the partner type. Technology partners focus on integration, implementation partners on delivery and enablement, and channel partners on co-selling and referrals. We agree a clear plan together before we start.",
+    title: "Financial Consulting & CA Firms",
+    desc: "Your audits keep finding duplicate payments, non-compliant vendors and GST mismatches. Recommend the system that stops them recurring — and earn on every client you introduce.",
+    tag: "Refer",
+    icon: (
+      <>
+        <rect x="4" y="3" width="16" height="18" rx="2.5" />
+        <path d="M8.5 12.5l2.5 2.5 4.5-5" />
+      </>
+    ),
   },
   {
-    q: "Do I need technical integration to partner with NimbleS2P?",
-    a: "No. Referral and consulting partners can work with us without building an integration. Technology partners get integration guidance from our team.",
+    title: "Fintech & Financing Providers",
+    desc: "An invoice that's verified, matched and approved is an invoice you can finance. Plug into a platform where supplier and invoice data is already clean and compliant.",
+    tag: "Strategic alliance",
+    icon: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2.5" />
+        <path d="M7 14h4" />
+        <path d="M7 10h10" />
+      </>
+    ),
   },
   {
-    q: "What support do partners receive?",
-    a: "Product training, demo support, sales and delivery enablement, and a named partner manager to help with joint accounts.",
-  },
-  {
-    q: "How do I get started?",
-    a: "Reach out through the Become a Partner button on this page. Our team will understand your business and customer base, and walk you through the right programme.",
+    title: "IT Services & System Integrators",
+    desc: "Add a ready-made S2P practice to your catalogue. Integration, data migration and managed support become recurring revenue on a platform you didn't have to build.",
+    tag: "Resell & implement",
+    icon: (
+      <>
+        <path d="M8 8l-4 4 4 4" />
+        <path d="M16 8l4 4-4 4" />
+        <path d="M13.5 6l-3 12" />
+      </>
+    ),
   },
 ];
 
-/* ── Step visuals (CSS illustrations in the platform palette) ── */
-function StepVisual({ kind }) {
-  if (kind === "connect") {
-    return (
-      <div className="pt-visual">
-        <div className="pt-vcard">
-          <div className="pt-vcard-title">Partner introductions</div>
-          {[
-            ["Enterprise finance team", "Intro scheduled"],
-            ["Procurement leadership", "Demo booked"],
-            ["Shared services group", "Discovery call"],
-          ].map(([a, b]) => (
-            <div className="pt-vrow" key={a}>
-              <span className="pt-vdot" />
-              <span className="pt-vrow-main">{a}</span>
-              <span className="pt-vrow-tag">{b}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (kind === "deliver") {
-    return (
-      <div className="pt-visual">
-        <div className="pt-vcard">
-          <div className="pt-vcard-title">Implementation plan</div>
-          {[
-            ["ERP integration", 92],
-            ["Supplier onboarding", 74],
-            ["Go-live readiness", 58],
-          ].map(([a, p]) => (
-            <div className="pt-vbar" key={a}>
-              <div className="pt-vbar-head">
-                <span>{a}</span>
-                <span>{p}%</span>
-              </div>
-              <div className="pt-vbar-track">
-                <div className="pt-vbar-fill" style={{ width: `${p}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  return (
-    <div className="pt-visual">
-      <div className="pt-vcard">
-        <div className="pt-vcard-title">Suite adoption</div>
-        {[
-          ["Supplier Due Diligence", "Live"],
-          ["Invoice Processing", "Live"],
-          ["RFx Management", "Rolling out"],
-          ["Early Financing", "Planned"],
-        ].map(([a, b]) => (
-          <div className="pt-vrow" key={a}>
-            <span className="pt-vdot" />
-            <span className="pt-vrow-main">{a}</span>
-            <span className="pt-vrow-tag">{b}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+const ENROLL_STEPS = [
+  { title: "Tell Us About Your Practice", desc: "Two minutes. Who you serve, where you operate and how you'd like to work together." },
+  { title: "Meet Your Partner Manager", desc: "A focused call to agree your partnership model, territory and first target accounts." },
+  { title: "Get Enabled And Go To Market", desc: "Training, a demo environment, pitch material — and our team alongside you on your first deals." },
+];
+
+const PRACTICE_OPTIONS = [
+  "ERP Implementation Partner",
+  "Financial Consulting / CA Firm",
+  "Fintech & Financing Provider",
+  "IT Services / System Integrator",
+  "Other",
+];
+
+const MODEL_OPTIONS = ["Not sure yet", "Resell & implement", "Refer", "Strategic alliance"];
 
 function ModulesSection() {
   const w = useWidth();
@@ -246,60 +209,161 @@ function ModulesSection() {
   );
 }
 
-function FaqItem({ f, isOpen, onToggle, isMobile }) {
-  const contentRef = useRef(null);
-  const [height, setHeight] = useState(0);
-  useEffect(() => {
-    if (contentRef.current) setHeight(isOpen ? contentRef.current.scrollHeight : 0);
-  }, [isOpen]);
+function PartnerTypes() {
   return (
-    <div style={{ borderBottom: "1px solid #F1F5F9", overflow: "hidden" }}>
-      <button
-        onClick={onToggle}
-        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "22px 0", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
-      >
-        <span style={{ fontFamily: "var(--fb)", fontSize: isMobile ? 15 : 17, fontWeight: 700, color: "#0F172A", letterSpacing: "-.01em", lineHeight: 1.3 }}>{f.q}</span>
-        <div style={{ width: 32, height: 32, borderRadius: "50%", background: isOpen ? "var(--p500)" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all .25s cubic-bezier(.22,1,.36,1)" }}>
-          <span style={{ fontSize: 18, color: isOpen ? "#fff" : "var(--p500)", fontWeight: 300, lineHeight: 1, transition: "transform .25s cubic-bezier(.22,1,.36,1)", transform: isOpen ? "rotate(45deg)" : "none", display: "inline-block" }}>+</span>
+    <section className="pt-types">
+      <div className="pt-inner">
+        <div className="pt-types-head sr">
+          <div>
+            <Eyebrow>Who Partners With Us</Eyebrow>
+            <h2>
+              Built For Firms That Already
+              <br />
+              <span>Sit With Finance.</span>
+            </h2>
+          </div>
+          <p>If CFOs and procurement heads already trust you, you have the hardest part of an enterprise sale. We bring the rest.</p>
         </div>
-      </button>
-      <div ref={contentRef} style={{ height: `${height}px`, overflow: "hidden", transition: "height .38s cubic-bezier(.22,1,.36,1)" }}>
-        <p style={{ paddingBottom: 24, fontSize: 15, color: "#64748B", lineHeight: 1.8, fontFamily: "var(--fb)" }}>{f.a}</p>
+        <div className="pt-types-grid">
+          {PARTNER_TYPES.map((t, i) => (
+            <div className={`pt-type-card sr${i ? ` sr-d${Math.min(i + 1, 3)}` : ""}`} key={t.title}>
+              <div className="pt-type-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  {t.icon}
+                </svg>
+              </div>
+              <h3>{t.title}</h3>
+              <p>{t.desc}</p>
+              <span className="pt-type-tag">{t.tag}</span>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-function PartnerFaqs({ onNavigate }) {
-  const w = useWidth();
-  const isMobile = w < 640;
-  const [open, setOpen] = useState(0);
-  const ref = useReveal();
+function PartnerEnroll() {
+  const [form, setForm] = useState({ name: "", email: "", phone: "", company: "", country: "", practice: "", model: "Not sure yet", message: "" });
+  const [consent, setConsent] = useState(false);
+  const [marketing, setMarketing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isValidEmail(form.email)) {
+      setError("Please enter a valid work email.");
+      return;
+    }
+    if (!consent) {
+      setError("Please agree to the Privacy Policy to continue.");
+      return;
+    }
+    setSubmitting(true);
+    setError("");
+    try {
+      await submitPartnerForm({ ...form, marketingOptIn: marketing });
+      setSubmitted(true);
+      trackLead("partner_enquiry", { form_type: "lead" });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      trackFormError("partner_enquiry", { form_type: "lead", message: msg || "submit_failed" });
+      setError(
+        msg.includes("not configured")
+          ? "Form is temporarily unavailable. Please email us directly."
+          : "Something went wrong. Please try again or email us directly.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <section style={{ background: "#fff", position: "relative", overflow: "hidden", padding: isMobile ? "64px 20px" : "clamp(64px,9vh,104px) 5vw" }}>
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,var(--p500),var(--p300),#F59E0B)", pointerEvents: "none" }} />
-      <div style={{ maxWidth: 1040, margin: "0 auto" }}>
-        <div className="reveal" ref={ref} style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.5fr", gap: isMobile ? 36 : 64, alignItems: "start" }}>
-          <div>
-            <Eyebrow>FAQs</Eyebrow>
-            <h2 style={{ fontFamily: "var(--fb)", fontSize: isMobile ? "clamp(24px,6vw,32px)" : "clamp(26px,3vw,38px)", fontWeight: 700, letterSpacing: "-.04em", lineHeight: 1.08, color: "#0F172A", marginBottom: 16 }}>
-              Questions<br />we get asked.
-            </h2>
-            <p style={{ fontSize: 15, color: "#64748B", lineHeight: 1.7, fontFamily: "var(--fb)", marginBottom: 28 }}>Everything about partnering with NimbleS2P, answered clearly.</p>
-            <a
-              href="/demo"
-              onClick={(e) => {
-                e.preventDefault();
-                if (typeof onNavigate === "function") onNavigate("demo");
-              }}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "var(--p700)", fontFamily: "var(--fb)", textDecoration: "none", borderBottom: "1.5px solid var(--p200)", paddingBottom: 2 }}
-            >Talk to our team →</a>
-          </div>
-          <div style={{ borderTop: "1px solid #E2E8F0" }}>
-            {FAQS.map((f, i) => (
-              <FaqItem key={f.q} f={f} isOpen={open === i} onToggle={() => setOpen(open === i ? null : i)} isMobile={isMobile} />
+    <section className="pt-enroll" id="enroll">
+      <div className="pt-enroll-inner">
+        <div className="pt-enroll-left sr">
+          <Eyebrow dark>How To Enroll</Eyebrow>
+          <h2>
+            From First Conversation
+            <br />
+            To First Deal. <span>In 3 Steps.</span>
+          </h2>
+          <div className="pt-enroll-steps">
+            {ENROLL_STEPS.map((st, i) => (
+              <div className="pt-enroll-step" key={st.title}>
+                <div className={`pt-enroll-num${i === 2 ? " pt-enroll-num-gold" : ""}`}>{i + 1}</div>
+                <div>
+                  <h3>{st.title}</h3>
+                  <p>{st.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
+        </div>
+
+        <div className="pt-enroll-card sr sr-d2">
+          {submitted ? (
+            <div className="pt-enroll-done">
+              <div className="pt-enroll-check">
+                <svg width="26" height="26" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M2.5 7.5l3 3 6-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <h3>Thank you!</h3>
+              <p>Our partner team will reach out within 1 business day.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <h3 className="pt-form-title">Want More Details?</h3>
+              <p className="pt-form-sub">Talk to our partner team. We reply within 1 business day.</p>
+              <div className="pt-form-grid">
+                <label>Full name<span className="pt-req">*</span>
+                  <input type="text" required autoComplete="name" value={form.name} onChange={set("name")} />
+                </label>
+                <label>Work email<span className="pt-req">*</span>
+                  <input type="email" required autoComplete="email" value={form.email} onChange={set("email")} />
+                </label>
+                <label>Phone (with country code)<span className="pt-req">*</span>
+                  <input type="tel" required autoComplete="tel" placeholder="+91" value={form.phone} onChange={set("phone")} />
+                </label>
+                <label>Company<span className="pt-req">*</span>
+                  <input type="text" required autoComplete="organization" value={form.company} onChange={set("company")} />
+                </label>
+                <label>Country<span className="pt-req">*</span>
+                  <input type="text" required autoComplete="country-name" value={form.country} onChange={set("country")} />
+                </label>
+                <label>Your practice<span className="pt-req">*</span>
+                  <select required value={form.practice} onChange={set("practice")}>
+                    <option value="" disabled>Select</option>
+                    {PRACTICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </label>
+                <label className="pt-form-full">How would you like to partner?
+                  <select value={form.model} onChange={set("model")}>
+                    {MODEL_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </label>
+                <label className="pt-form-full">Anything we should know? (optional)
+                  <textarea rows={3} value={form.message} onChange={set("message")} />
+                </label>
+              </div>
+              <ConsentCheckboxes
+                idPrefix="partner"
+                consent={consent}
+                onConsentChange={setConsent}
+                marketing={marketing}
+                onMarketingChange={setMarketing}
+                style={{ marginTop: 16 }}
+              />
+              {error && <p className="pt-form-error" role="alert">{error}</p>}
+              <button type="submit" className="pt-form-submit" disabled={submitting || !consent}>
+                {submitting ? "Sending…" : "Request Partner Details →"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </section>
@@ -437,56 +501,57 @@ export default function PartnersPage({ onBack, onNavigate }) {
 
         <div className="pt-divider" aria-hidden="true" />
 
-        {/* ══ PROGRAMME STEPS ══ */}
+        {/* ══ THE OPPORTUNITY ══ */}
         <section className="pt-section" id="program">
-          <div className="pt-inner">
-            <div className="pt-section-head sr">
-              <Eyebrow>How Partnering Works</Eyebrow>
-              <h2>
-                One Partnership.
-                <br />
-                Three Ways To Create Value.
-              </h2>
+          <div className="pt-inner pt-opp">
+            <div className="pt-opp-left">
+              <div className="sr">
+                <Eyebrow>The Opportunity</Eyebrow>
+                <h2>
+                  Why Source-to-Pay Just Moved Up <span>The CFO's Agenda.</span>
+                </h2>
+              </div>
+              <div className="pt-steps">
+                {OPPORTUNITY.map((o, i) => (
+                  <div className="pt-step sr" key={o.title}>
+                    <div className="pt-step-num">0{i + 1}</div>
+                    <h3>{o.title}</h3>
+                    <p>{o.desc}</p>
+                    <span className="pt-step-tag">{o.tag}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="pt-steps">
-              {STEPS.map((s, i) => (
-                <div className={`pt-step sr${i % 2 ? " pt-step-alt" : ""}`} key={s.title}>
-                  <div className="pt-step-text">
-                    <div className="pt-step-num">0{i + 1}</div>
-                    <h3>{s.title}</h3>
-                    <p>{s.desc}</p>
-                    <ul>
-                      {s.bullets.map((b) => (
-                        <li key={b}>
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                            <path d="M2.5 7.5l3 3 6-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
+            <aside className="pt-market sr sr-d2">
+              <Eyebrow dark>Global S2P Market</Eyebrow>
+              <div className="pt-market-big">$9B+</div>
+              <p className="pt-market-sub">in 2025, growing about 10% a year through 2035.</p>
+              <div className="pt-market-chart">
+                <div className="pt-market-bars">
+                  <div className="pt-market-col">
+                    <div className="pt-market-bar pt-market-bar-a" style={{ height: `${(9 / 22.9) * 100}%` }} />
                   </div>
-                  <StepVisual kind={s.visual} />
+                  <div className="pt-market-col">
+                    <div className="pt-market-bar pt-market-bar-b" style={{ height: "100%" }} />
+                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="pt-market-labels">
+                  <span>2025 · $9.0B</span>
+                  <span>2035 · $22.9B</span>
+                </div>
+              </div>
+              <p className="pt-market-src">Source: Emergen Research, Source to Pay Market Report (2025–2035). Estimates vary by firm.</p>
+            </aside>
           </div>
         </section>
 
         {/* ══ PLATFORM MODULES ══ */}
         <ModulesSection />
 
-        <PartnerFaqs onNavigate={onNavigate} />
+        <PartnerTypes />
 
-        <ProductPageBottomCta
-          eyebrow="Partner With Us"
-          eyebrowStyle="orange"
-          title="Make every vendor transaction compliant, automated and maximized"
-          description="Let's explore how NimbleS2P can transform your vendor, sourcing and finance workflows together."
-          ctaLabel="Become a Partner →"
-          ctaHref="/demo"
-        />
+        <PartnerEnroll />
       </main>
 
       <VDDFooter onNavigate={onNavigate} />
@@ -526,6 +591,46 @@ const PARTNERS_CSS = `
 .partners-page .pt-divider{height:3px;width:100%;background:linear-gradient(90deg,var(--p500),var(--p300),#F59E0B);display:block;}
 
 /* ── Sections ── */
+.partners-page .pt-enroll{background:linear-gradient(160deg,#0F0C2A 0%,#1a1260 45%,#221868 100%);padding:clamp(56px,8vh,96px) 5vw;position:relative;overflow:hidden;}
+.partners-page .pt-enroll-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
+.partners-page .pt-enroll-left h2{font-size:clamp(30px,3.6vw,48px);font-weight:900;letter-spacing:-.045em;line-height:1.05;color:#fff;margin-bottom:44px;}
+.partners-page .pt-enroll-left h2 span{background:linear-gradient(95deg,#F5D060,#F5A623);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.partners-page .pt-enroll-steps{display:flex;flex-direction:column;gap:14px;}
+.partners-page .pt-enroll-step{display:flex;gap:16px;align-items:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:22px;}
+.partners-page .pt-enroll-num{width:44px;height:44px;border-radius:12px;background:#3B1FA3;color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fb);}
+.partners-page .pt-enroll-num-gold{background:linear-gradient(135deg,#E8920A,#F5B020);box-shadow:0 6px 22px rgba(232,150,10,.4);}
+.partners-page .pt-enroll-step h3{font-size:18px;font-weight:800;letter-spacing:-.02em;color:#fff;margin-bottom:4px;}
+.partners-page .pt-enroll-step p{font-family:var(--fb);font-size:15px;line-height:1.6;color:rgba(255,255,255,.62);}
+.partners-page .pt-enroll-card{background:#fff;border-radius:24px;padding:36px;box-shadow:0 24px 70px rgba(0,0,0,.35);}
+.partners-page .pt-form-title{font-size:24px;font-weight:900;letter-spacing:-.035em;color:#0F172A;margin-bottom:6px;}
+.partners-page .pt-form-sub{font-family:var(--fb);font-size:14px;color:#64748B;margin-bottom:22px;}
+.partners-page .pt-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 16px;}
+.partners-page .pt-form-grid label{display:flex;flex-direction:column;gap:7px;font-family:var(--fb);font-size:13px;font-weight:600;color:#1E293B;}
+.partners-page .pt-form-full{grid-column:1/-1;}
+.partners-page .pt-req{color:#6320E0;margin-left:3px;}
+.partners-page .pt-form-grid input,.partners-page .pt-form-grid select,.partners-page .pt-form-grid textarea{width:100%;font-family:var(--fb);font-size:15px;font-weight:400;color:#0F172A;background:#F8F7FF;border:1px solid #E2DDF5;border-radius:12px;padding:13px 14px;outline:none;transition:border-color .2s,box-shadow .2s;}
+.partners-page .pt-form-grid textarea{resize:vertical;min-height:84px;}
+.partners-page .pt-form-grid input:focus,.partners-page .pt-form-grid select:focus,.partners-page .pt-form-grid textarea:focus{border-color:#8B5CF6;box-shadow:0 0 0 3px rgba(139,92,246,.18);}
+.partners-page .pt-form-error{font-family:var(--fb);font-size:13px;color:#DC2626;margin-top:12px;}
+.partners-page .pt-form-submit{width:100%;margin-top:18px;border:none;cursor:pointer;background:linear-gradient(135deg,#E8920A,#F5B020);color:#fff;border-radius:12px;padding:16px;font-size:16px;font-weight:700;font-family:var(--fb);box-shadow:0 6px 28px rgba(232,150,10,.4);transition:transform .2s,opacity .2s;}
+.partners-page .pt-form-submit:hover:not(:disabled){transform:translateY(-2px);}
+.partners-page .pt-form-submit:disabled{opacity:.55;cursor:not-allowed;}
+.partners-page .pt-enroll-done{text-align:center;padding:48px 8px;}
+.partners-page .pt-enroll-done h3{font-size:26px;font-weight:900;color:#0F172A;margin:16px 0 8px;}
+.partners-page .pt-enroll-done p{font-family:var(--fb);color:#64748B;font-size:15px;}
+.partners-page .pt-enroll-check{width:56px;height:56px;border-radius:50%;background:#EEE8FD;color:#6320E0;display:inline-flex;align-items:center;justify-content:center;}
+.partners-page .pt-types{padding:clamp(64px,9vh,104px) 5vw;background:#F3F0FF;}
+.partners-page .pt-types-head{display:grid;grid-template-columns:1.2fr 1fr;gap:64px;align-items:center;margin-bottom:44px;}
+.partners-page .pt-types-head h2{font-size:clamp(28px,3.4vw,46px);font-weight:900;letter-spacing:-.045em;line-height:1.06;color:#0F172A;}
+.partners-page .pt-types-head h2 span{color:var(--p600,#5B21D8);}
+.partners-page .pt-types-head p{font-family:var(--fb);font-size:16px;line-height:1.7;color:#5B6580;max-width:440px;}
+.partners-page .pt-types-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;align-items:stretch;}
+.partners-page .pt-type-card{display:flex;flex-direction:column;background:#fff;border:1px solid #E4DDFA;border-radius:20px;padding:24px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;}
+.partners-page .pt-type-card:hover{transform:translateY(-4px);border-color:#B9A6F2;box-shadow:0 16px 40px rgba(99,32,224,.14);}
+.partners-page .pt-type-icon{width:48px;height:48px;border-radius:14px;background:#EEE8FD;color:var(--p600,#5B21D8);display:flex;align-items:center;justify-content:center;margin-bottom:22px;}
+.partners-page .pt-type-card h3{font-size:18px;font-weight:800;letter-spacing:-.02em;line-height:1.3;color:#0F172A;margin-bottom:12px;}
+.partners-page .pt-type-card p{font-family:var(--fb);font-size:15px;line-height:1.65;color:#5B6580;margin-bottom:22px;}
+.partners-page .pt-type-tag{margin-top:auto;align-self:flex-start;background:#EEE8FD;color:#2E1065;font-family:var(--fb);font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;}
 .partners-page .pt-section{padding:clamp(64px,9vh,104px) 5vw;background:#fff;}
 .partners-page .pt-section-tint{background:#F7F8FC;}
 .partners-page .pt-inner{max-width:1080px;margin:0 auto;}
@@ -533,43 +638,52 @@ const PARTNERS_CSS = `
 .partners-page .pt-section-head h2{font-size:clamp(26px,3vw,40px);font-weight:900;letter-spacing:-.04em;line-height:1.08;color:#0F172A;margin-bottom:10px;}
 .partners-page .pt-section-head p{font-family:var(--fb);font-size:15px;color:#64748B;line-height:1.7;max-width:520px;}
 
-/* ── Steps (timeline + visual) ── */
-.partners-page .pt-steps{position:relative;display:flex;flex-direction:column;gap:72px;padding-left:36px;}
-.partners-page .pt-steps::before{content:'';position:absolute;left:5px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,var(--p500),var(--p300) 60%,#E2E8F0);}
-.partners-page .pt-step{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
-.partners-page .pt-step::before{content:'';position:absolute;left:-36px;top:10px;width:12px;height:12px;border-radius:50%;background:var(--p500);box-shadow:0 0 0 4px rgba(99,32,224,.15);}
-.partners-page .pt-step-num{font-family:var(--fb);font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--p500);margin-bottom:10px;}
-.partners-page .pt-step h3{font-size:clamp(19px,2vw,24px);font-weight:800;letter-spacing:-.03em;line-height:1.2;color:#0F172A;margin-bottom:12px;}
-.partners-page .pt-step p{font-family:var(--fb);font-size:15px;color:#64748B;line-height:1.75;margin-bottom:18px;}
-.partners-page .pt-step ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
-.partners-page .pt-step li{display:flex;align-items:center;gap:10px;font-family:var(--fb);font-size:14px;color:#334155;}
-.partners-page .pt-step li svg{color:var(--p500);flex-shrink:0;}
-.partners-page .pt-step-alt .pt-visual{order:-1;}
-
-.partners-page .pt-visual{border-radius:20px;padding:36px;background:linear-gradient(140deg,#14104A 0%,#1E1660 45%,#2d1f80 100%);position:relative;overflow:hidden;}
-.partners-page .pt-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 80% 10%,rgba(245,166,35,.18),transparent 60%),radial-gradient(ellipse 70% 70% at 10% 90%,rgba(99,32,224,.4),transparent 60%);}
-.partners-page .pt-vcard{position:relative;background:rgba(255,255,255,.96);border-radius:14px;padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.28);}
-.partners-page .pt-vcard-title{font-family:var(--fb);font-size:13px;font-weight:800;color:#0F172A;margin-bottom:14px;}
-.partners-page .pt-vrow{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #EEF0F6;}
-.partners-page .pt-vdot{width:8px;height:8px;border-radius:50%;background:var(--p500);flex-shrink:0;}
-.partners-page .pt-vrow-main{font-family:var(--fb);font-size:13px;font-weight:600;color:#334155;flex:1;}
-.partners-page .pt-vrow-tag{font-family:var(--fb);font-size:11px;font-weight:700;color:var(--p700);background:#F1ECFD;border-radius:100px;padding:4px 10px;white-space:nowrap;}
-.partners-page .pt-vbar{padding:9px 0;}
-.partners-page .pt-vbar-head{display:flex;justify-content:space-between;font-family:var(--fb);font-size:13px;font-weight:600;color:#334155;margin-bottom:7px;}
-.partners-page .pt-vbar-track{height:8px;border-radius:100px;background:#EEF0F6;overflow:hidden;}
-.partners-page .pt-vbar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--p500),var(--p300));}
+/* ── The opportunity (timeline + market card) ── */
+.partners-page .pt-opp{display:grid;grid-template-columns:1.1fr .9fr;gap:72px;align-items:stretch;}
+.partners-page .pt-opp-left h2{font-size:clamp(30px,3.6vw,48px);font-weight:900;letter-spacing:-.045em;line-height:1.05;color:#0F172A;margin-bottom:44px;}
+.partners-page .pt-opp-left h2 span{color:var(--p600,#5B21D8);}
+.partners-page .pt-steps{position:relative;display:flex;flex-direction:column;gap:34px;padding-left:48px;}
+.partners-page .pt-steps::before{content:'';position:absolute;left:11px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,var(--p500),var(--p300) 60%,#E2E8F0);}
+.partners-page .pt-step{position:relative;}
+.partners-page .pt-step::before{content:'';position:absolute;left:-48px;top:-1px;width:24px;height:24px;border-radius:50%;background:var(--p500);box-shadow:0 0 0 4px rgba(99,32,224,.14);}
+.partners-page .pt-step-num{font-family:var(--fb);font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--p500);margin-bottom:6px;}
+.partners-page .pt-step h3{font-size:clamp(20px,2vw,26px);font-weight:800;letter-spacing:-.03em;line-height:1.2;color:#0F172A;margin-bottom:8px;}
+.partners-page .pt-step p{font-family:var(--fb);font-size:16px;color:#64748B;line-height:1.65;margin-bottom:14px;max-width:460px;}
+.partners-page .pt-step-tag{display:inline-block;background:#EEE8FD;color:#2E1065;font-family:var(--fb);font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;}
+.partners-page .pt-market{position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:28px;padding:40px 32px 32px;background:linear-gradient(160deg,#0F0C2A 0%,#1a1260 50%,#221868 100%);color:#fff;}
+.partners-page .pt-market::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 90% 0%,rgba(245,166,35,.2),transparent 65%);}
+.partners-page .pt-market>*{position:relative;}
+.partners-page .pt-market-big{font-family:var(--fb);font-size:clamp(72px,8vw,120px);font-weight:900;letter-spacing:-.06em;line-height:1;margin:4px 0 14px;background:linear-gradient(95deg,#fff 0%,#fff 45%,#F5D060 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.partners-page .pt-market-sub{font-family:var(--fb);font-size:18px;line-height:1.6;color:rgba(255,255,255,.7);max-width:340px;}
+.partners-page .pt-market-chart{margin-top:auto;padding:22px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);}
+.partners-page .pt-market-bars{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end;height:150px;}
+.partners-page .pt-market-col{height:100%;display:flex;align-items:flex-end;}
+.partners-page .pt-market-bar{width:100%;border-radius:12px 12px 0 0;}
+.partners-page .pt-market-bar-a{background:linear-gradient(180deg,#8B5CF6,#5B21D8);}
+.partners-page .pt-market-bar-b{background:linear-gradient(180deg,#E8A030,#F0B040);box-shadow:0 0 36px rgba(245,166,35,.3);}
+.partners-page .pt-market-labels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;font-family:var(--fb);font-size:14px;font-weight:600;color:rgba(255,255,255,.85);}
+.partners-page .pt-market-src{font-family:var(--fb);font-size:13px;line-height:1.55;color:rgba(255,255,255,.5);margin-top:18px;}
 
 /* ── Responsive ── */
 @media(max-width:900px){
-  .partners-page .pt-step{grid-template-columns:1fr;gap:28px;}
-  .partners-page .pt-step-alt .pt-visual{order:0;}
+  .partners-page .pt-opp{grid-template-columns:1fr;gap:48px;}
+  .partners-page .pt-market{min-height:420px;}
+  .partners-page .pt-types-grid{grid-template-columns:repeat(2,1fr);}
+  .partners-page .pt-enroll-inner{grid-template-columns:1fr;gap:40px;}
+  .partners-page .pt-types-head{gap:32px;}
 }
 @media(max-width:640px){
   .partners-page .pt-hero{padding:116px 20px 80px;min-height:0;}
   .partners-page .pt-hero p{font-size:15px;}
   .partners-page .pt-section{padding:64px 20px;}
-  .partners-page .pt-steps{padding-left:28px;gap:56px;}
-  .partners-page .pt-step::before{left:-28px;}
-  .partners-page .pt-visual{padding:22px;}
+  .partners-page .pt-types{padding:64px 20px;}
+  .partners-page .pt-enroll{padding:64px 20px;}
+  .partners-page .pt-enroll-card{padding:24px 20px;}
+  .partners-page .pt-form-grid{grid-template-columns:1fr;}
+  .partners-page .pt-types-head{grid-template-columns:1fr;gap:16px;}
+  .partners-page .pt-types-grid{grid-template-columns:1fr;}
+  .partners-page .pt-steps{padding-left:40px;gap:28px;}
+  .partners-page .pt-step::before{left:-40px;}
+  .partners-page .pt-market{padding:32px 22px 24px;}
 }
 `;
