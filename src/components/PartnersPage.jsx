@@ -306,6 +306,57 @@ function PartnerFaqs({ onNavigate }) {
   );
 }
 
+/* ═══════════════════════════════════════════════════════════
+   Statement section (placeholder copy, mirrors Supplier Portal urgency block)
+═══════════════════════════════════════════════════════════ */
+function PartnersStatement() {
+  const w = useWidth(); const isMobile = w < 640;
+  const lineCount = 36;
+  const ref = useReveal();
+  return (
+    <section style={{
+      position: "relative", overflow: "hidden",
+      background: [
+        "radial-gradient(ellipse 55% 60% at 0% 0%,   #FCC96B 0%, transparent 65%)",
+        "radial-gradient(ellipse 50% 55% at 100% 0%,  #FCBB4A 0%, transparent 60%)",
+        "radial-gradient(ellipse 40% 50% at 100% 100%,#F5C86A 0%, transparent 55%)",
+        "radial-gradient(ellipse 30% 40% at 0% 80%,   #FDD08A 0%, transparent 55%)",
+        "#ffffff",
+      ].join(","),
+      minHeight: "80vh",
+      display: "flex", flexDirection: "column", justifyContent: "center",
+      padding: isMobile ? "52px 20px 62px" : "clamp(62px,9vh,104px) 5vw",
+    }}>
+      <div style={{ position: "absolute", inset: 0, display: "flex", pointerEvents: "none", zIndex: 0, WebkitMaskImage: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,.08) 25%, rgba(0,0,0,.28) 50%, rgba(0,0,0,.55) 70%, rgba(0,0,0,.7) 100%)", maskImage: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,.08) 25%, rgba(0,0,0,.28) 50%, rgba(0,0,0,.55) 70%, rgba(0,0,0,.7) 100%)" }}>
+        {Array.from({ length: lineCount }).map((_, i) => (
+          <div key={i} style={{ flex: 1, borderRight: "1px dashed rgba(200,140,40,.35)" }} />
+        ))}
+      </div>
+
+      <div style={{ maxWidth: 1040, margin: "0 auto", position: "relative", zIndex: 1, width: "100%", textAlign: "center" }}>
+        <div className="reveal" ref={ref} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{
+            fontFamily: "Georgia, serif", fontSize: isMobile ? 120 : 200,
+            lineHeight: .7, color: "#C8930A", opacity: .22,
+            userSelect: "none", marginBottom: isMobile ? -24 : -48,
+          }}>"</div>
+          <blockquote style={{ margin: 0, padding: 0 }}>
+            <p className="kalam" style={{
+              fontSize: isMobile ? "clamp(22px,6vw,32px)" : "clamp(26px,2.9vw,44px)",
+              lineHeight: 1.35, letterSpacing: ".005em",
+              color: "#1a1a3e", margin: 0,
+            }}>
+              Introducing NimbleS2P, a{" "}
+              <span className="kalam-highlight">compliance-first AI platform</span>{" "}
+              designed around how enterprises actually work — supplier-heavy, process-intensive, approval-driven, and audit-sensitive.
+            </p>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function PartnersPage({ onBack, onNavigate }) {
   const rootRef = useRef(null);
 
@@ -381,6 +432,8 @@ export default function PartnersPage({ onBack, onNavigate }) {
             </svg>
           </div>
         </section>
+
+        <PartnersStatement />
 
         <div className="pt-divider" aria-hidden="true" />
 
