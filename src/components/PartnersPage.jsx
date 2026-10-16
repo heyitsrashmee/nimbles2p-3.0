@@ -354,12 +354,12 @@ export default function PartnersPage({ onBack, onNavigate }) {
 
           <div className="pt-hero-inner">
             <h1>
-              Grow Faster With The
+              Your Next Growth
               <br />
-              NimbleS2P Partner Ecosystem
+              Opportunity Starts Here.
             </h1>
             <p>
-              The quickest and sharpest AI-augmented B2B enterprise SaaS for source-to-pay automation &mdash; with the integrations, enablement and co-selling support to take it to finance and procurement teams.
+              You’ve already built the relationships. Now imagine what they could be worth. As enterprises invest in <strong>AI, e-invoicing and compliance mandates</strong>, the demand for solutions like NimbleS2P is growing. You bring the relationships. We bring the technology and expertise. Together, we can turn your existing network into enterprise opportunities worth <strong>upto ₹2 crore</strong>.
             </p>
             <div className="pt-hero-btns">
               <a href="/demo" className="pt-btn-primary" onClick={(e) => { e.preventDefault(); goDemo(); }}>
@@ -368,9 +368,9 @@ export default function PartnersPage({ onBack, onNavigate }) {
               <a href="#program" className="pt-btn-ghost">Explore the Programme &darr;</a>
             </div>
             <div className="pt-hero-pills">
-              <span>Co-selling support</span>
-              <span>Integration guidance</span>
-              <span>Dedicated partner manager</span>
+              <span>Zero Product Development Cost</span>
+              <span>Enterprise-Trusted SaaS Platform</span>
+              <span>Faster Go-to-Market in Enterprise Segment</span>
             </div>
           </div>
 
@@ -460,7 +460,8 @@ const PARTNERS_CSS = `
 .partners-page .pt-hero{position:relative;overflow:hidden;min-height:78vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:140px 5vw 100px;background:#14104A;}
 .partners-page .pt-hero-inner{position:relative;z-index:2;max-width:860px;width:100%;}
 .partners-page .pt-hero h1{font-weight:900;font-size:clamp(34px,4.7vw,62px);line-height:1.08;letter-spacing:-.05em;margin-bottom:22px;padding-bottom:.12em;background:linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-.partners-page .pt-hero p{font-family:var(--fb);font-size:18px;line-height:1.75;color:rgba(255,255,255,.52);max-width:640px;margin:0 auto 36px;}
+.partners-page .pt-hero p{font-family:var(--fb);font-size:18px;line-height:1.75;color:rgba(255,255,255,.52);max-width:800px;margin:0 auto 36px;}
+.partners-page .pt-hero p strong{font-weight:700;color:rgba(255,255,255,.9);}
 .partners-page .pt-hero-btns{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;align-items:center;margin-bottom:40px;}
 .partners-page .pt-btn-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#E8920A,#F5B020);color:#fff;border-radius:12px;padding:14px 34px;font-size:16px;font-weight:700;font-family:var(--fb);letter-spacing:-.01em;box-shadow:0 6px 32px rgba(232,150,10,.52);transition:transform .2s,box-shadow .2s;}
 .partners-page .pt-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(232,150,10,.62);}
