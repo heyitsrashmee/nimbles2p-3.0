@@ -16,21 +16,24 @@ import { trackLead, trackFormError } from "@/lib/analytics";
    .partners-page.
 ═══════════════════════════════════════════════════════════ */
 
+const SECURITY_BADGES = [
+  { label: "Certified", name: "ISO 27001" },
+  { label: "Audited", name: "SOC 1 Type 1" },
+  { label: "Audited", name: "SOC 2 Type 2" },
+];
+
 const OPPORTUNITY = [
   {
     title: "Compliance Is Now Continuous",
-    desc: "E-invoicing and GST mandates mean every supplier and invoice gets checked live, not at audit time.",
-    tag: "50+ real-time checks",
+    desc: "E-invoicing and tax mandates mean every supplier and invoice gets checked live, not at audit time.",
   },
   {
     title: "AI Pays Off First In Payables",
     desc: "Invoices outgrow finance teams. AI agents match, flag and chase, with results in the first billing cycle.",
-    tag: "Agentic 3-way matching",
   },
   {
     title: "The Mid-Market Is Wide Open",
-    desc: "Legacy suites were built for the Fortune 500. Your clients need modular S2P on the ERP they already run.",
-    tag: "Any ERP · Start with one module",
+    desc: "Enterprises have invested in ERP. Now, S2P automation is the next big step.",
   },
 ];
 
@@ -39,7 +42,7 @@ const MODULES = [
   {
     icon: "🛡️",
     title: "Compliance That Never Sleeps",
-    desc: "Automated statutory, financial, GST, MCA, PAN, legal and risk checks across 50+ real-time parameters, with continuous monitoring and a full audit trail.",
+    desc: "Automated statutory, financial, tax, corporate registry, tax ID, legal and risk checks across 50+ real-time parameters, with continuous monitoring and a full audit trail.",
     pills: [["✅", "50+ Real-Time Parameters"], ["🔔", "Expiry Alerts"], ["🧾", "Full Audit Trail"]],
   },
   {
@@ -88,8 +91,8 @@ const PARTNER_TYPES = [
     ),
   },
   {
-    title: "Financial Consulting & CA Firms",
-    desc: "Your audits keep finding duplicate payments, non-compliant vendors and GST mismatches. Recommend the system that stops them recurring — and earn on every client you introduce.",
+    title: "Financial Consulting & Accounting Firms",
+    desc: "Your audits keep finding duplicate payments, non-compliant vendors and tax mismatches. Recommend the system that stops them recurring — and earn on every client you introduce.",
     tag: "Refer",
     icon: (
       <>
@@ -132,7 +135,7 @@ const ENROLL_STEPS = [
 
 const PRACTICE_OPTIONS = [
   "ERP Implementation Partner",
-  "Financial Consulting / CA Firm",
+  "Financial Consulting / Accounting Firm",
   "Fintech & Financing Provider",
   "IT Services / System Integrator",
   "Other",
@@ -222,7 +225,7 @@ function PartnerTypes() {
               <span>Sit With Finance.</span>
             </h2>
           </div>
-          <p>If CFOs and procurement heads already trust you, you have the hardest part of an enterprise sale. We bring the rest.</p>
+          <p>If CFOs and procurement heads already trust your services, it’s time to take that trust to the next level and unlock greater value.</p>
         </div>
         <div className="pt-types-grid">
           {PARTNER_TYPES.map((t, i) => (
@@ -317,25 +320,23 @@ function PartnerEnroll() {
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <h3 className="pt-form-title">Want More Details?</h3>
-              <p className="pt-form-sub">Talk to our partner team. We reply within 1 business day.</p>
               <div className="pt-form-grid">
-                <label>Full name<span className="pt-req">*</span>
+                <label><span>Full name<span className="pt-req">*</span></span>
                   <input type="text" required autoComplete="name" value={form.name} onChange={set("name")} />
                 </label>
-                <label>Work email<span className="pt-req">*</span>
+                <label><span>Work email<span className="pt-req">*</span></span>
                   <input type="email" required autoComplete="email" value={form.email} onChange={set("email")} />
                 </label>
-                <label>Phone (with country code)<span className="pt-req">*</span>
-                  <input type="tel" required autoComplete="tel" placeholder="+91" value={form.phone} onChange={set("phone")} />
+                <label><span>Phone (with country code)<span className="pt-req">*</span></span>
+                  <input type="tel" required autoComplete="tel" placeholder="Include country code" value={form.phone} onChange={set("phone")} />
                 </label>
-                <label>Company<span className="pt-req">*</span>
+                <label><span>Company<span className="pt-req">*</span></span>
                   <input type="text" required autoComplete="organization" value={form.company} onChange={set("company")} />
                 </label>
-                <label>Country<span className="pt-req">*</span>
+                <label><span>Country<span className="pt-req">*</span></span>
                   <input type="text" required autoComplete="country-name" value={form.country} onChange={set("country")} />
                 </label>
-                <label>Your practice<span className="pt-req">*</span>
+                <label><span>Your practice<span className="pt-req">*</span></span>
                   <select required value={form.practice} onChange={set("practice")}>
                     <option value="" disabled>Select</option>
                     {PRACTICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -474,7 +475,7 @@ export default function PartnersPage({ onBack, onNavigate }) {
               Opportunity Starts Here.
             </h1>
             <p>
-              You’ve already built the relationships. Now imagine what they could be worth. As enterprises invest in <strong>AI, e-invoicing and compliance mandates</strong>, the demand for solutions like NimbleS2P is growing. You bring the relationships. We bring the technology and expertise. Together, we can turn your existing network into enterprise opportunities worth <strong>upto ₹2 crore</strong>.
+              You’ve already built the relationships. Now imagine what they could be worth. As enterprises invest in <strong>AI, e-invoicing and compliance mandates</strong>, the demand for solutions like NimbleS2P is growing. You bring the relationships and expertise. We bring the technology. Together, we can turn your existing network into enterprise opportunities worth <strong>millions</strong>.
             </p>
             <div className="pt-hero-btns">
               <a href="/demo" className="pt-btn-primary" onClick={(e) => { e.preventDefault(); goDemo(); }}>
@@ -483,9 +484,18 @@ export default function PartnersPage({ onBack, onNavigate }) {
               <a href="#program" className="pt-btn-ghost">Explore the Programme &darr;</a>
             </div>
             <div className="pt-hero-pills">
-              <span>Zero Product Development Cost</span>
-              <span>Enterprise-Trusted SaaS Platform</span>
-              <span>Faster Go-to-Market in Enterprise Segment</span>
+              {SECURITY_BADGES.map((b) => (
+                <div className="pt-badge" key={b.name}>
+                  <svg className="pt-badge-shield" width="30" height="34" viewBox="0 0 30 34" fill="none" aria-hidden="true">
+                    <path d="M15 1.5l12 4.5v10.5c0 8-5.2 13.6-12 16-6.8-2.4-12-8-12-16V6l12-4.5z" fill="rgba(245,166,35,.12)" stroke="#F5C042" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M9.5 17l3.8 3.8 7.2-8" stroke="#F5D060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <div className="pt-badge-text">
+                    <span>{b.label}</span>
+                    <strong>{b.name}</strong>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -517,31 +527,50 @@ export default function PartnersPage({ onBack, onNavigate }) {
                     <div className="pt-step-num">0{i + 1}</div>
                     <h3>{o.title}</h3>
                     <p>{o.desc}</p>
-                    <span className="pt-step-tag">{o.tag}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <aside className="pt-market sr sr-d2">
-              <Eyebrow dark>Global S2P Market</Eyebrow>
-              <div className="pt-market-big">$9B+</div>
-              <p className="pt-market-sub">in 2025, growing about 10% a year through 2035.</p>
+              <Eyebrow dark>Global S2P Market · 2035</Eyebrow>
+              <div className="pt-market-big">$23B</div>
+              <p className="pt-market-sub">Projected size of the global source-to-pay market by 2035.</p>
               <div className="pt-market-chart">
-                <div className="pt-market-bars">
-                  <div className="pt-market-col">
-                    <div className="pt-market-bar pt-market-bar-a" style={{ height: `${(9 / 22.9) * 100}%` }} />
-                  </div>
-                  <div className="pt-market-col">
-                    <div className="pt-market-bar pt-market-bar-b" style={{ height: "100%" }} />
-                  </div>
+                <div className="pt-market-plot">
+                  <svg viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="ptAreaFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#6D3AE8" stopOpacity=".55" />
+                        <stop offset="100%" stopColor="#6D3AE8" stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="ptLineStroke" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#8B5CF6" />
+                        <stop offset="100%" stopColor="#F5A623" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,120 C90,108 170,100 230,78 C285,58 330,38 360,26 L360,150 L0,150 Z" fill="url(#ptAreaFill)" />
+                    <path d="M0,120 C90,108 170,100 230,78 C285,58 330,38 360,26" fill="none" stroke="url(#ptLineStroke)" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                  </svg>
+                  <span className="pt-market-flag">$23B</span>
+                  <span className="pt-market-dot" />
                 </div>
-                <div className="pt-market-labels">
-                  <span>2025 · $9.0B</span>
-                  <span>2035 · $22.9B</span>
+                <div className="pt-market-axis">
+                  <span>2025</span>
+                  <span>2035</span>
                 </div>
               </div>
-              <p className="pt-market-src">Source: Emergen Research, Source to Pay Market Report (2025–2035). Estimates vary by firm.</p>
+              <div className="pt-market-stats">
+                <div>
+                  <strong>~10%</strong>
+                  <span>Yearly growth, 2025–2035</span>
+                </div>
+                <div>
+                  <strong>#1</strong>
+                  <span>Large enterprises are the biggest buyers</span>
+                </div>
+              </div>
+              <p className="pt-market-src">Source: Emergen Research, Source to Pay Market Report (2025–2035). Projection; estimates vary by firm.</p>
             </aside>
           </div>
         </section>
@@ -586,7 +615,12 @@ const PARTNERS_CSS = `
 .partners-page .pt-btn-ghost{font-family:var(--fb);font-size:15px;font-weight:500;color:rgba(255,255,255,.6);transition:color .18s;}
 .partners-page .pt-btn-ghost:hover{color:#fff;}
 .partners-page .pt-hero-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.partners-page .pt-hero-pills span{font-family:var(--fb);font-size:12.5px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:7px 16px;}
+.partners-page .pt-hero-pills{gap:14px;}
+.partners-page .pt-badge{display:flex;align-items:center;gap:12px;padding:10px 20px 10px 14px;border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.04));border:1px solid rgba(245,192,66,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 20px rgba(0,0,0,.2);text-align:left;}
+.partners-page .pt-badge-shield{flex-shrink:0;filter:drop-shadow(0 0 8px rgba(245,166,35,.35));}
+.partners-page .pt-badge-text{display:flex;flex-direction:column;gap:1px;}
+.partners-page .pt-badge-text span{font-family:var(--fb);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,208,96,.85);}
+.partners-page .pt-badge-text strong{font-family:var(--fb);font-size:15px;font-weight:800;letter-spacing:-.01em;color:#fff;white-space:nowrap;}
 
 .partners-page .pt-divider{height:3px;width:100%;background:linear-gradient(90deg,var(--p500),var(--p300),#F59E0B);display:block;}
 
@@ -602,8 +636,6 @@ const PARTNERS_CSS = `
 .partners-page .pt-enroll-step h3{font-size:18px;font-weight:800;letter-spacing:-.02em;color:#fff;margin-bottom:4px;}
 .partners-page .pt-enroll-step p{font-family:var(--fb);font-size:15px;line-height:1.6;color:rgba(255,255,255,.62);}
 .partners-page .pt-enroll-card{background:#fff;border-radius:24px;padding:36px;box-shadow:0 24px 70px rgba(0,0,0,.35);}
-.partners-page .pt-form-title{font-size:24px;font-weight:900;letter-spacing:-.035em;color:#0F172A;margin-bottom:6px;}
-.partners-page .pt-form-sub{font-family:var(--fb);font-size:14px;color:#64748B;margin-bottom:22px;}
 .partners-page .pt-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 16px;}
 .partners-page .pt-form-grid label{display:flex;flex-direction:column;gap:7px;font-family:var(--fb);font-size:13px;font-weight:600;color:#1E293B;}
 .partners-page .pt-form-full{grid-column:1/-1;}
@@ -649,19 +681,21 @@ const PARTNERS_CSS = `
 .partners-page .pt-step-num{font-family:var(--fb);font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--p500);margin-bottom:6px;}
 .partners-page .pt-step h3{font-size:clamp(20px,2vw,26px);font-weight:800;letter-spacing:-.03em;line-height:1.2;color:#0F172A;margin-bottom:8px;}
 .partners-page .pt-step p{font-family:var(--fb);font-size:16px;color:#64748B;line-height:1.65;margin-bottom:14px;max-width:460px;}
-.partners-page .pt-step-tag{display:inline-block;background:#EEE8FD;color:#2E1065;font-family:var(--fb);font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;}
 .partners-page .pt-market{position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:28px;padding:40px 32px 32px;background:linear-gradient(160deg,#0F0C2A 0%,#1a1260 50%,#221868 100%);color:#fff;}
 .partners-page .pt-market::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 90% 0%,rgba(245,166,35,.2),transparent 65%);}
 .partners-page .pt-market>*{position:relative;}
 .partners-page .pt-market-big{font-family:var(--fb);font-size:clamp(72px,8vw,120px);font-weight:900;letter-spacing:-.06em;line-height:1;margin:4px 0 14px;background:linear-gradient(95deg,#fff 0%,#fff 45%,#F5D060 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .partners-page .pt-market-sub{font-family:var(--fb);font-size:18px;line-height:1.6;color:rgba(255,255,255,.7);max-width:340px;}
-.partners-page .pt-market-chart{margin-top:auto;padding:22px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);}
-.partners-page .pt-market-bars{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end;height:150px;}
-.partners-page .pt-market-col{height:100%;display:flex;align-items:flex-end;}
-.partners-page .pt-market-bar{width:100%;border-radius:12px 12px 0 0;}
-.partners-page .pt-market-bar-a{background:linear-gradient(180deg,#8B5CF6,#5B21D8);}
-.partners-page .pt-market-bar-b{background:linear-gradient(180deg,#E8A030,#F0B040);box-shadow:0 0 36px rgba(245,166,35,.3);}
-.partners-page .pt-market-labels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;font-family:var(--fb);font-size:14px;font-weight:600;color:rgba(255,255,255,.85);}
+.partners-page .pt-market-chart{margin-top:auto;padding-top:28px;}
+.partners-page .pt-market-plot{position:relative;height:170px;}
+.partners-page .pt-market-plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.partners-page .pt-market-dot{position:absolute;right:0;top:17.3%;width:16px;height:16px;border-radius:50%;background:#F5A623;border:3px solid #fff;transform:translate(50%,-50%);box-shadow:0 0 0 8px rgba(245,166,35,.22),0 0 30px rgba(245,166,35,.6);}
+.partners-page .pt-market-flag{position:absolute;right:0;top:-6px;transform:translateY(-100%);background:#F5D060;color:#1a1258;font-family:var(--fb);font-size:14px;font-weight:800;padding:5px 14px;border-radius:999px;}
+.partners-page .pt-market-axis{display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,.14);padding-top:10px;font-family:var(--fb);font-size:14px;font-weight:700;color:rgba(255,255,255,.7);}
+.partners-page .pt-market-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+.partners-page .pt-market-stats>div{padding:16px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);}
+.partners-page .pt-market-stats strong{display:block;font-family:var(--fb);font-size:26px;font-weight:900;letter-spacing:-.03em;color:#fff;margin-bottom:4px;}
+.partners-page .pt-market-stats span{font-family:var(--fb);font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.65);}
 .partners-page .pt-market-src{font-family:var(--fb);font-size:13px;line-height:1.55;color:rgba(255,255,255,.5);margin-top:18px;}
 
 /* ── Responsive ── */
