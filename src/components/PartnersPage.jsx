@@ -154,7 +154,7 @@ function ModulesSection() {
       <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div className="reveal" ref={ref}>
           <div style={{ marginBottom: isMobile ? 36 : 52 }}>
-            <Eyebrow dark>The Platform</Eyebrow>
+            <Eyebrow dark>Compliance First AI Platform</Eyebrow>
             <h2 style={{ fontFamily: "var(--fb)", fontSize: isMobile ? "clamp(24px,6vw,34px)" : "clamp(28px,3.5vw,46px)", fontWeight: 900, letterSpacing: "-.04em", lineHeight: 1.1, background: "linear-gradient(95deg,#fff 0%,#fff 30%,#F5D060 62%,#F5A623 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", paddingBottom: "0.12em", marginBottom: 14 }}>
               All Modules. One Intelligent Platform.<br />Zero Chaos.
             </h2>
